@@ -1,0 +1,1 @@
+# No dependencies required - urllib is built-in to Python

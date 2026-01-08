@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/chat", "destination": "/api/chat" },
+    { "source": "/lead", "destination": "/api/lead" },
+    { "source": "/tts", "destination": "/api/tts" },
+    { "source": "/stt", "destination": "/api/stt" },
+    { "source": "/(.*)", "destination": "/public/$1" }
+  ]
+}

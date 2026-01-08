@@ -1,0 +1,110 @@
+from http.server import BaseHTTPRequestHandler
+import json
+import urllib.request
+import os
+
+class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+        return
+
+    def do_POST(self):
+        # Read the request body
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        data = json.loads(post_data)
+        
+        # Get API key from environment variable
+        api_key = os.environ.get('ANTHROPIC_API_KEY')
+        
+        if not api_key:
+            self.send_error(500, "API key not configured")
+            return
+        
+        # Prepare the Anthropic API request
+        url = "https://api.anthropic.com/v1/messages"
+        
+        system_prompt = f"""You are SUMMITWEBCRAFT's professional AI assistant, founded by Irvan Damon (creator of HAIBO PHANDA).
+
+CONTACT DETAILS:
+- Website: https://summitwebcraft.co.za/
+- Email: design@summitwebcraft.co.za
+- WhatsApp: +27 63 112 6410
+- Portfolio: https://summitwebcraft.co.za/pages/portfolio-projects-page
+- Location: South Africa
+
+SERVICES & PRICING:
+- Basic Website: R5,000 - R15,000 (5-10 pages, responsive design, SEO)
+- E-commerce Store: R15,000 - R40,000 (product catalogue, payments, admin)
+- Custom Development: R25,000+ (web apps, integrations, complex features)
+- SEO Services: R2,000 - R8,000/month
+- Hosting & Support: R300 - R1,500/month
+
+DEVELOPMENT PROCESS:
+1. Free initial consultation call
+2. Detailed proposal within 48 hours
+3. Development: 2-4 weeks depending on complexity
+4. Testing, revisions, and launch
+5. 3 months included support
+
+PORTFOLIO SHOWCASE:
+We have extensive examples of our work available at https://summitwebcraft.co.za/pages/portfolio-projects-page which showcases our capabilities across different industries and project types
+
+KEY SPECIALITIES:
+- Custom WordPress development
+- React and Next.js applications
+- WooCommerce and Shopify e-commerce solutions
+- Progressive Web Apps (PWAs)
+- SEO optimisation and digital marketing
+- Mobile-responsive design
+- API development and integrations
+
+COMPANY BACKGROUND:
+Founded by Irvan Damon, who is also the creator of HAIBO PHANDA. We focus on creating high-performance, user-friendly websites that deliver real business value for our clients across South Africa and globally.
+
+COMMUNICATION PREFERENCES:
+- For project enquiries: design@summitwebcraft.co.za
+- For quick questions: WhatsApp +27 63 112 6410
+- To see our work: https://summitwebcraft.co.za/pages/portfolio-projects-page
+- Response time: Within 2-4 hours during business hours
+
+Guidelines for responses:
+- Be professional, helpful, and knowledgeable about web development
+- Use British English spelling
+- Provide specific, actionable information
+- Always include relevant contact details when appropriate
+- Guide qualified leads towards scheduling consultations
+- Reference our portfolio page when clients ask about examples
+- Be enthusiastic about our capabilities whilst remaining professional
+
+User question: {data['message']}"""
+        
+        api_data = {
+            "model": "claude-3-haiku-20240307",
+            "max_tokens": 350,
+            "messages": [{"role": "user", "content": system_prompt}]
+        }
+        
+        req = urllib.request.Request(url, json.dumps(api_data).encode(), {
+            'Content-Type': 'application/json',
+            'x-api-key': api_key,
+            'anthropic-version': '2023-06-01'
+        })
+        
+        try:
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode())
+                bot_response = result['content'][0]['text']
+        except Exception as e:
+            bot_response = f"I'm experiencing technical difficulties. Please contact us directly at design@summitwebcraft.co.za or WhatsApp +27 63 112 6410"
+        
+        # Send response
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(json.dumps({'response': bot_response}).encode())

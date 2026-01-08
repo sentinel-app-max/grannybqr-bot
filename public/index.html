@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAIBO PHANDA AI Assistant</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
+            height: 100vh; 
+            display: flex; 
+            align-items: flex-start; 
+            justify-content: center; 
+        }
+        
+        .chat-container { 
+            width: 100%; 
+            height: 100%; min-height: 100vh; 
+            background: white; 
+            border-radius: 0; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chat-header { 
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
+            color: white; 
+            padding: 25px 20px; 
+            text-align: center; 
+            position: relative;
+        }
+        
+        .chat-header h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+        
+        .header-left {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .header-right {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .language-selector {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            outline: none;
+        }
+        
+        .language-selector option {
+            background: #CC5500;
+            color: white;
+        }
+        
+        .clear-chat {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: background 0.2s;
+        }
+        
+        .clear-chat:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .chat-messages { 
+            flex: 1; 
+            padding: 25px 20px; 
+            overflow-y: auto; 
+            background: #f8f9fa; 
+        }
+        
+        .message { 
+            margin-bottom: 15px; 
+            display: flex; 
+            animation: fadeIn 0.3s ease; 
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-content { 
+            max-width: 85%; 
+            padding: 12px 16px; 
+            border-radius: 18px; 
+            font-size: 14px; 
+            line-height: 1.5; 
+            white-space: pre-wrap;
+            position: relative;
+        }
+        
+        .user-message { justify-content: flex-end; }
+        .user-message .message-content { 
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
+            color: white; 
+        }
+        
+        .bot-message { justify-content: flex-start; }
+        .bot-message .message-content { 
+            background: white; 
+            color: #333; 
+            border: 1px solid #e1e8ed; 
+        }
+        
+        .chat-input { 
+            padding: 25px 20px; 
+            background: white; 
+            border-top: 1px solid #e1e8ed; 
+            display: flex; 
+            gap: 10px; 
+        }
+        
+        .chat-input input { 
+            flex: 1; 
+            padding: 12px 16px; 
+            border: 1px solid #e1e8ed; 
+            border-radius: 25px; 
+            outline: none; 
+            font-size: 14px; 
+        }
+        
+        .chat-input input:focus { 
+            border-color: #CC5500; 
+            box-shadow: 0 0 0 2px rgba(204, 85, 0, 0.1); 
+        }
+        
+        .chat-input button { flex-shrink: 0; 
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: transform 0.2s ease;
+        }
+        
+        .chat-input button:hover { transform: translateY(-1px); }
+        .chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .mic-btn { flex-shrink: 0; 
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
+            color: white;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        .mic-btn:hover { transform: translateY(-1px); }
+        
+        .mic-btn.recording {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.5); }
+            50% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+        }
+        
+        .speak-btn {
+            background: none;
+            border: none;
+            color: #CC5500;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+            margin-top: 8px;
+            border-radius: 12px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        
+        .speak-btn:hover {
+            background: rgba(204, 85, 0, 0.1);
+        }
+        
+        .speak-btn.loading {
+            color: #999;
+            cursor: wait;
+        }
+        
+        .speak-btn.playing {
+            color: #e74c3c;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .typing-indicator.active {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background: #999;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .message-content a { color: #CC5500; text-decoration: none; }
+        .message-content a:hover { text-decoration: underline; }
+        .user-message .message-content a { color: #fff; text-decoration: underline; }
+        
+        .quote-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 0;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .quote-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(204, 85, 0, 0.4);
+        }
+        
+        .form-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .form-overlay.active { display: flex; }
+        
+        .lead-form {
+            background: white;
+            width: 90%;
+            max-height: 90%;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-header {
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .form-header h3 { margin: 0; font-size: 16px; }
+        
+        .close-form {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        .close-form:hover { background: rgba(255,255,255,0.3); }
+        
+        .form-body {
+            padding: 25px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .form-group { margin-bottom: 16px; }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        .form-group label .required { color: #e74c3c; }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #CC5500;
+            box-shadow: 0 0 0 3px rgba(204, 85, 0, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+        
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(204, 85, 0, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .form-note {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 12px;
+        }
+        
+        .voice-status {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            padding: 4px;
+            background: #f0f0f0;
+            display: none;
+        }
+        
+        .voice-status.active { display: block; }
+
+        @media (max-width: 480px) {
+            .chat-input { padding: 12px 8px; gap: 6px; }
+            .chat-input input { padding: 10px 10px; font-size: 13px; min-width: 0; }
+            .chat-input button { padding: 10px 12px; font-size: 12px; }
+            .mic-btn { width: 38px; height: 38px; min-width: 38px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-left">
+                <select class="language-selector" id="languageSelector" onchange="changeLanguage()">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="af">🇿🇦 Afrikaans</option>
+                    <option value="zu">🇿🇦 isiZulu</option>
+                    <option value="xh">🇿🇦 isiXhosa</option>
+                    <option value="st">🇿🇦 Sesotho</option>
+                    <option value="nso">🇿🇦 Sepedi</option>
+                </select>
+            </div>
+            
+            <div class="header-right">
+                <button class="clear-chat" onclick="clearChat()" id="clearBtn">New Chat</button>
+            </div>
+        </div>
+        
+        <div class="voice-status" id="voiceStatus">🎤 Listening...</div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content" id="welcomeMessage">
+Sawubona! I'm Onalerona, your AI literacy guide at HAIBO PHANDA. Whether you're a young person ready to future-proof your skills, an SMME owner looking to grow smarter, or someone who wants to support our mission, I'm here to help you phanda!
+
+What brings you here today?
+                    <button class="speak-btn" onclick="speakText(this, this.parentElement.innerText.replace('🔊 Listen', '').replace('⏹️ Stop', '').replace('⏳ Loading...', '').trim())">🔊 Listen</button>
+                </div>
+            </div>
+            <div class="typing-indicator" id="typingIndicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Ask about free AI training, collaboration, or supporting our mission...">
+            <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()" title="Voice input">🎤</button>
+            <button onclick="sendMessage()" id="sendButton">Send</button>
+        </div>
+        
+        <div class="form-overlay" id="formOverlay">
+            <div class="lead-form">
+                <div class="form-header">
+                    <h3 id="formTitle">Get In Touch</h3>
+                    <button class="close-form" onclick="closeForm()">&times;</button>
+                </div>
+                <div class="form-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelName">Name <span class="required">*</span></label>
+                            <input type="text" id="leadName" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelPhone">Phone</label>
+                            <input type="tel" id="leadPhone" placeholder="+27...">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label id="labelEmail">Email <span class="required">*</span></label>
+                        <input type="email" id="leadEmail" placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelInterestType">I'm Interested In</label>
+                            <select id="leadInterestType">
+                                <option value="">Select...</option>
+                                <option value="Youth Track Training">Youth Track Training</option>
+                                <option value="SMME Track Training">SMME Track Training</option>
+                                <option value="School/Group Training">School/Group Training</option>
+                                <option value="Corporate Partnership">Corporate Partnership</option>
+                                <option value="NGO Collaboration">NGO Collaboration</option>
+                                <option value="Government Partnership">Government Partnership</option>
+                                <option value="Donation/CSI">Donation/CSI</option>
+                                <option value="Volunteering/Mentorship">Volunteering/Mentorship</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label id="labelOrganisation">Organisation</label>
+                            <input type="text" id="leadOrganisation" placeholder="Optional">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label id="labelDetails">Tell Us More</label>
+                        <textarea id="leadDetails" placeholder=""></textarea>
+                    </div>
+                    
+                    <button class="submit-btn" id="submitBtn" onclick="submitLead()">Submit</button>
+                    <p class="form-note" id="formNote">We'll get back to you soon. Everything we offer is 100% FREE!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isWaitingForResponse = false;
+        let conversationHistory = [];
+        let currentLanguage = 'en';
+        let recognition = null;
+        let isRecording = false;
+        let currentAudio = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        
+        const translations = {
+            en: {
+                welcomeMessage: "Sawubona! I'm Onalerona, your AI literacy guide at HAIBO PHANDA. Whether you're a young person ready to future-proof your skills, an SMME owner looking to grow smarter, or someone who wants to support our mission, I'm here to help you phanda!\n\nWhat brings you here today?",
+                placeholder: "Ask about free AI training, collaboration, or supporting our mission...",
+                sendButton: "Send",
+                clearButton: "New Chat",
+                contactButton: "📋 Get In Touch",
+                formTitle: "Get In Touch",
+                labelName: "Name",
+                labelPhone: "Phone",
+                labelEmail: "Email",
+                labelInterestType: "I'm Interested In",
+                labelOrganisation: "Organisation",
+                labelDetails: "Tell Us More",
+                submitButton: "Submit",
+                formNote: "We'll get back to you soon. Everything we offer is 100% FREE!",
+                detailsPlaceholder: "Tell us about yourself, your goals, or how you'd like to get involved...",
+                listenButton: "🔊 Listen",
+                stopButton: "⏹️ Stop",
+                loadingButton: "⏳ Loading...",
+                listeningStatus: "🎤 Listening..."
+            },
+            af: {
+                welcomeMessage: "Goeie dag mense! Baie goeie dinge gebeur in Suid-Afrika. My naam is Karien, beste vriendin van Onalerona. Of jy nou 'n jong persoon is wat gereed is om jou vaardighede te toekomsbewys, 'n SMME-eienaar wat slimmer wil groei, of iemand wat ons missie wil ondersteun, ons is hier om jou te help panda!\n\nWat bring jou vandag hier?",
+                placeholder: "Vra oor gratis KI-opleiding, samewerking, of ondersteuning...",
+                sendButton: "Stuur",
+                clearButton: "Nuwe Boodskap",
+                contactButton: "📋 Kontak Ons",
+                formTitle: "Kontak Ons",
+                labelName: "Naam",
+                labelPhone: "Telefoon",
+                labelEmail: "E-pos",
+                labelInterestType: "Ek Stel Belang In",
+                labelOrganisation: "Organisasie",
+                labelDetails: "Vertel Ons Meer",
+                submitButton: "Dien In",
+                formNote: "Ons sal binnekort terugkom. Alles wat ons bied is 100% GRATIS!",
+                detailsPlaceholder: "Vertel ons van jouself, jou doelwitte, of hoe jy betrokke wil raak...",
+                listenButton: "🔊 Luister",
+                stopButton: "⏹️ Stop",
+                loadingButton: "⏳ Laai...",
+                listeningStatus: "🎤 Luister..."
+            },
+            zu: {
+                welcomeMessage: "Sawubona! NginguOnalerona, umqondisi wakho wokufunda nge-AI e-HAIBO PHANDA. Noma ungumuntu omusha okulungele ukuvikela amakhono akho, umnikazi we-SMME ofuna ukukhula ngokuhlakanipha, noma othile ofuna ukusekela umsebenzi wethu, ngilapha ukukusiza uphande!\n\nYini ekulethe lapha namuhla?",
+                placeholder: "Buza ngokuqeqeshwa kwe-AI kwamahhala, ukubambisana, noma ukusekela...",
+                sendButton: "Thumela",
+                clearButton: "Ingxoxo Entsha",
+                contactButton: "📋 Thintana Nathi",
+                formTitle: "Thintana Nathi",
+                labelName: "Igama",
+                labelPhone: "Ifoni",
+                labelEmail: "I-imeyili",
+                labelInterestType: "Nginesithakazelo",
+                labelOrganisation: "Inhlangano",
+                labelDetails: "Sitshele Kabanzi",
+                submitButton: "Thumela",
+                formNote: "Sizobuyela kuwe maduze. Konke esikuhlinzekayo KUMAHHALA 100%!",
+                detailsPlaceholder: "Sitshele ngawe, izinhloso zakho, noma indlela ofuna ukubamba ngayo iqhaza...",
+                listenButton: "🔊 Lalela",
+                stopButton: "⏹️ Misa",
+                loadingButton: "⏳ Iyalayisha...",
+                listeningStatus: "🎤 Ilalele..."
+            },
+            xh: {
+                welcomeMessage: "Molo! NdinguOnalerona, umkhokeli wakho wokufunda nge-AI e-HAIBO PHANDA. Nokuba ungumntu omtsha okulungele ukukhusela izakhono zakho, umnikazi we-SMME ofuna ukukhula ngobulumko, okanye umntu ofuna ukuxhasa umsebenzi wethu, ndikho ukukunceda uphande!\n\nYintoni ekuzise apha namhlanje?",
+                placeholder: "Buza ngoqeqesho lwe-AI lwasimahla, ukusebenzisana, okanye ukuxhasa...",
+                sendButton: "Thumela",
+                clearButton: "Incoko Entsha",
+                contactButton: "📋 Qhagamshelana Nathi",
+                formTitle: "Qhagamshelana Nathi",
+                labelName: "Igama",
+                labelPhone: "Ifowuni",
+                labelEmail: "I-imeyili",
+                labelInterestType: "Ndinomdla",
+                labelOrganisation: "Umbutho",
+                labelDetails: "Sixelele Ngakumbi",
+                submitButton: "Thumela",
+                formNote: "Siza kubuyela kuwe kungekudala. Yonke into esiyinikezelayo SIMAHLA 100%!",
+                detailsPlaceholder: "Sixelele ngawe, iinjongo zakho, okanye indlela ofuna ukubandakanyeka ngayo...",
+                listenButton: "🔊 Mamela",
+                stopButton: "⏹️ Yeka",
+                loadingButton: "⏳ Iyalayisha...",
+                listeningStatus: "🎤 Iyamamela..."
+            },
+            st: {
+                welcomeMessage: "Dumela! Ke Onalerona, motataisi wa hao wa ho ithuta AI ho HAIBO PHANDA. Leha o le motho e mocha ya itokiseditseng ho sireletsa bokgoni ba hao, monga SMME ya batlang ho hola ka bohlale, kapa e mong ya batlang ho tshehetsa mosebetsi wa rona, ke mona ho o thusa o phande!\n\nKe eng e o tlisitseng mona kajeno?",
+                placeholder: "Botsa ka koetliso ya AI ya mahala, tshebedisano, kapa tshehetso...",
+                sendButton: "Romela",
+                clearButton: "Puisano e Ncha",
+                contactButton: "📋 Ikopanye le Rona",
+                formTitle: "Ikopanye le Rona",
+                labelName: "Lebitso",
+                labelPhone: "Mohala",
+                labelEmail: "Emeile",
+                labelInterestType: "Ke Thahasella",
+                labelOrganisation: "Mokgatlo",
+                labelDetails: "Re Bolelle Haholoanyane",
+                submitButton: "Romela",
+                formNote: "Re tla kgutlela ho wena haufinyane. Tsohle tseo re di fanang ke MAHALA 100%!",
+                detailsPlaceholder: "Re bolelle ka wena, dipheo tsa hao, kapa kamoo o batlang ho kenella kateng...",
+                listenButton: "🔊 Mamela",
+                stopButton: "⏹️ Emisa",
+                loadingButton: "⏳ E laoela...",
+                listeningStatus: "🎤 E mamela..."
+            },
+            nso: {
+                welcomeMessage: "Thobela! Ke Onalerona, moetapele wa gago wa go ithuta AI go HAIBO PHANDA. Le ge o le yo mofsa yo a itokišeditšego go šireletša mabokgoni a gago, mong wa SMME yo a nyakago go gola ka bohlale, goba yo mongwe yo a nyakago go thekga mošomo wa rena, ke mo go go thuša o phande!\n\nKe eng se se go tlišitšego mo lehono?",
+                placeholder: "Botšiša ka tlhahlo ya AI ya mahala, tšhomišano, goba thekgo...",
+                sendButton: "Romela",
+                clearButton: "Poledišano ye Mpsha",
+                contactButton: "📋 Ikgokagantšha le Rena",
+                formTitle: "Ikgokagantšha le Rena",
+                labelName: "Leina",
+                labelPhone: "Mogala",
+                labelEmail: "Emeile",
+                labelInterestType: "Ke Na le Kgahlego",
+                labelOrganisation: "Mokgatlo",
+                labelDetails: "Re Botše Go Feta",
+                submitButton: "Romela",
+                formNote: "Re tla boela go wena ka pela. Tšohle tšeo re di fago ke MAHALA 100%!",
+                detailsPlaceholder: "Re botše ka wena, dipakane tša gago, goba ka fao o nyakago go tšea karolo...",
+                listenButton: "🔊 Theetša",
+                stopButton: "⏹️ Emiša",
+                loadingButton: "⏳ E laoela...",
+                listeningStatus: "🎤 E theetša..."
+            }
+        };
+        
+        const speechLanguageMap = {
+            'en': 'en-ZA',
+            'af': 'af-ZA',
+            'zu': 'zu-ZA',
+            'xh': 'xh-ZA',
+            'st': 'st-ZA',
+            'nso': 'nso-ZA'
+        };
+        
+        function getSupportedMimeType() {
+            const types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+            for (const type of types) {
+                if (MediaRecorder.isTypeSupported(type)) {
+                    return type;
+                }
+            }
+            return 'audio/mp4';
+        }
+        
+        function initSpeechRecognition() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (!isIOS && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                
+                recognition.onstart = () => {
+                    isRecording = true;
+                    document.getElementById('micBtn').classList.add('recording');
+                    document.getElementById('voiceStatus').classList.add('active');
+                    document.getElementById('voiceStatus').textContent = translations[currentLanguage].listeningStatus;
+                };
+                
+                recognition.onend = () => {
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('recording');
+                    document.getElementById('voiceStatus').classList.remove('active');
+                };
+                
+                recognition.onresult = (event) => {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    if (finalTranscript) {
+                        document.getElementById('messageInput').value = finalTranscript;
+                        sendMessage();
+                    }
+                };
+                
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('recording');
+                    document.getElementById('voiceStatus').classList.remove('active');
+                };
+            }
+        }
+        
+        async function toggleVoiceInput() {
+            if (recognition) {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    recognition.lang = speechLanguageMap[currentLanguage];
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        await startWhisperRecording();
+                    }
+                }
+                return;
+            }
+            
+            if (isRecording) {
+                stopWhisperRecording();
+            } else {
+                await startWhisperRecording();
+            }
+        }
+        
+        async function startWhisperRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                let options = {};
+                
+                if (!isIOS) {
+                    let mimeType = getSupportedMimeType();
+                    if (mimeType) {
+                        options = { mimeType: mimeType };
+                    }
+                }
+                
+                mediaRecorder = new MediaRecorder(stream, options);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const duration = ((Date.now() - window.recordingStartTime) / 1000).toFixed(1);
+                    console.log('Recording stopped after', duration, 'seconds, chunks:', audioChunks.length);
+                    document.getElementById('micBtn').classList.remove('recording');
+                    document.getElementById('voiceStatus').textContent = '⏳ Processing...';
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    const recordedMimeType = mediaRecorder.mimeType || 'audio/mp4';
+                    const audioBlob = new Blob(audioChunks, { type: recordedMimeType });
+                    
+                    if (audioChunks.length === 0 || audioBlob.size < 100) {
+                        alert('Recording failed. Please speak for at least 2 seconds and try again.');
+                        document.getElementById('voiceStatus').classList.remove('active');
+                        return;
+                    }
+                    
+                    await sendAudioToSTT(audioBlob, recordedMimeType);
+                };
+                
+                mediaRecorder.start(500);
+                window.recordingStartTime = Date.now();
+                
+                mediaRecorder.onerror = (e) => alert('MediaRecorder ERROR: ' + e.error.name);
+                
+                isRecording = true;
+                document.getElementById('micBtn').classList.add('recording');
+                document.getElementById('voiceStatus').classList.add('active');
+                document.getElementById('voiceStatus').textContent = translations[currentLanguage].listeningStatus;
+                
+            } catch (err) {
+                console.error('Microphone error:', err);
+                alert('Microphone error: ' + err.message + '. On iOS, use Safari and check Settings > Safari > Microphone.');
+            }
+        }
+        
+        function stopWhisperRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+        }
+        
+        async function sendAudioToSTT(audioBlob, mimeType) {
+            try {
+                let filename = 'recording.mp4';
+                if (mimeType) {
+                    if (mimeType.includes('webm')) filename = 'recording.webm';
+                    else if (mimeType.includes('ogg')) filename = 'recording.ogg';
+                    else if (mimeType.includes('wav')) filename = 'recording.wav';
+                }
+                
+                const formData = new FormData();
+                formData.append('audio_file', audioBlob, filename);
+                
+                let response;
+                try {
+                    response = await fetch('/stt', {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch (fetchError) {
+                    alert('Network error: ' + fetchError.message);
+                    document.getElementById('voiceStatus').classList.remove('active');
+                    return;
+                }
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    alert('Server error ' + response.status + ': ' + errorText);
+                    document.getElementById('voiceStatus').classList.remove('active');
+                    return;
+                }
+                
+                const data = await response.json();
+                document.getElementById('voiceStatus').classList.remove('active');
+                
+                if (data.text && data.text.trim()) {
+                    document.getElementById('messageInput').value = data.text;
+                    sendMessage();
+                } else if (data.error) {
+                    alert('Voice error: ' + data.error);
+                } else {
+                    alert('No speech detected. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('STT Error:', error);
+                document.getElementById('voiceStatus').classList.remove('active');
+                alert('Voice processing failed: ' + error.message);
+            }
+        }
+        
+        async function speakText(button, text) {
+            const t = translations[currentLanguage];
+            
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                button.classList.remove('playing');
+                button.textContent = t.listenButton;
+                currentAudio = null;
+                return;
+            }
+            
+            button.classList.add('loading');
+            button.textContent = t.loadingButton;
+            
+            try {
+                const response = await fetch('/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text.replace(/\*\*/g, "").replace(/[\u{1F300}-\u{1F9FF}]/gu, "").replace(/[\u{2600}-\u{26FF}]/gu, "").replace(/PHANDA/gi, "PANDA"), language: currentLanguage })
+                });
+                
+                if (!response.ok) throw new Error('TTS request failed');
+                
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error);
+                
+                const byteCharacters = atob(data.audio);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'audio/mpeg' });
+                const audioSrc = URL.createObjectURL(blob);
+                currentAudio = new Audio(audioSrc);
+                
+                button.classList.remove('loading');
+                button.classList.add('playing');
+                button.textContent = t.stopButton;
+                
+                currentAudio.onended = () => {
+                    button.classList.remove('playing');
+                    button.textContent = t.listenButton;
+                    currentAudio = null;
+                };
+                
+                currentAudio.onerror = () => {
+                    button.classList.remove('playing');
+                    button.textContent = t.listenButton;
+                    currentAudio = null;
+                };
+                
+                currentAudio.play();
+                
+            } catch (error) {
+                console.error('TTS Error:', error);
+                button.classList.remove('loading');
+                button.textContent = t.listenButton;
+                fallbackBrowserTTS(text);
+            }
+        }
+        
+        function fallbackBrowserTTS(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = speechLanguageMap[currentLanguage];
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function changeLanguage() {
+            currentLanguage = document.getElementById('languageSelector').value;
+            updateUIText();
+            clearChat();
+        }
+        
+        function updateUIText() {
+            const t = translations[currentLanguage];
+            document.getElementById('messageInput').placeholder = t.placeholder;
+            document.getElementById('sendButton').textContent = t.sendButton;
+            document.getElementById('clearBtn').textContent = t.clearButton;
+            document.getElementById('formTitle').textContent = t.formTitle;
+            document.getElementById('labelName').innerHTML = t.labelName + ' <span class="required">*</span>';
+            document.getElementById('labelPhone').textContent = t.labelPhone;
+            document.getElementById('labelEmail').innerHTML = t.labelEmail + ' <span class="required">*</span>';
+            document.getElementById('labelInterestType').textContent = t.labelInterestType;
+            document.getElementById('labelOrganisation').textContent = t.labelOrganisation;
+            document.getElementById('labelDetails').textContent = t.labelDetails;
+            document.getElementById('submitBtn').textContent = t.submitButton;
+            document.getElementById('formNote').textContent = t.formNote;
+            document.getElementById('leadDetails').placeholder = t.detailsPlaceholder;
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const message = input.value.trim();
+            
+            if (!message || isWaitingForResponse) return;
+            
+            isWaitingForResponse = true;
+            sendButton.disabled = true;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            conversationHistory.push({ role: 'user', content: message });
+            
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.add('active');
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: message,
+                        history: conversationHistory.slice(0, -1),
+                        language: currentLanguage
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                typingIndicator.classList.remove('active');
+                
+                const shouldShowContactBtn = checkForContactTrigger(message, data.response);
+                addMessage(data.response, 'bot', shouldShowContactBtn);
+                
+                conversationHistory.push({ role: 'assistant', content: data.response });
+                
+                if (conversationHistory.length > 20) {
+                    conversationHistory = conversationHistory.slice(-20);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                typingIndicator.classList.remove('active');
+                addMessage('Connection error. Please check your internet connection or contact us at ai@haibophanda.org.za', 'bot');
+                conversationHistory.pop();
+            } finally {
+                isWaitingForResponse = false;
+                sendButton.disabled = false;
+                input.focus();
+            }
+        }
+        
+        function checkForContactTrigger(userMsg, botResponse) {
+            const triggers = ['training', 'learn', 'course', 'sign up', 'register', 'enrol', 'donate', 'donation', 'support', 'partner', 'collaborate', 'sponsor', 'contact', 'get started', 'interested', 'join', 'school', 'csi', 'corporate'];
+            const lowerUser = userMsg.toLowerCase();
+            const lowerBot = botResponse.toLowerCase();
+            
+            return triggers.some(t => lowerUser.includes(t)) || 
+                   lowerBot.includes('get in touch') ||
+                   lowerBot.includes('connect you') ||
+                   lowerBot.includes('your details') ||
+                   lowerBot.includes('your email');
+        }
+        
+        function addMessage(content, sender, showContactBtn = false) {
+            const container = document.getElementById('chatMessages');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const t = translations[currentLanguage];
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            const linkedContent = content
+                .replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>')
+                .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+            
+            contentDiv.innerHTML = linkedContent;
+            
+            if (sender === 'bot') {
+                const speakBtn = document.createElement('button');
+                speakBtn.className = 'speak-btn';
+                speakBtn.textContent = t.listenButton;
+                speakBtn.onclick = function() { speakText(this, content); };
+                contentDiv.appendChild(speakBtn);
+                
+                if (showContactBtn) {
+                    const btnDiv = document.createElement('div');
+                    btnDiv.innerHTML = `<button class="quote-btn" onclick="openForm()">${t.contactButton}</button>`;
+                    contentDiv.appendChild(btnDiv);
+                }
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            container.insertBefore(messageDiv, typingIndicator);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function openForm() { document.getElementById('formOverlay').classList.add('active'); }
+        function closeForm() { document.getElementById('formOverlay').classList.remove('active'); }
+        
+        async function submitLead() {
+            const submitBtn = document.getElementById('submitBtn');
+            const name = document.getElementById('leadName').value.trim();
+            const email = document.getElementById('leadEmail').value.trim();
+            const phone = document.getElementById('leadPhone').value.trim();
+            const interestType = document.getElementById('leadInterestType').value;
+            const organisation = document.getElementById('leadOrganisation').value.trim();
+            const details = document.getElementById('leadDetails').value.trim();
+            
+            if (!name) { alert('Please enter your name'); return; }
+            if (!email || !email.includes('@')) { alert('Please enter a valid email address'); return; }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            try {
+                const response = await fetch('/lead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, interestType, organisation, details })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeForm();
+                    addMessage(data.message, 'bot');
+                    document.getElementById('leadName').value = '';
+                    document.getElementById('leadEmail').value = '';
+                    document.getElementById('leadPhone').value = '';
+                    document.getElementById('leadInterestType').value = '';
+                    document.getElementById('leadOrganisation').value = '';
+                    document.getElementById('leadDetails').value = '';
+                } else {
+                    alert(data.message || 'There was an error. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Connection error. Please try again or email us directly at ai@haibophanda.org.za');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = translations[currentLanguage].submitButton;
+            }
+        }
+        
+        function clearChat() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            
+            conversationHistory = [];
+            const container = document.getElementById('chatMessages');
+            const t = translations[currentLanguage];
+            
+            container.innerHTML = `
+                <div class="message bot-message">
+                    <div class="message-content">
+${t.welcomeMessage}
+                        <button class="speak-btn" onclick="speakText(this, '${t.welcomeMessage.replace(/'/g, "\\'").replace(/\n/g, ' ')}')">${t.listenButton}</button>
+                    </div>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            
+            document.getElementById('messageInput').focus();
+        }
+        
+        document.getElementById('formOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeForm();
+        });
+        
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        initSpeechRecognition();
+        updateUIText();
+        document.getElementById('messageInput').focus();
+    </script>
+</body>
+</html>
