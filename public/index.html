@@ -2,522 +2,756 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAIBO PHANDA AI Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Granny B's Paint Advisor</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
-            height: 100vh; 
-            display: flex; 
-            align-items: flex-start; 
-            justify-content: center; 
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #FFFDF5;
+            height: 100vh;
+            color: #1A1A1A;
         }
-        
-        .chat-container { 
-            width: 100%; 
-            height: 100%; min-height: 100vh; 
-            background: white; 
-            border-radius: 0; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
-            display: flex; 
-            flex-direction: column; 
+
+        /* ===== LEAD SCREEN ===== */
+        .lead-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: #FFFDF5;
+        }
+
+        .lead-container {
+            width: 100%;
+            max-width: 420px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.08);
             overflow: hidden;
-            position: relative;
         }
-        
-        .chat-header { 
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
-            color: white; 
-            padding: 25px 20px; 
-            text-align: center; 
-            position: relative;
+
+        .lead-header {
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            padding: 30px 24px 24px;
+            text-align: center;
         }
-        
-        .chat-header h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
-        
+
+        .lead-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 4px;
+        }
+
+        .lead-header p {
+            font-size: 13px;
+            color: #1A1A1A;
+            opacity: 0.7;
+        }
+
+        .lead-body {
+            padding: 24px;
+        }
+
+        .incentive-text {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #7A9B6D;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f7ed;
+            border-radius: 10px;
+        }
+
+        .lead-body .form-group {
+            margin-bottom: 16px;
+        }
+
+        .lead-body .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 6px;
+        }
+
+        .lead-body .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e1e0d8;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #FFFDF5;
+            color: #1A1A1A;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .lead-body .form-group input:focus {
+            outline: none;
+            border-color: #D4BF4A;
+            box-shadow: 0 0 0 3px rgba(247, 224, 125, 0.3);
+        }
+
+        .consent-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #FFFDF5;
+            border-radius: 10px;
+        }
+
+        .consent-group input[type="checkbox"] {
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            accent-color: #D4BF4A;
+        }
+
+        .consent-group label {
+            font-size: 12px;
+            color: #8C8577;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .lead-submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            color: #1A1A1A;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .lead-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212, 191, 74, 0.4); }
+
+        .skip-link {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #8C8577;
+            font-size: 13px;
+            padding: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .skip-link:hover { color: #1A1A1A; }
+
+        .lead-footer, .chat-footer, .thanks-footer {
+            text-align: center;
+            font-size: 11px;
+            color: #8C8577;
+            padding: 16px;
+            background: #FFFDF5;
+        }
+
+        /* ===== CHAT SCREEN ===== */
+        .chat-screen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background: #FFFDF5;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            color: #1A1A1A;
+            padding: 16px 16px 12px;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-header .header-subtitle {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
         .header-left {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
         }
-        
+
         .header-right {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
         }
-        
+
         .language-selector {
-            background: rgba(255,255,255,0.2);
+            background: rgba(26, 26, 26, 0.1);
             border: none;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 12px;
+            color: #1A1A1A;
+            padding: 5px 8px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 10px;
             font-weight: 600;
             outline: none;
         }
-        
+
         .language-selector option {
-            background: #CC5500;
-            color: white;
+            background: #FFFDF5;
+            color: #1A1A1A;
         }
-        
-        .clear-chat {
-            background: rgba(255,255,255,0.2);
+
+        .done-btn {
+            background: rgba(26, 26, 26, 0.1);
             border: none;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 12px;
+            color: #1A1A1A;
+            padding: 6px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
+            font-weight: 700;
             transition: background 0.2s;
         }
-        
-        .clear-chat:hover {
-            background: rgba(255,255,255,0.3);
+
+        .done-btn:hover { background: rgba(26, 26, 26, 0.2); }
+
+        /* ===== PRODUCT BADGE ===== */
+        .product-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #f0efe8;
+            flex-shrink: 0;
         }
-        
-        .chat-messages { 
-            flex: 1; 
-            padding: 25px 20px; 
-            overflow-y: auto; 
-            background: #f8f9fa; 
+
+        .colour-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #F7E07D;
+            border: 2px solid #D4BF4A;
+            flex-shrink: 0;
         }
-        
-        .message { 
-            margin-bottom: 15px; 
-            display: flex; 
-            animation: fadeIn 0.3s ease; 
+
+        .product-badge span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1A1A1A;
         }
-        
+
+        /* ===== VOICE STATUS ===== */
+        .voice-status {
+            font-size: 11px;
+            color: #8C8577;
+            text-align: center;
+            padding: 4px;
+            background: #f0efe8;
+            display: none;
+            flex-shrink: 0;
+        }
+
+        .voice-status.active { display: block; }
+
+        /* ===== CHAT MESSAGES ===== */
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #FFFDF5;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        .message-content { 
-            max-width: 85%; 
-            padding: 12px 16px; 
-            border-radius: 18px; 
-            font-size: 14px; 
-            line-height: 1.5; 
+
+        .message-content {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
             white-space: pre-wrap;
             position: relative;
         }
-        
+
         .user-message { justify-content: flex-end; }
-        .user-message .message-content { 
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
-            color: white; 
+        .user-message .message-content {
+            background: #1A1A1A;
+            color: #FFFFFF;
         }
-        
+
         .bot-message { justify-content: flex-start; }
-        .bot-message .message-content { 
-            background: white; 
-            color: #333; 
-            border: 1px solid #e1e8ed; 
+        .bot-message .message-content {
+            background: #FFFFFF;
+            color: #1A1A1A;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
-        
-        .chat-input { 
-            padding: 25px 20px; 
-            background: white; 
-            border-top: 1px solid #e1e8ed; 
-            display: flex; 
-            gap: 10px; 
-        }
-        
-        .chat-input input { 
-            flex: 1; 
-            padding: 12px 16px; 
-            border: 1px solid #e1e8ed; 
-            border-radius: 25px; 
-            outline: none; 
-            font-size: 14px; 
-        }
-        
-        .chat-input input:focus { 
-            border-color: #CC5500; 
-            box-shadow: 0 0 0 2px rgba(204, 85, 0, 0.1); 
-        }
-        
-        .chat-input button { flex-shrink: 0; 
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            border-radius: 25px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: transform 0.2s ease;
-        }
-        
-        .chat-input button:hover { transform: translateY(-1px); }
-        .chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .mic-btn { flex-shrink: 0; 
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
-            color: white;
-            border: none;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-        }
-        
-        .mic-btn:hover { transform: translateY(-1px); }
-        
-        .mic-btn.recording {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.5); }
-            50% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
-        }
-        
+
+        .message-content a { color: #D4BF4A; text-decoration: none; }
+        .message-content a:hover { text-decoration: underline; }
+        .user-message .message-content a { color: #F7E07D; text-decoration: underline; }
+
+        /* ===== SPEAK BUTTON ===== */
         .speak-btn {
             background: none;
             border: none;
-            color: #CC5500;
+            color: #D4BF4A;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             padding: 4px 8px;
-            margin-top: 8px;
-            border-radius: 12px;
+            margin-top: 6px;
+            border-radius: 10px;
             transition: background 0.2s;
             display: inline-flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 4px;
         }
-        
-        .speak-btn:hover {
-            background: rgba(204, 85, 0, 0.1);
+
+        .speak-btn:hover { background: rgba(212, 191, 74, 0.15); }
+        .speak-btn.loading { color: #8C8577; cursor: wait; }
+        .speak-btn.playing { color: #e74c3c; }
+
+        /* ===== GUIDED QUESTIONS ===== */
+        .guided-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
         }
-        
-        .speak-btn.loading {
-            color: #999;
-            cursor: wait;
+
+        .guided-option {
+            background: #FFFDF5;
+            border: 1.5px solid #e1e0d8;
+            color: #1A1A1A;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
         }
-        
-        .speak-btn.playing {
-            color: #e74c3c;
+
+        .guided-option:hover {
+            border-color: #D4BF4A;
+            background: rgba(247, 224, 125, 0.15);
         }
-        
+
+        .guided-option:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .guided-option.selected {
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            border-color: #D4BF4A;
+            color: #1A1A1A;
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        /* ===== PROMO CARDS ===== */
+        .promo-card {
+            margin: 10px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border-left: 4px solid #ccc;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .promo-badge {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #1A1A1A;
+            opacity: 0.5;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .promo-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 2px;
+        }
+
+        .promo-deal {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+
+        .promo-aisle {
+            font-size: 11px;
+            color: #8C8577;
+            margin-top: 2px;
+        }
+
+        .promo-dismiss {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #8C8577;
+            cursor: pointer;
+            font-size: 16px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .promo-dismiss:hover { background: rgba(0,0,0,0.05); }
+
+        /* ===== TYPING INDICATOR ===== */
         .typing-indicator {
             display: none;
             padding: 10px;
             margin: 10px 0;
         }
-        
+
         .typing-indicator.active {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
         }
-        
+
         .typing-indicator span {
             height: 8px;
             width: 8px;
-            background: #999;
+            background: #D4BF4A;
             border-radius: 50%;
             display: inline-block;
             margin: 0 2px;
             animation: typing 1.4s infinite;
         }
-        
+
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        
+
         @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-            30% { transform: translateY(-10px); opacity: 1; }
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
         }
-        
-        .message-content a { color: #CC5500; text-decoration: none; }
-        .message-content a:hover { text-decoration: underline; }
-        .user-message .message-content a { color: #fff; text-decoration: underline; }
-        
-        .quote-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 0;
-            margin-top: 10px;
+
+        /* ===== CHAT INPUT ===== */
+        .chat-input {
+            padding: 12px 16px;
+            background: #FFFFFF;
+            border-top: 1px solid #f0efe8;
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e1e0d8;
+            border-radius: 24px;
+            outline: none;
+            font-size: 14px;
+            font-family: inherit;
+            background: #FFFDF5;
+            color: #1A1A1A;
+        }
+
+        .chat-input input:focus {
+            border-color: #D4BF4A;
+            box-shadow: 0 0 0 2px rgba(247, 224, 125, 0.3);
+        }
+
+        .chat-input button {
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            color: #1A1A1A;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 24px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .chat-input button:hover { transform: translateY(-1px); }
+        .chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .mic-btn {
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            color: #1A1A1A;
             border: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .quote-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(204, 85, 0, 0.4);
-        }
-        
-        .form-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: flex-start;
-            justify-content: center;
-            z-index: 100;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .form-overlay.active { display: flex; }
-        
-        .lead-form {
-            background: white;
-            width: 90%;
-            max-height: 90%;
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .form-header {
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
-            color: white;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        
-        .form-header h3 { margin: 0; font-size: 16px; }
-        
-        .close-form {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 28px;
-            height: 28px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 18px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
         }
-        
-        .close-form:hover { background: rgba(255,255,255,0.3); }
-        
-        .form-body {
-            padding: 25px 20px;
-            overflow-y: auto;
-            flex: 1;
+
+        .mic-btn:hover { transform: translateY(-1px); }
+
+        .mic-btn.recording {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            animation: pulse 1.5s infinite;
         }
-        
-        .form-group { margin-bottom: 16px; }
-        
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 6px;
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.5); }
+            50% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
         }
-        
-        .form-group label .required { color: #e74c3c; }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+
+        /* ===== THANK YOU SCREEN ===== */
+        .thanks-screen {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: #FFFDF5;
+        }
+
+        .thanks-container {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #e1e8ed;
-            border-radius: 8px;
+            max-width: 420px;
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .thanks-container h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+        }
+
+        .thanks-container > p {
             font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #8C8577;
+            margin-bottom: 20px;
         }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #CC5500;
-            box-shadow: 0 0 0 3px rgba(204, 85, 0, 0.1);
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
-        
-        .submit-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #CC5500 0%, #8B3A00 100%);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
+
+        .discount-box {
+            border: 2px dashed #D4BF4A;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 0 auto 12px;
+            max-width: 280px;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .discount-box:hover { background: rgba(247, 224, 125, 0.1); }
+
+        .discount-box .code {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #1A1A1A;
+        }
+
+        .discount-box .tap-hint {
+            font-size: 11px;
+            color: #8C8577;
+            margin-top: 4px;
+        }
+
+        .discount-note {
+            font-size: 13px;
+            color: #7A9B6D;
+            font-weight: 600;
+            margin-bottom: 28px;
+        }
+
+        .cta-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 12px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            text-align: center;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(204, 85, 0, 0.4);
-        }
-        
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .form-note {
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            margin-top: 12px;
-        }
-        
-        .voice-status {
-            font-size: 11px;
-            color: #666;
-            text-align: center;
-            padding: 4px;
-            background: #f0f0f0;
-            display: none;
-        }
-        
-        .voice-status.active { display: block; }
 
+        .cta-btn:hover { transform: translateY(-1px); }
+
+        .cta-btn.primary {
+            background: linear-gradient(135deg, #F7E07D 0%, #D4BF4A 100%);
+            color: #1A1A1A;
+        }
+
+        .cta-btn.primary:hover { box-shadow: 0 4px 16px rgba(212, 191, 74, 0.4); }
+
+        .cta-btn.secondary {
+            background: #FFFFFF;
+            color: #1A1A1A;
+            border: 2px solid #e1e0d8;
+        }
+
+        .cta-btn.secondary:hover { border-color: #D4BF4A; }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
-            .chat-input { padding: 12px 8px; gap: 6px; }
-            .chat-input input { padding: 10px 10px; font-size: 13px; min-width: 0; }
-            .chat-input button { padding: 10px 12px; font-size: 12px; }
-            .mic-btn { width: 38px; height: 38px; min-width: 38px; font-size: 14px; }
+            .chat-input { padding: 10px 8px; gap: 6px; }
+            .chat-input input { padding: 10px 12px; font-size: 13px; min-width: 0; }
+            .chat-input button { padding: 10px 14px; font-size: 13px; }
+            .mic-btn { width: 38px; height: 38px; min-width: 38px; font-size: 15px; }
+            .product-badge { padding: 8px 12px; }
+            .product-badge span { font-size: 11px; }
+            .colour-swatch { width: 24px; height: 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
+
+    <!-- ===== LEAD SCREEN ===== -->
+    <div class="lead-screen" id="leadScreen">
+        <div class="lead-container">
+            <div class="lead-header">
+                <h1>Granny B's Paint Advisor</h1>
+                <p>Your in-store chalk paint expert</p>
+            </div>
+            <div class="lead-body">
+                <div class="incentive-text">Plus 10% off your next Granny B's online order</div>
+
+                <div class="form-group">
+                    <label>First name</label>
+                    <input type="text" id="leadNameInput" placeholder="First name" autocomplete="given-name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="leadEmailInput" placeholder="you@email.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label>Mobile</label>
+                    <input type="tel" id="leadPhoneInput" placeholder="0821234567" autocomplete="tel">
+                </div>
+
+                <div class="consent-group">
+                    <input type="checkbox" id="consentCheck">
+                    <label for="consentCheck">I consent to Granny B's and Leroy Merlin storing my details for product advice and offers (POPIA)</label>
+                </div>
+
+                <button class="lead-submit-btn" onclick="submitLeadForm()">Get my paint advice &rarr;</button>
+                <button class="skip-link" onclick="skipLead()">Skip, just let me browse</button>
+            </div>
+            <div class="lead-footer">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</div>
+        </div>
+    </div>
+
+    <!-- ===== CHAT SCREEN ===== -->
+    <div class="chat-screen" id="chatScreen">
         <div class="chat-header">
             <div class="header-left">
                 <select class="language-selector" id="languageSelector" onchange="changeLanguage()">
-                    <option value="en">🇬🇧 English</option>
-                    <option value="af">🇿🇦 Afrikaans</option>
-                    <option value="zu">🇿🇦 isiZulu</option>
-                    <option value="xh">🇿🇦 isiXhosa</option>
-                    <option value="st">🇿🇦 Sesotho</option>
-                    <option value="nso">🇿🇦 Sepedi</option>
+                    <option value="en" selected>EN</option>
+                    <option value="af">AF</option>
+                    <option value="zu">ZU</option>
+                    <option value="xh">XH</option>
+                    <option value="st">ST</option>
+                    <option value="nso">NSO</option>
                 </select>
             </div>
-            
+            <div>
+                <h2>Granny B's Paint Advisor</h2>
+                <p class="header-subtitle">Your in-store chalk paint expert</p>
+            </div>
             <div class="header-right">
-                <button class="clear-chat" onclick="clearChat()" id="clearBtn">New Chat</button>
+                <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
             </div>
         </div>
-        
-        <div class="voice-status" id="voiceStatus">🎤 Listening...</div>
-        
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot-message">
-                <div class="message-content" id="welcomeMessage">
-Sawubona! I'm Onalerona, your AI literacy guide at HAIBO PHANDA. Whether you're a young person ready to future-proof your skills, an SMME owner looking to grow smarter, or someone who wants to support our mission, I'm here to help you phanda!
 
-What brings you here today?
-                    <button class="speak-btn" onclick="speakText(this, this.parentElement.innerText.replace('🔊 Listen', '').replace('⏹️ Stop', '').replace('⏳ Loading...', '').trim())">🔊 Listen</button>
-                </div>
-            </div>
+        <div class="product-badge">
+            <div class="colour-swatch"></div>
+            <span>Chalk Paint Granny B's Daisy 1L &middot; R259 &middot; SKU 81415711</span>
+        </div>
+
+        <div class="voice-status" id="voiceStatus">&#127908; Listening...</div>
+
+        <div class="chat-messages" id="chatMessages">
             <div class="typing-indicator" id="typingIndicator">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
         </div>
-        
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Ask about free AI training, collaboration, or supporting our mission...">
-            <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()" title="Voice input">🎤</button>
+
+        <div class="chat-input" id="chatInputArea" style="display: none;">
+            <input type="text" id="messageInput" placeholder="Ask about Granny B's paint...">
+            <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()" title="Voice input">&#127908;</button>
             <button onclick="sendMessage()" id="sendButton">Send</button>
         </div>
-        
-        <div class="form-overlay" id="formOverlay">
-            <div class="lead-form">
-                <div class="form-header">
-                    <h3 id="formTitle">Get In Touch</h3>
-                    <button class="close-form" onclick="closeForm()">&times;</button>
-                </div>
-                <div class="form-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label id="labelName">Name <span class="required">*</span></label>
-                            <input type="text" id="leadName" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label id="labelPhone">Phone</label>
-                            <input type="tel" id="leadPhone" placeholder="+27...">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label id="labelEmail">Email <span class="required">*</span></label>
-                        <input type="email" id="leadEmail" placeholder="your@email.com">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label id="labelInterestType">I'm Interested In</label>
-                            <select id="leadInterestType">
-                                <option value="">Select...</option>
-                                <option value="Youth Track Training">Youth Track Training</option>
-                                <option value="SMME Track Training">SMME Track Training</option>
-                                <option value="School/Group Training">School/Group Training</option>
-                                <option value="Corporate Partnership">Corporate Partnership</option>
-                                <option value="NGO Collaboration">NGO Collaboration</option>
-                                <option value="Government Partnership">Government Partnership</option>
-                                <option value="Donation/CSI">Donation/CSI</option>
-                                <option value="Volunteering/Mentorship">Volunteering/Mentorship</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label id="labelOrganisation">Organisation</label>
-                            <input type="text" id="leadOrganisation" placeholder="Optional">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label id="labelDetails">Tell Us More</label>
-                        <textarea id="leadDetails" placeholder=""></textarea>
-                    </div>
-                    
-                    <button class="submit-btn" id="submitBtn" onclick="submitLead()">Submit</button>
-                    <p class="form-note" id="formNote">We'll get back to you soon. Everything we offer is 100% FREE!</p>
-                </div>
+
+        <div class="chat-footer">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</div>
+    </div>
+
+    <!-- ===== THANK YOU SCREEN ===== -->
+    <div class="thanks-screen" id="thankYouScreen">
+        <div class="thanks-container">
+            <h1 id="thanksTitle">Thanks!</h1>
+            <p>Here's your exclusive discount:</p>
+
+            <div class="discount-box" onclick="copyCode()">
+                <div class="code">GRANNYB10</div>
+                <div class="tap-hint" id="copyHint">Tap to copy</div>
             </div>
+            <p class="discount-note">10% off your next Granny B's online order</p>
+
+            <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" class="cta-btn primary" target="_blank" rel="noopener">Shop Granny B's Online &rarr;</a>
+            <a href="https://www.grannyb.co.za/pages/rewards" class="cta-btn secondary" target="_blank" rel="noopener">Join Rewards Programme</a>
+
+            <div class="thanks-footer">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</div>
         </div>
     </div>
 
     <script>
+        /* ===== STATE ===== */
         let isWaitingForResponse = false;
         let conversationHistory = [];
         let currentLanguage = 'en';
@@ -526,180 +760,400 @@ What brings you here today?
         let currentAudio = null;
         let mediaRecorder = null;
         let audioChunks = [];
-        
-        const translations = {
-            en: {
-                welcomeMessage: "Sawubona! I'm Onalerona, your AI literacy guide at HAIBO PHANDA. Whether you're a young person ready to future-proof your skills, an SMME owner looking to grow smarter, or someone who wants to support our mission, I'm here to help you phanda!\n\nWhat brings you here today?",
-                placeholder: "Ask about free AI training, collaboration, or supporting our mission...",
-                sendButton: "Send",
-                clearButton: "New Chat",
-                contactButton: "📋 Get In Touch",
-                formTitle: "Get In Touch",
-                labelName: "Name",
-                labelPhone: "Phone",
-                labelEmail: "Email",
-                labelInterestType: "I'm Interested In",
-                labelOrganisation: "Organisation",
-                labelDetails: "Tell Us More",
-                submitButton: "Submit",
-                formNote: "We'll get back to you soon. Everything we offer is 100% FREE!",
-                detailsPlaceholder: "Tell us about yourself, your goals, or how you'd like to get involved...",
-                listenButton: "🔊 Listen",
-                stopButton: "⏹️ Stop",
-                loadingButton: "⏳ Loading...",
-                listeningStatus: "🎤 Listening..."
-            },
-            af: {
-                welcomeMessage: "Goeie dag mense! Baie goeie dinge gebeur in Suid-Afrika. My naam is Karien, beste vriendin van Onalerona. Of jy nou 'n jong persoon is wat gereed is om jou vaardighede te toekomsbewys, 'n SMME-eienaar wat slimmer wil groei, of iemand wat ons missie wil ondersteun, ons is hier om jou te help panda!\n\nWat bring jou vandag hier?",
-                placeholder: "Vra oor gratis KI-opleiding, samewerking, of ondersteuning...",
-                sendButton: "Stuur",
-                clearButton: "Nuwe Boodskap",
-                contactButton: "📋 Kontak Ons",
-                formTitle: "Kontak Ons",
-                labelName: "Naam",
-                labelPhone: "Telefoon",
-                labelEmail: "E-pos",
-                labelInterestType: "Ek Stel Belang In",
-                labelOrganisation: "Organisasie",
-                labelDetails: "Vertel Ons Meer",
-                submitButton: "Dien In",
-                formNote: "Ons sal binnekort terugkom. Alles wat ons bied is 100% GRATIS!",
-                detailsPlaceholder: "Vertel ons van jouself, jou doelwitte, of hoe jy betrokke wil raak...",
-                listenButton: "🔊 Luister",
-                stopButton: "⏹️ Stop",
-                loadingButton: "⏳ Laai...",
-                listeningStatus: "🎤 Luister..."
-            },
-            zu: {
-                welcomeMessage: "Sawubona! NginguOnalerona, umqondisi wakho wokufunda nge-AI e-HAIBO PHANDA. Noma ungumuntu omusha okulungele ukuvikela amakhono akho, umnikazi we-SMME ofuna ukukhula ngokuhlakanipha, noma othile ofuna ukusekela umsebenzi wethu, ngilapha ukukusiza uphande!\n\nYini ekulethe lapha namuhla?",
-                placeholder: "Buza ngokuqeqeshwa kwe-AI kwamahhala, ukubambisana, noma ukusekela...",
-                sendButton: "Thumela",
-                clearButton: "Ingxoxo Entsha",
-                contactButton: "📋 Thintana Nathi",
-                formTitle: "Thintana Nathi",
-                labelName: "Igama",
-                labelPhone: "Ifoni",
-                labelEmail: "I-imeyili",
-                labelInterestType: "Nginesithakazelo",
-                labelOrganisation: "Inhlangano",
-                labelDetails: "Sitshele Kabanzi",
-                submitButton: "Thumela",
-                formNote: "Sizobuyela kuwe maduze. Konke esikuhlinzekayo KUMAHHALA 100%!",
-                detailsPlaceholder: "Sitshele ngawe, izinhloso zakho, noma indlela ofuna ukubamba ngayo iqhaza...",
-                listenButton: "🔊 Lalela",
-                stopButton: "⏹️ Misa",
-                loadingButton: "⏳ Iyalayisha...",
-                listeningStatus: "🎤 Ilalele..."
-            },
-            xh: {
-                welcomeMessage: "Molo! NdinguOnalerona, umkhokeli wakho wokufunda nge-AI e-HAIBO PHANDA. Nokuba ungumntu omtsha okulungele ukukhusela izakhono zakho, umnikazi we-SMME ofuna ukukhula ngobulumko, okanye umntu ofuna ukuxhasa umsebenzi wethu, ndikho ukukunceda uphande!\n\nYintoni ekuzise apha namhlanje?",
-                placeholder: "Buza ngoqeqesho lwe-AI lwasimahla, ukusebenzisana, okanye ukuxhasa...",
-                sendButton: "Thumela",
-                clearButton: "Incoko Entsha",
-                contactButton: "📋 Qhagamshelana Nathi",
-                formTitle: "Qhagamshelana Nathi",
-                labelName: "Igama",
-                labelPhone: "Ifowuni",
-                labelEmail: "I-imeyili",
-                labelInterestType: "Ndinomdla",
-                labelOrganisation: "Umbutho",
-                labelDetails: "Sixelele Ngakumbi",
-                submitButton: "Thumela",
-                formNote: "Siza kubuyela kuwe kungekudala. Yonke into esiyinikezelayo SIMAHLA 100%!",
-                detailsPlaceholder: "Sixelele ngawe, iinjongo zakho, okanye indlela ofuna ukubandakanyeka ngayo...",
-                listenButton: "🔊 Mamela",
-                stopButton: "⏹️ Yeka",
-                loadingButton: "⏳ Iyalayisha...",
-                listeningStatus: "🎤 Iyamamela..."
-            },
-            st: {
-                welcomeMessage: "Dumela! Ke Onalerona, motataisi wa hao wa ho ithuta AI ho HAIBO PHANDA. Leha o le motho e mocha ya itokiseditseng ho sireletsa bokgoni ba hao, monga SMME ya batlang ho hola ka bohlale, kapa e mong ya batlang ho tshehetsa mosebetsi wa rona, ke mona ho o thusa o phande!\n\nKe eng e o tlisitseng mona kajeno?",
-                placeholder: "Botsa ka koetliso ya AI ya mahala, tshebedisano, kapa tshehetso...",
-                sendButton: "Romela",
-                clearButton: "Puisano e Ncha",
-                contactButton: "📋 Ikopanye le Rona",
-                formTitle: "Ikopanye le Rona",
-                labelName: "Lebitso",
-                labelPhone: "Mohala",
-                labelEmail: "Emeile",
-                labelInterestType: "Ke Thahasella",
-                labelOrganisation: "Mokgatlo",
-                labelDetails: "Re Bolelle Haholoanyane",
-                submitButton: "Romela",
-                formNote: "Re tla kgutlela ho wena haufinyane. Tsohle tseo re di fanang ke MAHALA 100%!",
-                detailsPlaceholder: "Re bolelle ka wena, dipheo tsa hao, kapa kamoo o batlang ho kenella kateng...",
-                listenButton: "🔊 Mamela",
-                stopButton: "⏹️ Emisa",
-                loadingButton: "⏳ E laoela...",
-                listeningStatus: "🎤 E mamela..."
-            },
-            nso: {
-                welcomeMessage: "Thobela! Ke Onalerona, moetapele wa gago wa go ithuta AI go HAIBO PHANDA. Le ge o le yo mofsa yo a itokišeditšego go šireletša mabokgoni a gago, mong wa SMME yo a nyakago go gola ka bohlale, goba yo mongwe yo a nyakago go thekga mošomo wa rena, ke mo go go thuša o phande!\n\nKe eng se se go tlišitšego mo lehono?",
-                placeholder: "Botšiša ka tlhahlo ya AI ya mahala, tšhomišano, goba thekgo...",
-                sendButton: "Romela",
-                clearButton: "Poledišano ye Mpsha",
-                contactButton: "📋 Ikgokagantšha le Rena",
-                formTitle: "Ikgokagantšha le Rena",
-                labelName: "Leina",
-                labelPhone: "Mogala",
-                labelEmail: "Emeile",
-                labelInterestType: "Ke Na le Kgahlego",
-                labelOrganisation: "Mokgatlo",
-                labelDetails: "Re Botše Go Feta",
-                submitButton: "Romela",
-                formNote: "Re tla boela go wena ka pela. Tšohle tšeo re di fago ke MAHALA 100%!",
-                detailsPlaceholder: "Re botše ka wena, dipakane tša gago, goba ka fao o nyakago go tšea karolo...",
-                listenButton: "🔊 Theetša",
-                stopButton: "⏹️ Emiša",
-                loadingButton: "⏳ E laoela...",
-                listeningStatus: "🎤 E theetša..."
-            }
-        };
-        
+
+        let leadData = { name: '', email: '', phone: '' };
+        let guidedStep = 0;
+        let shownPromos = new Set();
+        let urlParams = { sku: '81415711', store: 'leroy-merlin' };
+
         const speechLanguageMap = {
-            'en': 'en-ZA',
-            'af': 'af-ZA',
-            'zu': 'zu-ZA',
-            'xh': 'xh-ZA',
-            'st': 'st-ZA',
-            'nso': 'nso-ZA'
+            'en': 'en-ZA', 'af': 'af-ZA', 'zu': 'zu-ZA',
+            'xh': 'xh-ZA', 'st': 'st-ZA', 'nso': 'nso-ZA'
         };
-        
-        function getSupportedMimeType() {
-            const types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
-            for (const type of types) {
-                if (MediaRecorder.isTypeSupported(type)) {
-                    return type;
+
+        /* ===== GUIDED QUESTIONS ===== */
+        const guidedQuestions = [
+            {
+                question: "What are you painting today?",
+                options: ["Furniture", "Kitchen cabinets", "Home d\u00e9cor / crafts", "Walls / feature wall", "Upcycle / thrift flip", "Just browsing"]
+            },
+            {
+                question: "What surface will you be painting on?",
+                options: ["Wood", "Metal", "Ceramic / pottery", "Melamine / laminate", "Fabric", "Not sure yet"]
+            },
+            {
+                question: "Have you used chalk paint before?",
+                options: ["Nope, first time!", "Done a project or two", "Experienced chalker", "I'm a pro / reseller"]
+            },
+            {
+                question: "What look are you going for?",
+                options: ["Vintage / distressed", "Smooth & modern", "Rustic farmhouse", "Bold statement colour", "Not sure, advise me"]
+            }
+        ];
+
+        /* ===== PROMO CARDS DATA ===== */
+        const promoCards = [
+            { id: 'sandpaper', triggers: ['sand','prep','wood'], title: 'Sandpaper Multi-Pack', deal: 'Buy 3 for R99', aisle: 'Aisle 3', bg: '#FFF3E0', border: '#FF9800' },
+            { id: 'brushes', triggers: ['brush','tool','roller'], title: 'Premium Brush Set', deal: 'Was R189 \u2192 R129', aisle: 'Aisle 4', bg: '#E3F2FD', border: '#2196F3' },
+            { id: 'tape', triggers: ['edge','clean','line','tape'], title: 'Masking Tape 3-Pack', deal: 'Only R69', aisle: 'Aisle 5', bg: '#E8F5E9', border: '#4CAF50' },
+            { id: 'dropcloth', triggers: ['floor','protect','mess'], title: 'Drop Cloth 4\u00d75m', deal: 'From R49', aisle: 'Aisle 3', bg: '#F3E5F5', border: '#9C27B0' },
+            { id: 'sealer', triggers: ['seal','protect','kitchen','water','durable'], title: "Granny B's Armour Sealer 1L", deal: 'R289', aisle: 'Same shelf', bg: '#FFF8E1', border: '#FFC107' },
+            { id: 'colours', triggers: ['colour','color','other','different','range'], title: '65+ Chalk Paint Colours', deal: 'From R79.90', aisle: 'Same shelf', bg: '#FCE4EC', border: '#E91E63' }
+        ];
+
+        /* ===== URL PARAMS ===== */
+        function parseUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('sku')) urlParams.sku = params.get('sku');
+            if (params.get('store')) urlParams.store = params.get('store');
+        }
+
+        /* ===== SCREEN NAVIGATION ===== */
+        function showScreen(id) {
+            document.getElementById('leadScreen').style.display = 'none';
+            document.getElementById('chatScreen').style.display = 'none';
+            document.getElementById('thankYouScreen').style.display = 'none';
+            const el = document.getElementById(id);
+            el.style.display = 'flex';
+        }
+
+        /* ===== LEAD FORM ===== */
+        function submitLeadForm() {
+            const name = document.getElementById('leadNameInput').value.trim();
+            const email = document.getElementById('leadEmailInput').value.trim();
+            const phone = document.getElementById('leadPhoneInput').value.trim();
+            const consent = document.getElementById('consentCheck').checked;
+
+            if (!name) { alert('Please enter your first name'); return; }
+            if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
+            if (phone && !/^(\+27|0)\d{9}$/.test(phone)) { alert('Please enter a valid SA mobile number (e.g. 0821234567)'); return; }
+            if (!consent) { alert('Please accept the POPIA consent to continue'); return; }
+
+            leadData = { name, email, phone };
+
+            fetch('/lead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name, email, phone,
+                    consent: true,
+                    sku: urlParams.sku,
+                    store: urlParams.store
+                })
+            }).catch(function(err) { console.error('Lead submit error:', err); });
+
+            enterChat();
+        }
+
+        function skipLead() {
+            leadData = { name: '', email: '', phone: '' };
+            enterChat();
+        }
+
+        /* ===== ENTER CHAT ===== */
+        function enterChat() {
+            showScreen('chatScreen');
+            var greeting = leadData.name
+                ? "Hi " + leadData.name + "! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need for your project."
+                : "Hi there! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need.";
+            addBotMessage(greeting);
+            setTimeout(function() { showGuidedQuestion(0); }, 800);
+        }
+
+        /* ===== GUIDED QUESTIONS ===== */
+        function showGuidedQuestion(index) {
+            if (index >= guidedQuestions.length) {
+                guidedStep = guidedQuestions.length;
+                document.getElementById('chatInputArea').style.display = 'flex';
+                var inp = document.getElementById('messageInput');
+                if (inp) inp.focus();
+                return;
+            }
+
+            var q = guidedQuestions[index];
+            var container = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot-message';
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = q.question;
+
+            var optionsDiv = document.createElement('div');
+            optionsDiv.className = 'guided-options';
+            optionsDiv.setAttribute('data-question', index);
+
+            q.options.forEach(function(opt) {
+                var btn = document.createElement('button');
+                btn.className = 'guided-option';
+                btn.textContent = opt;
+                btn.onclick = function() { selectGuidedOption(index, opt, optionsDiv); };
+                optionsDiv.appendChild(btn);
+            });
+
+            contentDiv.appendChild(optionsDiv);
+            msgDiv.appendChild(contentDiv);
+            container.insertBefore(msgDiv, typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function selectGuidedOption(questionIndex, optionText, optionsDiv) {
+            if (isWaitingForResponse) return;
+
+            var buttons = optionsDiv.querySelectorAll('.guided-option');
+            buttons.forEach(function(btn) {
+                btn.disabled = true;
+                if (btn.textContent === optionText) btn.classList.add('selected');
+            });
+
+            addUserMessage(optionText);
+            conversationHistory.push({ role: 'user', content: optionText });
+
+            isWaitingForResponse = true;
+            var typing = document.getElementById('typingIndicator');
+            typing.classList.add('active');
+
+            try {
+                var response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: optionText,
+                        history: conversationHistory.slice(0, -1),
+                        language: currentLanguage,
+                        sku: urlParams.sku,
+                        store: urlParams.store
+                    })
+                });
+
+                var data = await response.json();
+                typing.classList.remove('active');
+
+                addBotMessage(data.response);
+                conversationHistory.push({ role: 'assistant', content: data.response });
+
+                checkPromoTriggers(optionText);
+                checkPromoTriggers(data.response);
+
+                if (questionIndex === 1 && !shownPromos.has('sealer')) {
+                    showPromoCard(promoCards.find(function(p) { return p.id === 'sealer'; }));
                 }
+
+                guidedStep = questionIndex + 1;
+                setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+
+            } catch (error) {
+                typing.classList.remove('active');
+                addBotMessage("Oops, had a little hiccup. Let\u2019s keep going!");
+                guidedStep = questionIndex + 1;
+                setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+            } finally {
+                isWaitingForResponse = false;
+            }
+        }
+
+        /* ===== MESSAGES ===== */
+        function addBotMessage(text) {
+            var container = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot-message';
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            var linkedContent = text
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>')
+                .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+            contentDiv.innerHTML = linkedContent;
+
+            var speakBtn = document.createElement('button');
+            speakBtn.className = 'speak-btn';
+            speakBtn.textContent = '\uD83D\uDD0A Listen';
+            speakBtn.onclick = function() { speakText(this, text); };
+            contentDiv.appendChild(speakBtn);
+
+            msgDiv.appendChild(contentDiv);
+            container.insertBefore(msgDiv, typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addUserMessage(text) {
+            var container = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'message user-message';
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+
+            msgDiv.appendChild(contentDiv);
+            container.insertBefore(msgDiv, typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        /* ===== PROMO CARDS ===== */
+        function checkPromoTriggers(text) {
+            var lower = text.toLowerCase();
+            promoCards.forEach(function(card) {
+                if (!shownPromos.has(card.id) && card.triggers.some(function(t) { return lower.includes(t); })) {
+                    showPromoCard(card);
+                }
+            });
+        }
+
+        function showPromoCard(card) {
+            if (!card || shownPromos.has(card.id)) return;
+            shownPromos.add(card.id);
+
+            var container = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+
+            var promoDiv = document.createElement('div');
+            promoDiv.className = 'promo-card';
+            promoDiv.style.background = card.bg;
+            promoDiv.style.borderLeftColor = card.border;
+
+            promoDiv.innerHTML =
+                '<button class="promo-dismiss" onclick="this.parentElement.remove()">\u2715</button>' +
+                '<div class="promo-badge">LEROY MERLIN</div>' +
+                '<div class="promo-title">' + card.title + '</div>' +
+                '<div class="promo-deal">' + card.deal + '</div>' +
+                '<div class="promo-aisle">' + card.aisle + '</div>';
+
+            container.insertBefore(promoDiv, typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        /* ===== SEND MESSAGE (free chat) ===== */
+        async function sendMessage() {
+            var input = document.getElementById('messageInput');
+            var sendBtn = document.getElementById('sendButton');
+            var message = input.value.trim();
+
+            if (!message || isWaitingForResponse) return;
+
+            isWaitingForResponse = true;
+            sendBtn.disabled = true;
+
+            addUserMessage(message);
+            input.value = '';
+
+            conversationHistory.push({ role: 'user', content: message });
+
+            var typing = document.getElementById('typingIndicator');
+            typing.classList.add('active');
+
+            try {
+                var response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        history: conversationHistory.slice(0, -1),
+                        language: currentLanguage,
+                        sku: urlParams.sku,
+                        store: urlParams.store
+                    })
+                });
+
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                var data = await response.json();
+                typing.classList.remove('active');
+
+                addBotMessage(data.response);
+                conversationHistory.push({ role: 'assistant', content: data.response });
+
+                checkPromoTriggers(message);
+                checkPromoTriggers(data.response);
+
+                if (conversationHistory.length > 20) {
+                    conversationHistory = conversationHistory.slice(-20);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                typing.classList.remove('active');
+                addBotMessage('Connection error. Please try again or ask a Leroy Merlin team member for help.');
+                conversationHistory.pop();
+            } finally {
+                isWaitingForResponse = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        /* ===== THANK YOU ===== */
+        function showThankYou() {
+            var title = leadData.name ? 'Thanks, ' + leadData.name + '!' : 'Thanks!';
+            document.getElementById('thanksTitle').textContent = title;
+            showScreen('thankYouScreen');
+        }
+
+        function copyCode() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText('GRANNYB10').then(function() {
+                    document.getElementById('copyHint').textContent = 'Copied!';
+                    setTimeout(function() { document.getElementById('copyHint').textContent = 'Tap to copy'; }, 2000);
+                });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = 'GRANNYB10';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                document.getElementById('copyHint').textContent = 'Copied!';
+                setTimeout(function() { document.getElementById('copyHint').textContent = 'Tap to copy'; }, 2000);
+            }
+        }
+
+        /* ===== LANGUAGE ===== */
+        function changeLanguage() {
+            currentLanguage = document.getElementById('languageSelector').value;
+        }
+
+        /* ===== VOICE: SPEECH RECOGNITION ===== */
+        function getSupportedMimeType() {
+            var types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+            for (var i = 0; i < types.length; i++) {
+                if (MediaRecorder.isTypeSupported(types[i])) return types[i];
             }
             return 'audio/mp4';
         }
-        
+
         function initSpeechRecognition() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
+            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
             if (!isIOS && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
                 recognition.continuous = false;
                 recognition.interimResults = true;
-                
-                recognition.onstart = () => {
+
+                recognition.onstart = function() {
                     isRecording = true;
                     document.getElementById('micBtn').classList.add('recording');
                     document.getElementById('voiceStatus').classList.add('active');
-                    document.getElementById('voiceStatus').textContent = translations[currentLanguage].listeningStatus;
+                    document.getElementById('voiceStatus').textContent = '\uD83C\uDFA4 Listening...';
                 };
-                
-                recognition.onend = () => {
+
+                recognition.onend = function() {
                     isRecording = false;
                     document.getElementById('micBtn').classList.remove('recording');
                     document.getElementById('voiceStatus').classList.remove('active');
                 };
-                
-                recognition.onresult = (event) => {
-                    let finalTranscript = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
+
+                recognition.onresult = function(event) {
+                    var finalTranscript = '';
+                    for (var i = event.resultIndex; i < event.results.length; i++) {
                         if (event.results[i].isFinal) {
                             finalTranscript += event.results[i][0].transcript;
                         }
@@ -709,8 +1163,8 @@ What brings you here today?
                         sendMessage();
                     }
                 };
-                
-                recognition.onerror = (event) => {
+
+                recognition.onerror = function(event) {
                     console.error('Speech recognition error:', event.error);
                     isRecording = false;
                     document.getElementById('micBtn').classList.remove('recording');
@@ -718,129 +1172,109 @@ What brings you here today?
                 };
             }
         }
-        
+
         async function toggleVoiceInput() {
             if (recognition) {
                 if (isRecording) {
                     recognition.stop();
                 } else {
                     recognition.lang = speechLanguageMap[currentLanguage];
-                    try {
-                        recognition.start();
-                    } catch (e) {
-                        await startWhisperRecording();
-                    }
+                    try { recognition.start(); }
+                    catch (e) { await startWhisperRecording(); }
                 }
                 return;
             }
-            
-            if (isRecording) {
-                stopWhisperRecording();
-            } else {
-                await startWhisperRecording();
-            }
+            if (isRecording) { stopWhisperRecording(); }
+            else { await startWhisperRecording(); }
         }
-        
+
         async function startWhisperRecording() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                let options = {};
-                
+                var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                var options = {};
+
                 if (!isIOS) {
-                    let mimeType = getSupportedMimeType();
-                    if (mimeType) {
-                        options = { mimeType: mimeType };
-                    }
+                    var mimeType = getSupportedMimeType();
+                    if (mimeType) options = { mimeType: mimeType };
                 }
-                
+
                 mediaRecorder = new MediaRecorder(stream, options);
                 audioChunks = [];
-                
-                mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        audioChunks.push(event.data);
-                    }
+
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) audioChunks.push(event.data);
                 };
-                
-                mediaRecorder.onstop = async () => {
-                    const duration = ((Date.now() - window.recordingStartTime) / 1000).toFixed(1);
-                    console.log('Recording stopped after', duration, 'seconds, chunks:', audioChunks.length);
+
+                mediaRecorder.onstop = async function() {
                     document.getElementById('micBtn').classList.remove('recording');
-                    document.getElementById('voiceStatus').textContent = '⏳ Processing...';
-                    
-                    stream.getTracks().forEach(track => track.stop());
-                    
-                    const recordedMimeType = mediaRecorder.mimeType || 'audio/mp4';
-                    const audioBlob = new Blob(audioChunks, { type: recordedMimeType });
-                    
+                    document.getElementById('voiceStatus').textContent = '\u23F3 Processing...';
+                    stream.getTracks().forEach(function(track) { track.stop(); });
+
+                    var recordedMimeType = mediaRecorder.mimeType || 'audio/mp4';
+                    var audioBlob = new Blob(audioChunks, { type: recordedMimeType });
+
                     if (audioChunks.length === 0 || audioBlob.size < 100) {
                         alert('Recording failed. Please speak for at least 2 seconds and try again.');
                         document.getElementById('voiceStatus').classList.remove('active');
                         return;
                     }
-                    
                     await sendAudioToSTT(audioBlob, recordedMimeType);
                 };
-                
+
                 mediaRecorder.start(500);
                 window.recordingStartTime = Date.now();
-                
-                mediaRecorder.onerror = (e) => alert('MediaRecorder ERROR: ' + e.error.name);
-                
+                mediaRecorder.onerror = function(e) { alert('MediaRecorder ERROR: ' + e.error.name); };
+
                 isRecording = true;
                 document.getElementById('micBtn').classList.add('recording');
                 document.getElementById('voiceStatus').classList.add('active');
-                document.getElementById('voiceStatus').textContent = translations[currentLanguage].listeningStatus;
-                
+                document.getElementById('voiceStatus').textContent = '\uD83C\uDFA4 Listening...';
+
             } catch (err) {
                 console.error('Microphone error:', err);
-                alert('Microphone error: ' + err.message + '. On iOS, use Safari and check Settings > Safari > Microphone.');
+                alert('Microphone error: ' + err.message);
             }
         }
-        
+
         function stopWhisperRecording() {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
                 isRecording = false;
             }
         }
-        
+
         async function sendAudioToSTT(audioBlob, mimeType) {
             try {
-                let filename = 'recording.mp4';
+                var filename = 'recording.mp4';
                 if (mimeType) {
                     if (mimeType.includes('webm')) filename = 'recording.webm';
                     else if (mimeType.includes('ogg')) filename = 'recording.ogg';
                     else if (mimeType.includes('wav')) filename = 'recording.wav';
                 }
-                
-                const formData = new FormData();
+
+                var formData = new FormData();
                 formData.append('audio_file', audioBlob, filename);
-                
-                let response;
+
+                var response;
                 try {
-                    response = await fetch('/stt', {
-                        method: 'POST',
-                        body: formData
-                    });
+                    response = await fetch('/stt', { method: 'POST', body: formData });
                 } catch (fetchError) {
                     alert('Network error: ' + fetchError.message);
                     document.getElementById('voiceStatus').classList.remove('active');
                     return;
                 }
-                
+
                 if (!response.ok) {
-                    const errorText = await response.text();
+                    var errorText = await response.text();
                     alert('Server error ' + response.status + ': ' + errorText);
                     document.getElementById('voiceStatus').classList.remove('active');
                     return;
                 }
-                
-                const data = await response.json();
+
+                var data = await response.json();
                 document.getElementById('voiceStatus').classList.remove('active');
-                
+
                 if (data.text && data.text.trim()) {
                     document.getElementById('messageInput').value = data.text;
                     sendMessage();
@@ -849,302 +1283,99 @@ What brings you here today?
                 } else {
                     alert('No speech detected. Please try again.');
                 }
-                
+
             } catch (error) {
                 console.error('STT Error:', error);
                 document.getElementById('voiceStatus').classList.remove('active');
                 alert('Voice processing failed: ' + error.message);
             }
         }
-        
+
+        /* ===== VOICE: TEXT-TO-SPEECH ===== */
         async function speakText(button, text) {
-            const t = translations[currentLanguage];
-            
             if (currentAudio && !currentAudio.paused) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
                 button.classList.remove('playing');
-                button.textContent = t.listenButton;
+                button.textContent = '\uD83D\uDD0A Listen';
                 currentAudio = null;
                 return;
             }
-            
+
             button.classList.add('loading');
-            button.textContent = t.loadingButton;
-            
+            button.textContent = '\u23F3 Loading...';
+
             try {
-                const response = await fetch('/tts', {
+                var response = await fetch('/tts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: text.replace(/\*\*/g, "").replace(/[\u{1F300}-\u{1F9FF}]/gu, "").replace(/[\u{2600}-\u{26FF}]/gu, "").replace(/PHANDA/gi, "PANDA"), language: currentLanguage })
+                    body: JSON.stringify({
+                        text: text.replace(/\*\*/g, "").replace(/[\u{1F300}-\u{1F9FF}]/gu, "").replace(/[\u{2600}-\u{26FF}]/gu, ""),
+                        language: currentLanguage
+                    })
                 });
-                
+
                 if (!response.ok) throw new Error('TTS request failed');
-                
-                const data = await response.json();
-                
+
+                var data = await response.json();
                 if (data.error) throw new Error(data.error);
-                
-                const byteCharacters = atob(data.audio);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
+
+                var byteCharacters = atob(data.audio);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
                     byteNumbers[i] = byteCharacters.charCodeAt(i);
                 }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], { type: 'audio/mpeg' });
-                const audioSrc = URL.createObjectURL(blob);
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray], { type: 'audio/mpeg' });
+                var audioSrc = URL.createObjectURL(blob);
                 currentAudio = new Audio(audioSrc);
-                
+
                 button.classList.remove('loading');
                 button.classList.add('playing');
-                button.textContent = t.stopButton;
-                
-                currentAudio.onended = () => {
+                button.textContent = '\u23F9\uFE0F Stop';
+
+                currentAudio.onended = function() {
                     button.classList.remove('playing');
-                    button.textContent = t.listenButton;
+                    button.textContent = '\uD83D\uDD0A Listen';
                     currentAudio = null;
                 };
-                
-                currentAudio.onerror = () => {
+
+                currentAudio.onerror = function() {
                     button.classList.remove('playing');
-                    button.textContent = t.listenButton;
+                    button.textContent = '\uD83D\uDD0A Listen';
                     currentAudio = null;
                 };
-                
+
                 currentAudio.play();
-                
+
             } catch (error) {
                 console.error('TTS Error:', error);
                 button.classList.remove('loading');
-                button.textContent = t.listenButton;
+                button.textContent = '\uD83D\uDD0A Listen';
                 fallbackBrowserTTS(text);
             }
         }
-        
+
         function fallbackBrowserTTS(text) {
             if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
+                var utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = speechLanguageMap[currentLanguage];
                 utterance.rate = 0.9;
                 window.speechSynthesis.speak(utterance);
             }
         }
-        
-        function changeLanguage() {
-            currentLanguage = document.getElementById('languageSelector').value;
-            updateUIText();
-            clearChat();
-        }
-        
-        function updateUIText() {
-            const t = translations[currentLanguage];
-            document.getElementById('messageInput').placeholder = t.placeholder;
-            document.getElementById('sendButton').textContent = t.sendButton;
-            document.getElementById('clearBtn').textContent = t.clearButton;
-            document.getElementById('formTitle').textContent = t.formTitle;
-            document.getElementById('labelName').innerHTML = t.labelName + ' <span class="required">*</span>';
-            document.getElementById('labelPhone').textContent = t.labelPhone;
-            document.getElementById('labelEmail').innerHTML = t.labelEmail + ' <span class="required">*</span>';
-            document.getElementById('labelInterestType').textContent = t.labelInterestType;
-            document.getElementById('labelOrganisation').textContent = t.labelOrganisation;
-            document.getElementById('labelDetails').textContent = t.labelDetails;
-            document.getElementById('submitBtn').textContent = t.submitButton;
-            document.getElementById('formNote').textContent = t.formNote;
-            document.getElementById('leadDetails').placeholder = t.detailsPlaceholder;
-        }
-        
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const sendButton = document.getElementById('sendButton');
-            const message = input.value.trim();
-            
-            if (!message || isWaitingForResponse) return;
-            
-            isWaitingForResponse = true;
-            sendButton.disabled = true;
-            
-            addMessage(message, 'user');
-            input.value = '';
-            
-            conversationHistory.push({ role: 'user', content: message });
-            
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.add('active');
-            
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        message: message,
-                        history: conversationHistory.slice(0, -1),
-                        language: currentLanguage
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Network response was not ok');
-                
-                const data = await response.json();
-                typingIndicator.classList.remove('active');
-                
-                const shouldShowContactBtn = checkForContactTrigger(message, data.response);
-                addMessage(data.response, 'bot', shouldShowContactBtn);
-                
-                conversationHistory.push({ role: 'assistant', content: data.response });
-                
-                if (conversationHistory.length > 20) {
-                    conversationHistory = conversationHistory.slice(-20);
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                typingIndicator.classList.remove('active');
-                addMessage('Connection error. Please check your internet connection or contact us at ai@haibophanda.org.za', 'bot');
-                conversationHistory.pop();
-            } finally {
-                isWaitingForResponse = false;
-                sendButton.disabled = false;
-                input.focus();
-            }
-        }
-        
-        function checkForContactTrigger(userMsg, botResponse) {
-            const triggers = ['training', 'learn', 'course', 'sign up', 'register', 'enrol', 'donate', 'donation', 'support', 'partner', 'collaborate', 'sponsor', 'contact', 'get started', 'interested', 'join', 'school', 'csi', 'corporate'];
-            const lowerUser = userMsg.toLowerCase();
-            const lowerBot = botResponse.toLowerCase();
-            
-            return triggers.some(t => lowerUser.includes(t)) || 
-                   lowerBot.includes('get in touch') ||
-                   lowerBot.includes('connect you') ||
-                   lowerBot.includes('your details') ||
-                   lowerBot.includes('your email');
-        }
-        
-        function addMessage(content, sender, showContactBtn = false) {
-            const container = document.getElementById('chatMessages');
-            const typingIndicator = document.getElementById('typingIndicator');
-            const t = translations[currentLanguage];
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            
-            const linkedContent = content
-                .replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>')
-                .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-            
-            contentDiv.innerHTML = linkedContent;
-            
-            if (sender === 'bot') {
-                const speakBtn = document.createElement('button');
-                speakBtn.className = 'speak-btn';
-                speakBtn.textContent = t.listenButton;
-                speakBtn.onclick = function() { speakText(this, content); };
-                contentDiv.appendChild(speakBtn);
-                
-                if (showContactBtn) {
-                    const btnDiv = document.createElement('div');
-                    btnDiv.innerHTML = `<button class="quote-btn" onclick="openForm()">${t.contactButton}</button>`;
-                    contentDiv.appendChild(btnDiv);
-                }
-            }
-            
-            messageDiv.appendChild(contentDiv);
-            container.insertBefore(messageDiv, typingIndicator);
-            container.scrollTop = container.scrollHeight;
-        }
-        
-        function openForm() { document.getElementById('formOverlay').classList.add('active'); }
-        function closeForm() { document.getElementById('formOverlay').classList.remove('active'); }
-        
-        async function submitLead() {
-            const submitBtn = document.getElementById('submitBtn');
-            const name = document.getElementById('leadName').value.trim();
-            const email = document.getElementById('leadEmail').value.trim();
-            const phone = document.getElementById('leadPhone').value.trim();
-            const interestType = document.getElementById('leadInterestType').value;
-            const organisation = document.getElementById('leadOrganisation').value.trim();
-            const details = document.getElementById('leadDetails').value.trim();
-            
-            if (!name) { alert('Please enter your name'); return; }
-            if (!email || !email.includes('@')) { alert('Please enter a valid email address'); return; }
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            try {
-                const response = await fetch('/lead', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, phone, interestType, organisation, details })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    closeForm();
-                    addMessage(data.message, 'bot');
-                    document.getElementById('leadName').value = '';
-                    document.getElementById('leadEmail').value = '';
-                    document.getElementById('leadPhone').value = '';
-                    document.getElementById('leadInterestType').value = '';
-                    document.getElementById('leadOrganisation').value = '';
-                    document.getElementById('leadDetails').value = '';
-                } else {
-                    alert(data.message || 'There was an error. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Connection error. Please try again or email us directly at ai@haibophanda.org.za');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = translations[currentLanguage].submitButton;
-            }
-        }
-        
-        function clearChat() {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio = null;
-            }
-            
-            conversationHistory = [];
-            const container = document.getElementById('chatMessages');
-            const t = translations[currentLanguage];
-            
-            container.innerHTML = `
-                <div class="message bot-message">
-                    <div class="message-content">
-${t.welcomeMessage}
-                        <button class="speak-btn" onclick="speakText(this, '${t.welcomeMessage.replace(/'/g, "\\'").replace(/\n/g, ' ')}')">${t.listenButton}</button>
-                    </div>
-                </div>
-                <div class="typing-indicator" id="typingIndicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            `;
-            
-            document.getElementById('messageInput').focus();
-        }
-        
-        document.getElementById('formOverlay').addEventListener('click', function(e) {
-            if (e.target === this) closeForm();
-        });
-        
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
+
+        /* ===== KEYBOARD ===== */
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey && document.activeElement === document.getElementById('messageInput')) {
                 e.preventDefault();
                 sendMessage();
             }
         });
-        
+
+        /* ===== INIT ===== */
+        parseUrlParams();
         initSpeechRecognition();
-        updateUIText();
-        document.getElementById('messageInput').focus();
     </script>
 </body>
 </html>
