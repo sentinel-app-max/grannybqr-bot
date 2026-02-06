@@ -1667,8 +1667,14 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        history: conversationHistory,
-                        language: currentLanguage
+                        chatHistory: conversationHistory,
+                        language: currentLanguage,
+                        name: leadData.name,
+                        email: leadData.email,
+                        answers: consultAnswers,
+                        flow: flowMode,
+                        sku: urlParams.sku,
+                        store: urlParams.store
                     })
                 });
 

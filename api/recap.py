@@ -18,22 +18,48 @@ class handler(BaseHTTPRequestHandler):
         data = json.loads(post_data)
 
         api_key = os.environ.get('ANTHROPIC_API_KEY')
+        brevo_key = os.environ.get('BREVO_API_KEY')
 
         if not api_key:
-            self.send_error(500, "API key not configured")
+            self._respond({'success': False, 'error': 'API key not configured'})
             return
 
-        history = data.get('history', [])
+        # Accept both field names for backwards compatibility
+        history = data.get('chatHistory', data.get('history', []))
         language = data.get('language', 'en')
+        name = data.get('name', '')
+        email = data.get('email', '')
+        answers = data.get('answers', [])
+        flow = data.get('flow', 'product')
+        sku = data.get('sku', '')
+        store = data.get('store', 'leroy-merlin')
 
         if not history:
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(json.dumps({'success': False, 'error': 'No conversation history'}).encode())
+            self._respond({'success': False, 'error': 'No conversation history'})
             return
 
+        # Step 1: Extract structured recap via Claude
+        recap = self._extract_recap(api_key, history)
+
+        if not recap:
+            self._respond({'success': False, 'error': 'Could not extract recap'})
+            return
+
+        # Step 2: Send Granny's Recipe email via Brevo (if email provided)
+        email_sent = False
+        if email and brevo_key:
+            email_sent = self._send_recipe_email(brevo_key, name, email, language, recap, flow, sku, store)
+
+        self._respond({'success': True, 'recap': recap, 'emailSent': email_sent})
+
+    def _respond(self, data):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode())
+
+    def _extract_recap(self, api_key, history):
         conversation_text = ""
         for msg in history:
             role = msg.get('role', 'user')
@@ -83,20 +109,185 @@ Extract what was actually discussed. Do not invent information not present in th
                 start = raw_text.find('{')
                 end = raw_text.rfind('}') + 1
                 if start >= 0 and end > start:
-                    recap = json.loads(raw_text[start:end])
+                    return json.loads(raw_text[start:end])
                 else:
-                    recap = json.loads(raw_text)
-
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({'success': True, 'recap': recap}).encode())
-
+                    return json.loads(raw_text)
         except Exception as e:
-            print(f"Recap Error: {str(e)}")
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(json.dumps({'success': False, 'error': 'Could not extract recap'}).encode())
+            print(f"Recap extraction error: {str(e)}")
+            return None
+
+    def _send_recipe_email(self, brevo_key, name, email, language, recap, flow, sku, store):
+        is_af = language == 'af'
+
+        display_name = name if name else ('Vriend' if is_af else 'Friend')
+
+        subject = f"Hier is jou resep van Granny B's, {display_name}! \U0001f3a8" if is_af else f"Here's your recipe from Granny B's, {display_name}! \U0001f3a8"
+
+        title = "Granny se Resep" if is_af else "Granny's Recipe"
+        subtitle = "Jou persoonlike krytverf plan" if is_af else "Your personal chalk paint plan"
+
+        lbl_project = "Projek" if is_af else "Project"
+        lbl_surface = "Oppervlak" if is_af else "Surface"
+        lbl_look = "Voorkoms" if is_af else "Look"
+        lbl_colour = "Aanbevole Kleur" if is_af else "Recommended Colour"
+        lbl_sealer = "Seler" if is_af else "Sealer"
+        lbl_prep = "VOORBEREIDING" if is_af else "PREP"
+        lbl_paint = "VERF" if is_af else "PAINT"
+        lbl_seal = "SEEL" if is_af else "SEAL"
+        lbl_leroy = "Leroy Merlin Produkte" if is_af else "Leroy Merlin Products"
+        lbl_discount = "Afslagkode" if is_af else "Discount Code"
+        lbl_discount_note = "10% afslag op jou volgende Granny B's aanlyn bestelling" if is_af else "10% off your next Granny B's online order"
+        lbl_shop = "Koop Granny B's Aanlyn" if is_af else "Shop Granny B's Online"
+        lbl_footer = "Jy het hierdie resep ontvang van Granny B's se Verfadviseur by Leroy Merlin." if is_af else "You received this recipe from Granny B's Paint Advisor at Leroy Merlin."
+
+        r = recap
+        project_text = r.get('projectType', '')
+        if r.get('specificPiece'):
+            project_text += f" \u2014 {r['specificPiece']}"
+
+        # Build detail rows
+        detail_rows = ""
+        if project_text:
+            detail_rows += self._email_row(lbl_project, project_text)
+        if r.get('surface'):
+            detail_rows += self._email_row(lbl_surface, r['surface'])
+        if r.get('dreamLook'):
+            detail_rows += self._email_row(lbl_look, r['dreamLook'])
+        if r.get('recommendedColour'):
+            detail_rows += self._email_row(lbl_colour, r['recommendedColour'], '#DD2222')
+        if r.get('sealer'):
+            detail_rows += self._email_row(lbl_sealer, r['sealer'])
+
+        # Build steps sections
+        steps_html = ""
+        if r.get('prepSteps'):
+            steps_html += self._email_step_section(lbl_prep, r['prepSteps'], '#FF9800')
+        if r.get('paintSteps'):
+            steps_html += self._email_step_section(lbl_paint, r['paintSteps'], '#DD2222')
+        if r.get('sealSteps'):
+            steps_html += self._email_step_section(lbl_seal, r['sealSteps'], '#4CAF50')
+
+        leroy_html = ""
+        if r.get('leroyProducts'):
+            leroy_html = f"""
+            <div style="margin-top:20px;padding:16px;background:#F5F5F5;border-radius:8px;">
+                <h3 style="margin:0 0 8px 0;font-size:14px;color:#1A1A1A;">{lbl_leroy}</h3>
+                <p style="margin:0;font-size:13px;color:#555;white-space:pre-line;">{self._escape(r['leroyProducts'])}</p>
+            </div>"""
+
+        email_html = f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#F5F5F5;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F5F5;padding:20px 0;">
+<tr><td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+    <!-- Header -->
+    <tr><td style="background:#DD2222;padding:32px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:28px;color:#FFFFFF;">\U0001f3a8 {title}</h1>
+        <p style="margin:6px 0 0 0;font-size:14px;color:rgba(255,255,255,0.85);">{subtitle}</p>
+    </td></tr>
+
+    <!-- Greeting -->
+    <tr><td style="padding:28px 24px 0 24px;">
+        <p style="margin:0;font-size:16px;color:#1A1A1A;">Hi {self._escape(display_name)},</p>
+        <p style="margin:8px 0 0 0;font-size:14px;color:#555;">{"Hier is jou persoonlike krytverf resep gebaseer op jou konsultasie." if is_af else "Here's your personalised chalk paint recipe based on your consultation."}</p>
+    </td></tr>
+
+    <!-- Details -->
+    <tr><td style="padding:20px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #F0E0E0;border-radius:8px;overflow:hidden;">
+            {detail_rows}
+        </table>
+    </td></tr>
+
+    <!-- Steps -->
+    <tr><td style="padding:0 24px;">
+        {steps_html}
+    </td></tr>
+
+    <!-- Leroy Products -->
+    <tr><td style="padding:0 24px;">
+        {leroy_html}
+    </td></tr>
+
+    <!-- Discount -->
+    <tr><td style="padding:24px;text-align:center;">
+        <div style="border:2px dashed #DD2222;border-radius:12px;padding:20px;display:inline-block;min-width:200px;">
+            <p style="margin:0;font-size:12px;color:#8C8577;text-transform:uppercase;letter-spacing:1px;">{lbl_discount}</p>
+            <p style="margin:6px 0;font-size:28px;font-weight:800;color:#1A1A1A;letter-spacing:3px;">GRANNYB10</p>
+            <p style="margin:0;font-size:13px;color:#7A9B6D;font-weight:600;">{lbl_discount_note}</p>
+        </div>
+    </td></tr>
+
+    <!-- CTA -->
+    <tr><td style="padding:0 24px 24px;text-align:center;">
+        <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" style="display:inline-block;background:#DD2222;color:#FFFFFF;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">{lbl_shop} &rarr;</a>
+    </td></tr>
+
+    <!-- Footer -->
+    <tr><td style="padding:20px 24px;text-align:center;border-top:1px solid #F0E0E0;">
+        <p style="margin:0;font-size:11px;color:#8C8577;">{lbl_footer}</p>
+        <p style="margin:4px 0 0 0;font-size:11px;color:#8C8577;">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</p>
+    </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body></html>"""
+
+        brevo_url = "https://api.brevo.com/v3/smtp/email"
+
+        brevo_data = {
+            "sender": {
+                "name": "Granny B's Paint Advisor",
+                "email": "ai@haibophanda.org.za"
+            },
+            "to": [
+                {
+                    "email": email,
+                    "name": display_name
+                }
+            ],
+            "subject": subject,
+            "htmlContent": email_html
+        }
+
+        req = urllib.request.Request(
+            brevo_url,
+            json.dumps(brevo_data).encode(),
+            {
+                'Content-Type': 'application/json',
+                'api-key': brevo_key
+            }
+        )
+
+        try:
+            with urllib.request.urlopen(req) as response:
+                json.loads(response.read().decode())
+                return True
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode() if e.fp else ''
+            print(f"Brevo Recap Email Error: {e.code} - {error_body}")
+            return False
+        except Exception as e:
+            print(f"Recap Email Error: {str(e)}")
+            return False
+
+    def _email_row(self, label, value, value_color='#1A1A1A'):
+        return f"""<tr>
+                <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#8C8577;width:140px;border-bottom:1px solid #F5F5F5;">{self._escape(label)}</td>
+                <td style="padding:10px 14px;font-size:14px;color:{value_color};border-bottom:1px solid #F5F5F5;">{self._escape(value)}</td>
+            </tr>"""
+
+    def _email_step_section(self, label, content, accent_color):
+        return f"""<div style="margin-top:16px;padding:16px;background:#FFFDF5;border-left:4px solid {accent_color};border-radius:4px;">
+                <h3 style="margin:0 0 8px 0;font-size:14px;color:{accent_color};">{self._escape(label)}</h3>
+                <p style="margin:0;font-size:13px;color:#555;line-height:1.6;white-space:pre-line;">{self._escape(content)}</p>
+            </div>"""
+
+    @staticmethod
+    def _escape(text):
+        if not text:
+            return ''
+        return str(text).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
