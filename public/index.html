@@ -170,12 +170,26 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #DC4040 0%, #B83030 100%);
+            background: #DC4040;
             color: #FFFFFF;
-            padding: 16px 16px 12px;
-            text-align: center;
-            position: relative;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             flex-shrink: 0;
+        }
+
+        .header-left-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .header-center {
+            text-align: center;
+            flex: 1;
+            min-width: 0;
         }
 
         .chat-header h2 {
@@ -189,20 +203,6 @@
             font-size: 11px;
             opacity: 0.7;
             margin-top: 2px;
-        }
-
-        .header-left {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .header-right {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
         }
 
         .language-selector {
@@ -232,6 +232,7 @@
             font-size: 11px;
             font-weight: 700;
             transition: background 0.2s;
+            flex-shrink: 0;
         }
 
         .done-btn:hover { background: rgba(255, 255, 255, 0.3); }
@@ -641,9 +642,9 @@
 
         /* ===== LOGO ===== */
         .header-logo {
-            height: 40px;
+            height: 36px;
             width: auto;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             flex-shrink: 0;
         }
@@ -655,17 +656,9 @@
             gap: 12px;
         }
 
-        .chat-header-inner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
         /* ===== CANDY STRIPE OVERLAY ===== */
         .lead-screen,
         .lead-header,
-        .chat-header,
         .thanks-screen {
             position: relative;
             overflow: hidden;
@@ -673,7 +666,6 @@
 
         .lead-screen::before,
         .lead-header::before,
-        .chat-header::before,
         .thanks-screen::before {
             content: '';
             position: absolute;
@@ -686,7 +678,6 @@
 
         .lead-screen > *,
         .lead-header > *,
-        .chat-header > *,
         .thanks-screen > * {
             position: relative;
             z-index: 1;
@@ -749,22 +740,18 @@
     <!-- ===== CHAT SCREEN ===== -->
     <div class="chat-screen" id="chatScreen">
         <div class="chat-header">
-            <div class="header-left">
+            <div class="header-left-group">
+                <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
                 <select class="language-selector" id="languageSelector" onchange="changeLanguage()">
                     <option value="en" selected>EN</option>
                     <option value="af">AF</option>
                 </select>
             </div>
-            <div class="chat-header-inner">
-                <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
-                <div>
-                    <h2>Granny B's Paint Advisor</h2>
-                    <p class="header-subtitle">Your in-store chalk paint expert</p>
-                </div>
+            <div class="header-center">
+                <h2>Granny B's Paint Advisor</h2>
+                <p class="header-subtitle">Your in-store chalk paint expert</p>
             </div>
-            <div class="header-right">
-                <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
-            </div>
+            <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
         </div>
 
         <div class="product-badge">
