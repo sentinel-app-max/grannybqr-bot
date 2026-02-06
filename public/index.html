@@ -639,6 +639,29 @@
 
         .cta-btn.secondary:hover { border-color: #DC4040; }
 
+        /* ===== LOGO ===== */
+        .header-logo {
+            height: 40px;
+            width: auto;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .lead-header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .chat-header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
         /* ===== CANDY STRIPE OVERLAY ===== */
         .lead-screen,
         .lead-header,
@@ -687,8 +710,13 @@
     <div class="lead-screen" id="leadScreen">
         <div class="lead-container">
             <div class="lead-header">
-                <h1>Granny B's Paint Advisor</h1>
-                <p>Your in-store chalk paint expert</p>
+                <div class="lead-header-inner">
+                    <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
+                    <div>
+                        <h1>Granny B's Paint Advisor</h1>
+                        <p>Your in-store chalk paint expert</p>
+                    </div>
+                </div>
             </div>
             <div class="lead-body">
                 <div class="incentive-text">Plus 10% off your next Granny B's online order</div>
@@ -727,9 +755,12 @@
                     <option value="af">AF</option>
                 </select>
             </div>
-            <div>
-                <h2>Granny B's Paint Advisor</h2>
-                <p class="header-subtitle">Your in-store chalk paint expert</p>
+            <div class="chat-header-inner">
+                <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
+                <div>
+                    <h2>Granny B's Paint Advisor</h2>
+                    <p class="header-subtitle">Your in-store chalk paint expert</p>
+                </div>
             </div>
             <div class="header-right">
                 <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
@@ -1165,6 +1196,31 @@
                 document.getElementById('copyHint').textContent = 'Copied!';
                 setTimeout(function() { document.getElementById('copyHint').textContent = 'Tap to copy'; }, 2000);
             }
+        }
+
+        /* ===== RESET APP ===== */
+        function resetApp() {
+            conversationHistory = [];
+            guidedStep = 0;
+            shownPromos = new Set();
+            promoQueue = [];
+            visiblePromoEl = null;
+            isWaitingForResponse = false;
+            leadData = { name: '', email: '', phone: '' };
+
+            var msgs = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+            msgs.innerHTML = '';
+            msgs.appendChild(typing);
+            typing.classList.remove('active');
+
+            document.getElementById('messageInput').value = '';
+            document.getElementById('leadNameInput').value = '';
+            document.getElementById('leadEmailInput').value = '';
+            document.getElementById('leadPhoneInput').value = '';
+            document.getElementById('consentCheck').checked = false;
+
+            showScreen('leadScreen');
         }
 
         /* ===== LANGUAGE ===== */
