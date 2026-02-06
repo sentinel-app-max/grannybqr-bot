@@ -692,10 +692,6 @@
                 <select class="language-selector" id="languageSelector" onchange="changeLanguage()">
                     <option value="en" selected>EN</option>
                     <option value="af">AF</option>
-                    <option value="zu">ZU</option>
-                    <option value="xh">XH</option>
-                    <option value="st">ST</option>
-                    <option value="nso">NSO</option>
                 </select>
             </div>
             <div>
@@ -722,7 +718,7 @@
             </div>
         </div>
 
-        <div class="chat-input" id="chatInputArea" style="display: none;">
+        <div class="chat-input" id="chatInputArea">
             <input type="text" id="messageInput" placeholder="Ask about Granny B's paint...">
             <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()" title="Voice input">&#127908;</button>
             <button onclick="sendMessage()" id="sendButton">Send</button>
@@ -764,11 +760,12 @@
         let leadData = { name: '', email: '', phone: '' };
         let guidedStep = 0;
         let shownPromos = new Set();
+        let promoQueue = [];
+        let visiblePromoEl = null;
         let urlParams = { sku: '81415711', store: 'leroy-merlin' };
 
         const speechLanguageMap = {
-            'en': 'en-ZA', 'af': 'af-ZA', 'zu': 'zu-ZA',
-            'xh': 'xh-ZA', 'st': 'st-ZA', 'nso': 'nso-ZA'
+            'en': 'en-ZA', 'af': 'af-ZA'
         };
 
         /* ===== GUIDED QUESTIONS ===== */
@@ -864,9 +861,6 @@
         function showGuidedQuestion(index) {
             if (index >= guidedQuestions.length) {
                 guidedStep = guidedQuestions.length;
-                document.getElementById('chatInputArea').style.display = 'flex';
-                var inp = document.getElementById('messageInput');
-                if (inp) inp.focus();
                 return;
             }
 
@@ -1003,7 +997,12 @@
             var lower = text.toLowerCase();
             promoCards.forEach(function(card) {
                 if (!shownPromos.has(card.id) && card.triggers.some(function(t) { return lower.includes(t); })) {
-                    showPromoCard(card);
+                    shownPromos.add(card.id);
+                    if (visiblePromoEl) {
+                        promoQueue.push(card);
+                    } else {
+                        displayPromoCard(card);
+                    }
                 }
             });
         }
@@ -1011,7 +1010,14 @@
         function showPromoCard(card) {
             if (!card || shownPromos.has(card.id)) return;
             shownPromos.add(card.id);
+            if (visiblePromoEl) {
+                promoQueue.push(card);
+            } else {
+                displayPromoCard(card);
+            }
+        }
 
+        function displayPromoCard(card) {
             var container = document.getElementById('chatMessages');
             var typing = document.getElementById('typingIndicator');
 
@@ -1021,12 +1027,21 @@
             promoDiv.style.borderLeftColor = card.border;
 
             promoDiv.innerHTML =
-                '<button class="promo-dismiss" onclick="this.parentElement.remove()">\u2715</button>' +
+                '<button class="promo-dismiss">\u2715</button>' +
                 '<div class="promo-badge">LEROY MERLIN</div>' +
                 '<div class="promo-title">' + card.title + '</div>' +
                 '<div class="promo-deal">' + card.deal + '</div>' +
                 '<div class="promo-aisle">' + card.aisle + '</div>';
 
+            promoDiv.querySelector('.promo-dismiss').onclick = function() {
+                promoDiv.remove();
+                visiblePromoEl = null;
+                if (promoQueue.length > 0) {
+                    setTimeout(function() { displayPromoCard(promoQueue.shift()); }, 300);
+                }
+            };
+
+            visiblePromoEl = promoDiv;
             container.insertBefore(promoDiv, typing);
             container.scrollTop = container.scrollHeight;
         }
@@ -1073,6 +1088,10 @@
 
                 checkPromoTriggers(message);
                 checkPromoTriggers(data.response);
+
+                if (guidedStep < guidedQuestions.length) {
+                    setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+                }
 
                 if (conversationHistory.length > 20) {
                     conversationHistory = conversationHistory.slice(-20);

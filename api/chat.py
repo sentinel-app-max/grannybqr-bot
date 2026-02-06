@@ -39,26 +39,6 @@ class handler(BaseHTTPRequestHandler):
                 'name': 'Afrikaans',
                 'instruction': 'Antwoord in Afrikaans. Gebruik korrekte Afrikaanse grammatika en spelling.',
                 'greeting': 'Goeie dag'
-            },
-            'zu': {
-                'name': 'isiZulu',
-                'instruction': 'Phendula ngesiZulu. Sebenzisa isiZulu esicwengekile futhi esivamile.',
-                'greeting': 'Sawubona'
-            },
-            'xh': {
-                'name': 'isiXhosa',
-                'instruction': 'Phendula ngesiXhosa. Sebenzisa isiXhosa esifanelekileyo nesiqhelekileyo.',
-                'greeting': 'Molo'
-            },
-            'st': {
-                'name': 'Sesotho',
-                'instruction': 'Araba ka Sesotho. Sebedisa Sesotho se nepahetseng le se tloaelehileng.',
-                'greeting': 'Dumela'
-            },
-            'nso': {
-                'name': 'Sepedi',
-                'instruction': 'Araba ka Sepedi. Šomiša Sepedi se se nepagetšego le se se tlwaelegilego.',
-                'greeting': 'Thobela'
             }
         }
 
