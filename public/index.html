@@ -707,6 +707,10 @@
                         <h1>Granny B's Paint Advisor</h1>
                         <p>Your in-store chalk paint expert</p>
                     </div>
+                    <select class="language-selector" id="leadLanguageSelector" onchange="changeLanguage(this.value)">
+                        <option value="en" selected>EN</option>
+                        <option value="af">AF</option>
+                    </select>
                 </div>
             </div>
             <div class="lead-body">
@@ -742,7 +746,7 @@
         <div class="chat-header">
             <div class="header-left-group">
                 <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
-                <select class="language-selector" id="languageSelector" onchange="changeLanguage()">
+                <select class="language-selector" id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="en" selected>EN</option>
                     <option value="af">AF</option>
                 </select>
@@ -860,8 +864,8 @@
                 doneBtn: "Klaar \u2713",
                 inputPlaceholder: "Vra oor Granny B\u2019s verf...",
                 sendBtn: "Stuur",
-                greetingName: "Hallo {name}! Ek sien jy kyk na Granny B\u2019s Daisy krytverf \u2014 pragtige keuse! Kom ek help jou om presies te kry wat jy nodig het vir jou projek.",
-                greetingAnon: "Hallo daar! Ek sien jy kyk na Granny B\u2019s Daisy krytverf \u2014 pragtige keuse! Kom ek help jou om presies te kry wat jy nodig het.",
+                greetingName: "Haai {name}! Ek sien jy kyk na Granny B\u2019s se Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het vir jou projek.",
+                greetingAnon: "Haai daar! Ek sien jy kyk na Granny B\u2019s se Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het.",
                 leadTitle: "Granny B\u2019s Verfadviseur",
                 leadSubtitle: "Jou in-winkel krytverf kenner",
                 leadIncentive: "Plus 10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
@@ -1309,10 +1313,37 @@
         }
 
         /* ===== LANGUAGE ===== */
-        function changeLanguage() {
-            currentLanguage = document.getElementById('languageSelector').value;
+        function changeLanguage(lang) {
+            currentLanguage = lang;
             guidedQuestions = guidedQuestionsData[currentLanguage];
+
+            document.getElementById('languageSelector').value = lang;
+            document.getElementById('leadLanguageSelector').value = lang;
+
             applyLanguage();
+
+            if (document.getElementById('chatScreen').style.display === 'flex') {
+                conversationHistory = [];
+                guidedStep = 0;
+                shownPromos = new Set();
+                promoQueue = [];
+                visiblePromoEl = null;
+                isWaitingForResponse = false;
+
+                var msgs = document.getElementById('chatMessages');
+                var typing = document.getElementById('typingIndicator');
+                msgs.innerHTML = '';
+                msgs.appendChild(typing);
+                typing.classList.remove('active');
+                document.getElementById('messageInput').value = '';
+
+                var s = uiStrings[currentLanguage];
+                var greeting = leadData.name
+                    ? s.greetingName.replace('{name}', leadData.name)
+                    : s.greetingAnon;
+                addBotMessage(greeting);
+                setTimeout(function() { showGuidedQuestion(0); }, 800);
+            }
         }
 
         function applyLanguage() {

@@ -37,7 +37,7 @@ class handler(BaseHTTPRequestHandler):
             },
             'af': {
                 'name': 'Afrikaans',
-                'instruction': 'Antwoord in Afrikaans. Gebruik korrekte Afrikaanse grammatika en spelling.',
+                'instruction': 'Jy is Granny B\'s se Verfadviseur. Antwoord ALTYD in Afrikaans. Hou antwoorde kort (2-3 sinne). Warm, vriendelike toon. Gebruik korrekte Afrikaanse grammatika en spelling.',
                 'greeting': 'Goeie dag'
             }
         }
