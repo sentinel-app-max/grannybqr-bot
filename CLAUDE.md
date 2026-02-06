@@ -30,8 +30,11 @@ grannybqr-bot/
 └── .gitignore
 ```
 
+## Production URL
+`https://grannybqr.summitwebcraft.co.za`
+
 ## URL Schema
-QR codes point to: `https://<domain>/?sku=81415711&store=leroy-fourways`
+QR codes point to: `https://grannybqr.summitwebcraft.co.za/?sku=81415711&store=leroy-fourways`
 
 | Param   | Description                                    | Default          |
 |---------|------------------------------------------------|------------------|
@@ -86,17 +89,20 @@ These params are read by the frontend and passed to `/api/lead` and `/api/chat`.
 - Direct to grannyb.co.za or Leroy Merlin staff if unsure
 
 ## Brand Colours
-| Token        | Hex       | Usage                        |
-|--------------|-----------|------------------------------|
-| Primary      | `#F7E07D` | Daisy yellow — buttons, header |
-| Secondary    | `#D4BF4A` | Dark daisy — gradient end     |
-| Background   | `#FFFDF5` | Cream — page background       |
-| Text         | `#1A1A1A` | Charcoal — primary text        |
-| Muted        | `#8C8577` | Muted text                    |
-| Accent       | `#7A9B6D` | Sage green — success states    |
-| Bot bubble   | `#FFFFFF` | White with subtle shadow       |
-| User bubble  | `#1A1A1A` | Charcoal with white text       |
-| Recording    | `#e74c3c` | Red — mic recording indicator  |
+| Token        | Hex       | Usage                              |
+|--------------|-----------|------------------------------------|
+| Primary      | `#DD2222` | Granny B's red — header, buttons   |
+| Background   | `#FFFFFF` | White — page background            |
+| Text         | `#1A1A1A` | Charcoal — primary text            |
+| Muted        | `#8C8577` | Muted text                         |
+| Accent       | `#7A9B6D` | Sage green — success states        |
+| Bot bubble   | `#FFFFFF` | White with #F0E0E0 border          |
+| User bubble  | `#1A1A1A` | Charcoal with white text           |
+| Product badge| `#FFF5F5` | Light pink bg, #DD2222 border      |
+| Swatch       | `#F7E07D` | Daisy yellow (product colour)      |
+| Recording    | `#e74c3c` | Red — mic recording indicator      |
+
+Visual features: radial sunburst conic-gradient (red/white, circus style) at low opacity on backgrounds, paint tin watermark repeat on chat area.
 
 ## Environment Variables
 ```
@@ -109,8 +115,9 @@ BREVO_API_KEY           # Brevo/Sendinblue for email delivery
 
 ## Deploy
 ```bash
-# Production
-vercel --prod
+# Production (auto-deploys on push to main)
+# Custom domain: grannybqr.summitwebcraft.co.za
+git push origin main
 
 # Local development
 vercel dev
