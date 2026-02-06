@@ -97,7 +97,7 @@ class handler(BaseHTTPRequestHandler):
         if not api_key:
             return None
         
-        voice_id = "bxCH5vIUrA0fEAmEtp6v"  # Onalerona
+        voice_id = "SAhdygBsjizE9aIj39dz"  # Granny B's voice
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         
         payload = {
