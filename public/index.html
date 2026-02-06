@@ -199,12 +199,6 @@
             letter-spacing: 0.5px;
         }
 
-        .chat-header .header-subtitle {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 2px;
-        }
-
         .language-selector {
             background: rgba(255, 255, 255, 0.2);
             border: none;
@@ -805,8 +799,7 @@
                         <option value="af">AF</option>
                     </select>
                     <div>
-                        <h1>Granny B's Paint Advisor</h1>
-                        <p>Your Smart Granny B</p>
+                        <h1>Your Smart Granny B</h1>
                     </div>
                     <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
                 </div>
@@ -853,8 +846,7 @@
                 </select>
             </div>
             <div class="header-center">
-                <h2>Granny B's Paint Advisor</h2>
-                <p class="header-subtitle">Your Smart Granny B</p>
+                <h2>Your Smart Granny B</h2>
             </div>
             <div class="header-right-group">
                 <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
@@ -937,15 +929,13 @@
         /* ===== UI TRANSLATIONS ===== */
         const uiStrings = {
             en: {
-                headerTitle: "Granny B\u2019s Paint Advisor",
-                headerSubtitle: "Your Smart Granny B",
+                headerTitle: "Your Smart Granny B",
                 doneBtn: "Done \u2713",
                 inputPlaceholder: "Ask about Granny B\u2019s paint...",
                 sendBtn: "Send",
                 greetingName: "Hi {name}! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need for your project.",
                 greetingAnon: "Hi there! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need.",
-                leadTitle: "Granny B\u2019s Paint Advisor",
-                leadSubtitle: "Your Smart Granny B",
+                leadTitle: "Your Smart Granny B",
                 leadIncentive: "Plus 10% off your next Granny B\u2019s online order",
                 leadNameLabel: "First name",
                 leadNamePlaceholder: "First name",
@@ -970,15 +960,13 @@
                 alertConsent: "Please accept the POPIA consent to continue"
             },
             af: {
-                headerTitle: "Granny B\u2019s Verfadviseur",
-                headerSubtitle: "Jou Slim Granny B",
+                headerTitle: "Jou Slim Granny B",
                 doneBtn: "Klaar \u2713",
                 inputPlaceholder: "Vra oor Granny B\u2019s verf...",
                 sendBtn: "Stuur",
                 greetingName: "Haai {name}! Ek sien jy kyk na hierdie Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het vir jou projek.",
                 greetingAnon: "Haai daar! Ek sien jy kyk na hierdie Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het.",
-                leadTitle: "Granny B\u2019s Verfadviseur",
-                leadSubtitle: "Jou Slim Granny B",
+                leadTitle: "Jou Slim Granny B",
                 leadIncentive: "Plus 10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
                 leadNameLabel: "Voornaam",
                 leadNamePlaceholder: "Voornaam",
@@ -1470,13 +1458,11 @@
             var s = uiStrings[currentLanguage];
 
             document.querySelector('.chat-header h2').textContent = s.headerTitle;
-            document.querySelector('.chat-header .header-subtitle').textContent = s.headerSubtitle;
             document.querySelector('.done-btn').innerHTML = s.doneBtn;
             document.getElementById('messageInput').placeholder = s.inputPlaceholder;
             document.getElementById('sendButton').textContent = s.sendBtn;
 
             document.querySelector('.lead-header h1').textContent = s.leadTitle;
-            document.querySelector('.lead-header p').textContent = s.leadSubtitle;
             document.querySelector('.incentive-text').textContent = s.leadIncentive;
             var labels = document.querySelectorAll('.lead-body .form-group label');
             if (labels[0]) labels[0].textContent = s.leadNameLabel;
