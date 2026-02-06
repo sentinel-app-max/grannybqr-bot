@@ -32,11 +32,8 @@ class handler(BaseHTTPRequestHandler):
         if len(text) > 1000:
             text = text[:1000]
         
-        # Use Google TTS for Afrikaans, ElevenLabs for everything else
-        if language == 'af':
-            audio_base64 = self.google_tts(text)
-        else:
-            audio_base64 = self.elevenlabs_tts(text)
+        # Use ElevenLabs for both languages with different voice IDs
+        audio_base64 = self.elevenlabs_tts(text, language)
         
         if audio_base64:
             self.send_response(200)
@@ -91,13 +88,17 @@ class handler(BaseHTTPRequestHandler):
             print(f"Google TTS Error: {str(e)}")
             return None
     
-    def elevenlabs_tts(self, text):
+    def elevenlabs_tts(self, text, language='en'):
         api_key = os.environ.get('ELEVENLABS_API_KEY')
-        
+
         if not api_key:
             return None
-        
-        voice_id = "SAhdygBsjizE9aIj39dz"  # Granny B's voice
+
+        voice_ids = {
+            'en': 'SAhdygBsjizE9aIj39dz',  # Granny B's English voice
+            'af': '5dyHljdO2LS6awAa9zBO',  # Granny B's Afrikaans voice
+        }
+        voice_id = voice_ids.get(language, voice_ids['en'])
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         
         payload = {

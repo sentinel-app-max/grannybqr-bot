@@ -819,25 +819,117 @@
             'en': 'en-ZA', 'af': 'af-ZA'
         };
 
-        /* ===== GUIDED QUESTIONS ===== */
-        const guidedQuestions = [
-            {
-                question: "What are you painting today?",
-                options: ["Furniture", "Kitchen cabinets", "Home d\u00e9cor / crafts", "Walls / feature wall", "Upcycle / thrift flip", "Just browsing"]
+        /* ===== UI TRANSLATIONS ===== */
+        const uiStrings = {
+            en: {
+                headerTitle: "Granny B\u2019s Paint Advisor",
+                headerSubtitle: "Your in-store chalk paint expert",
+                doneBtn: "Done \u2713",
+                inputPlaceholder: "Ask about Granny B\u2019s paint...",
+                sendBtn: "Send",
+                greetingName: "Hi {name}! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need for your project.",
+                greetingAnon: "Hi there! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need.",
+                leadTitle: "Granny B\u2019s Paint Advisor",
+                leadSubtitle: "Your in-store chalk paint expert",
+                leadIncentive: "Plus 10% off your next Granny B\u2019s online order",
+                leadNameLabel: "First name",
+                leadNamePlaceholder: "First name",
+                leadEmailLabel: "Email",
+                leadEmailPlaceholder: "you@email.com",
+                leadPhoneLabel: "Mobile",
+                leadPhonePlaceholder: "0821234567",
+                leadConsent: "I consent to Granny B\u2019s and Leroy Merlin storing my details for product advice and offers (POPIA)",
+                leadSubmit: "Get my paint advice \u2192",
+                leadSkip: "Skip, just let me browse",
+                thanksTitle: "Thanks!",
+                thanksTitleName: "Thanks, {name}!",
+                thanksSubtitle: "Here\u2019s your exclusive discount:",
+                discountNote: "10% off your next Granny B\u2019s online order",
+                ctaShop: "Shop Granny B\u2019s Online \u2192",
+                ctaRewards: "Join Rewards Programme",
+                tapToCopy: "Tap to copy",
+                copied: "Copied!",
+                alertName: "Please enter your first name",
+                alertEmail: "Please enter a valid email",
+                alertPhone: "Please enter a valid SA mobile number (e.g. 0821234567)",
+                alertConsent: "Please accept the POPIA consent to continue"
             },
-            {
-                question: "What surface will you be painting on?",
-                options: ["Wood", "Metal", "Ceramic / pottery", "Melamine / laminate", "Fabric", "Not sure yet"]
-            },
-            {
-                question: "Have you used chalk paint before?",
-                options: ["Nope, first time!", "Done a project or two", "Experienced chalker", "I'm a pro / reseller"]
-            },
-            {
-                question: "What look are you going for?",
-                options: ["Vintage / distressed", "Smooth & modern", "Rustic farmhouse", "Bold statement colour", "Not sure, advise me"]
+            af: {
+                headerTitle: "Granny B\u2019s Verfadviseur",
+                headerSubtitle: "Jou in-winkel krytverf kenner",
+                doneBtn: "Klaar \u2713",
+                inputPlaceholder: "Vra oor Granny B\u2019s verf...",
+                sendBtn: "Stuur",
+                greetingName: "Hallo {name}! Ek sien jy kyk na Granny B\u2019s Daisy krytverf \u2014 pragtige keuse! Kom ek help jou om presies te kry wat jy nodig het vir jou projek.",
+                greetingAnon: "Hallo daar! Ek sien jy kyk na Granny B\u2019s Daisy krytverf \u2014 pragtige keuse! Kom ek help jou om presies te kry wat jy nodig het.",
+                leadTitle: "Granny B\u2019s Verfadviseur",
+                leadSubtitle: "Jou in-winkel krytverf kenner",
+                leadIncentive: "Plus 10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
+                leadNameLabel: "Voornaam",
+                leadNamePlaceholder: "Voornaam",
+                leadEmailLabel: "E-pos",
+                leadEmailPlaceholder: "jy@epos.com",
+                leadPhoneLabel: "Selfoon",
+                leadPhonePlaceholder: "0821234567",
+                leadConsent: "Ek stem in dat Granny B\u2019s en Leroy Merlin my besonderhede mag stoor vir produkadvies en aanbiedinge (POPIA)",
+                leadSubmit: "Kry my verfadvies \u2192",
+                leadSkip: "Slaan oor, laat ek net blaai",
+                thanksTitle: "Dankie!",
+                thanksTitleName: "Dankie, {name}!",
+                thanksSubtitle: "Hier is jou eksklusiewe afslag:",
+                discountNote: "10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
+                ctaShop: "Koop Granny B\u2019s Aanlyn \u2192",
+                ctaRewards: "Sluit aan by Beloningsprogram",
+                tapToCopy: "Tik om te kopi\u00EBer",
+                copied: "Gekopieer!",
+                alertName: "Voer asseblief jou voornaam in",
+                alertEmail: "Voer asseblief \u2019n geldige e-posadres in",
+                alertPhone: "Voer asseblief \u2019n geldige SA selfoonnommer in (bv. 0821234567)",
+                alertConsent: "Aanvaar asseblief die POPIA-toestemming om voort te gaan"
             }
-        ];
+        };
+
+        /* ===== GUIDED QUESTIONS ===== */
+        const guidedQuestionsData = {
+            en: [
+                {
+                    question: "What are you painting today?",
+                    options: ["Furniture", "Kitchen cabinets", "Home d\u00e9cor / crafts", "Walls / feature wall", "Upcycle / thrift flip", "Just browsing"]
+                },
+                {
+                    question: "What surface will you be painting on?",
+                    options: ["Wood", "Metal", "Ceramic / pottery", "Melamine / laminate", "Fabric", "Not sure yet"]
+                },
+                {
+                    question: "Have you used chalk paint before?",
+                    options: ["Nope, first time!", "Done a project or two", "Experienced chalker", "I'm a pro / reseller"]
+                },
+                {
+                    question: "What look are you going for?",
+                    options: ["Vintage / distressed", "Smooth & modern", "Rustic farmhouse", "Bold statement colour", "Not sure, advise me"]
+                }
+            ],
+            af: [
+                {
+                    question: "Wat verf jy vandag?",
+                    options: ["Meubels", "Kombuiskaste", "Huisversiering / kunsvlyt", "Mure / kenmuuur", "Hergebruik / opknap", "Kyk net rond"]
+                },
+                {
+                    question: "Watter oppervlak gaan jy verf?",
+                    options: ["Hout", "Metaal", "Keramiek / pottebakkery", "Melamine / laminaat", "Materiaal", "Nie seker nie"]
+                },
+                {
+                    question: "Het jy al krytverf gebruik?",
+                    options: ["Nee, eerste keer!", "Een of twee projekte gedoen", "Ervare krytverfer", "Ek is \u2019n pro / herverkoper"]
+                },
+                {
+                    question: "Watter voorkoms soek jy?",
+                    options: ["Vintage / verweer", "Glad & modern", "Rustiese plaashuis", "Vet stelling kleur", "Nie seker, adviseer my"]
+                }
+            ]
+        };
+
+        var guidedQuestions = guidedQuestionsData[currentLanguage];
 
         /* ===== PROMO CARDS DATA ===== */
         const promoCards = [
@@ -872,10 +964,11 @@
             const phone = document.getElementById('leadPhoneInput').value.trim();
             const consent = document.getElementById('consentCheck').checked;
 
-            if (!name) { alert('Please enter your first name'); return; }
-            if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
-            if (phone && !/^(\+27|0)\d{9}$/.test(phone)) { alert('Please enter a valid SA mobile number (e.g. 0821234567)'); return; }
-            if (!consent) { alert('Please accept the POPIA consent to continue'); return; }
+            var s = uiStrings[currentLanguage];
+            if (!name) { alert(s.alertName); return; }
+            if (!email || !email.includes('@')) { alert(s.alertEmail); return; }
+            if (phone && !/^(\+27|0)\d{9}$/.test(phone)) { alert(s.alertPhone); return; }
+            if (!consent) { alert(s.alertConsent); return; }
 
             leadData = { name, email, phone };
 
@@ -901,9 +994,10 @@
         /* ===== ENTER CHAT ===== */
         function enterChat() {
             showScreen('chatScreen');
+            var s = uiStrings[currentLanguage];
             var greeting = leadData.name
-                ? "Hi " + leadData.name + "! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need for your project."
-                : "Hi there! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need.";
+                ? s.greetingName.replace('{name}', leadData.name)
+                : s.greetingAnon;
             addBotMessage(greeting);
             setTimeout(function() { showGuidedQuestion(0); }, 800);
         }
@@ -1162,16 +1256,20 @@
 
         /* ===== THANK YOU ===== */
         function showThankYou() {
-            var title = leadData.name ? 'Thanks, ' + leadData.name + '!' : 'Thanks!';
+            var s = uiStrings[currentLanguage];
+            var title = leadData.name
+                ? s.thanksTitleName.replace('{name}', leadData.name)
+                : s.thanksTitle;
             document.getElementById('thanksTitle').textContent = title;
             showScreen('thankYouScreen');
         }
 
         function copyCode() {
+            var s = uiStrings[currentLanguage];
             if (navigator.clipboard) {
                 navigator.clipboard.writeText('GRANNYB10').then(function() {
-                    document.getElementById('copyHint').textContent = 'Copied!';
-                    setTimeout(function() { document.getElementById('copyHint').textContent = 'Tap to copy'; }, 2000);
+                    document.getElementById('copyHint').textContent = s.copied;
+                    setTimeout(function() { document.getElementById('copyHint').textContent = s.tapToCopy; }, 2000);
                 });
             } else {
                 var ta = document.createElement('textarea');
@@ -1180,8 +1278,8 @@
                 ta.select();
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                document.getElementById('copyHint').textContent = 'Copied!';
-                setTimeout(function() { document.getElementById('copyHint').textContent = 'Tap to copy'; }, 2000);
+                document.getElementById('copyHint').textContent = s.copied;
+                setTimeout(function() { document.getElementById('copyHint').textContent = s.tapToCopy; }, 2000);
             }
         }
 
@@ -1213,6 +1311,39 @@
         /* ===== LANGUAGE ===== */
         function changeLanguage() {
             currentLanguage = document.getElementById('languageSelector').value;
+            guidedQuestions = guidedQuestionsData[currentLanguage];
+            applyLanguage();
+        }
+
+        function applyLanguage() {
+            var s = uiStrings[currentLanguage];
+
+            document.querySelector('.chat-header h2').textContent = s.headerTitle;
+            document.querySelector('.chat-header .header-subtitle').textContent = s.headerSubtitle;
+            document.querySelector('.done-btn').innerHTML = s.doneBtn;
+            document.getElementById('messageInput').placeholder = s.inputPlaceholder;
+            document.getElementById('sendButton').textContent = s.sendBtn;
+
+            document.querySelector('.lead-header h1').textContent = s.leadTitle;
+            document.querySelector('.lead-header p').textContent = s.leadSubtitle;
+            document.querySelector('.incentive-text').textContent = s.leadIncentive;
+            var labels = document.querySelectorAll('.lead-body .form-group label');
+            if (labels[0]) labels[0].textContent = s.leadNameLabel;
+            if (labels[1]) labels[1].textContent = s.leadEmailLabel;
+            if (labels[2]) labels[2].textContent = s.leadPhoneLabel;
+            document.getElementById('leadNameInput').placeholder = s.leadNamePlaceholder;
+            document.getElementById('leadEmailInput').placeholder = s.leadEmailPlaceholder;
+            document.getElementById('leadPhoneInput').placeholder = s.leadPhonePlaceholder;
+            document.querySelector('.consent-group label').textContent = s.leadConsent;
+            document.querySelector('.lead-submit-btn').innerHTML = s.leadSubmit;
+            document.querySelector('.skip-link').textContent = s.leadSkip;
+
+            document.querySelector('.thanks-container > p').textContent = s.thanksSubtitle;
+            document.querySelector('.discount-note').textContent = s.discountNote;
+            var ctaBtns = document.querySelectorAll('.cta-btn');
+            if (ctaBtns[0]) ctaBtns[0].innerHTML = s.ctaShop;
+            if (ctaBtns[1]) ctaBtns[1].textContent = s.ctaRewards;
+            document.getElementById('copyHint').textContent = s.tapToCopy;
         }
 
         /* ===== VOICE: SPEECH RECOGNITION ===== */
