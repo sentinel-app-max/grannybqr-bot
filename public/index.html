@@ -869,11 +869,12 @@
                 </select>
             </div>
             <div class="header-right-group">
+                <button class="done-btn" id="headerDoneBtn" onclick="showThankYou()" style="display:none;">Done &#10003;</button>
                 <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
             </div>
         </div>
 
-        <div class="product-badge">
+        <div class="product-badge" id="productBadge">
             <div class="colour-swatch"></div>
             <span>Chalk Paint Granny B's Daisy 1L &middot; R259 &middot; SKU 81415711</span>
             <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
@@ -940,7 +941,9 @@
         let shownPromos = new Set();
         let promoQueue = [];
         let visiblePromoEl = null;
-        let urlParams = { sku: '81415711', store: 'leroy-merlin' };
+        let urlParams = { sku: '', store: 'leroy-merlin' };
+        let flowMode = 'consultation';
+        let consultAnswers = [];
 
         const speechLanguageMap = {
             'en': 'en-ZA', 'af': 'af-ZA'
@@ -955,6 +958,8 @@
                 sendBtn: "Send",
                 greetingName: "Hi {name}! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need for your project.",
                 greetingAnon: "Hi there! I see you\u2019re checking out Granny B\u2019s Daisy chalk paint \u2014 lovely choice! Let me help you find exactly what you need.",
+                consultGreetingName: "Welcome to Granny B\u2019s, {name}! I\u2019m your personal paint advisor. Tell me about your project and I\u2019ll help you find exactly what you need, from the right colour to the perfect finish.",
+                consultGreetingAnon: "Welcome to Granny B\u2019s! I\u2019m your personal paint advisor. Tell me about your project and I\u2019ll help you find exactly what you need, from the right colour to the perfect finish.",
                 leadTitle: "Your Smart Granny B",
                 leadIncentive: "Plus 10% off your next Granny B\u2019s online order",
                 leadNameLabel: "First name",
@@ -986,6 +991,8 @@
                 sendBtn: "Stuur",
                 greetingName: "Haai {name}! Ek sien jy kyk na hierdie Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het vir jou projek.",
                 greetingAnon: "Haai daar! Ek sien jy kyk na hierdie Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het.",
+                consultGreetingName: "Welkom by Granny B\u2019s, {name}! Ek is jou persoonlike verfadviseur. Vertel my van jou projek en ek sal jou help om presies te kry wat jy nodig het, van die regte kleur tot die perfekte afwerking.",
+                consultGreetingAnon: "Welkom by Granny B\u2019s! Ek is jou persoonlike verfadviseur. Vertel my van jou projek en ek sal jou help om presies te kry wat jy nodig het, van die regte kleur tot die perfekte afwerking.",
                 leadTitle: "Jou Slim Granny B",
                 leadIncentive: "Plus 10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
                 leadNameLabel: "Voornaam",
@@ -1054,6 +1061,68 @@
 
         var guidedQuestions = guidedQuestionsData[currentLanguage];
 
+        /* ===== CONSULTATION GUIDED QUESTIONS (5 questions, Q2 conditional) ===== */
+        const consultGuidedData = {
+            en: [
+                {
+                    question: "What brings you here today?",
+                    options: ["Furniture project", "Kitchen cabinets", "Upcycle / thrift flip", "Wall or feature wall", "Arts, crafts & d\u00e9cor", "Just browsing for inspiration"]
+                },
+                {
+                    conditional: true,
+                    variants: {
+                        "Furniture project": { question: "What piece are you working on?", options: ["Dresser / chest", "Dining table", "Side table / nightstand", "Bookshelf / display", "Bed frame / headboard", "Other furniture"] },
+                        "Kitchen cabinets": { question: "What specifically?", options: ["Cabinet doors", "Countertops", "Open shelving", "Kitchen island", "Full kitchen redo"] },
+                        "Upcycle / thrift flip": { question: "What did you find?", options: ["Old chair", "Picture frame / mirror", "Wooden box or crate", "Side table or stool", "Thrift store find", "Something else"] },
+                        "Wall or feature wall": { question: "What kind of wall?", options: ["Bedroom accent wall", "Living room feature", "Kids room", "Bathroom wall", "Outdoor wall"] },
+                        "Arts, crafts & d\u00e9cor": { question: "What are you making?", options: ["Pots or vases", "Canvas or board art", "Home d\u00e9cor accessories", "Stencil project", "Gift or keepsake"] },
+                        "Just browsing for inspiration": { question: "What caught your eye?", options: ["The colours", "Chalk paint technique", "Furniture makeovers", "Someone recommended it", "Just curious"] }
+                    }
+                },
+                {
+                    question: "What surface are we working with?",
+                    options: ["Bare wood", "Stained or varnished wood", "Melamine / laminate", "Metal", "Ceramic / tiles / glass", "Not sure"]
+                },
+                {
+                    question: "What\u2019s the dream?",
+                    options: ["Vintage distressed charm", "Clean modern finish", "Rustic farmhouse", "Bold colour pop", "Soft neutral tones", "Show me what\u2019s trending"]
+                },
+                {
+                    question: "And your experience with chalk paint?",
+                    options: ["Total beginner", "Done a project or two", "Experienced painter", "Basically a pro"]
+                }
+            ],
+            af: [
+                {
+                    question: "Wat bring jou vandag hier?",
+                    options: ["Meubelprojek", "Kombuiskaste", "Herwin / thrift flip", "Muur of kenmuur", "Kuns, handwerk & dekor", "Soek net inspirasie"]
+                },
+                {
+                    conditional: true,
+                    variants: {
+                        "Meubelprojek": { question: "Watter stuk werk jy aan?", options: ["Laaikas / kas", "Eetkamertafel", "Bytafel / nagkassie", "Boekrak / vertoonkas", "Bedraam / kopstuk", "Ander meubels"] },
+                        "Kombuiskaste": { question: "Wat spesifiek?", options: ["Kasdeure", "Kombuisblaaie", "Oop rakke", "Kombuiseiland", "Volle kombuis oormaak"] },
+                        "Herwin / thrift flip": { question: "Wat het jy gevind?", options: ["Ou stoel", "Prentlys / spi\u00ebl", "Houtkis of krat", "Bytafel of stoeltjie", "Tweedehandse vonds", "Iets anders"] },
+                        "Muur of kenmuur": { question: "Watter soort muur?", options: ["Slaapkamer aksentmuur", "Sitkamer kenmuur", "Kinderkamer", "Badkamermuur", "Buite muur"] },
+                        "Kuns, handwerk & dekor": { question: "Wat maak jy?", options: ["Potte of vase", "Doek of bordkuns", "Huisdekor bykomstighede", "Stensil projek", "Geskenk of aandenking"] },
+                        "Soek net inspirasie": { question: "Wat het jou oog gevang?", options: ["Die kleure", "Krytverf tegniek", "Meubel oormaaksels", "Iemand het dit aanbeveel", "Net nuuskierig"] }
+                    }
+                },
+                {
+                    question: "Watter oppervlak werk ons mee?",
+                    options: ["Kaal hout", "Gebeitste of gelakte hout", "Melamien / laminaat", "Metaal", "Keramiek / te\u00ebls / glas", "Nie seker nie"]
+                },
+                {
+                    question: "Wat is die droom?",
+                    options: ["Vintage verweerde sjarme", "Skoon moderne afwerking", "Rustiese plaashuis", "Vet kleurpop", "Sagte neutrale tone", "Wys my wat trending is"]
+                },
+                {
+                    question: "En jou ervaring met krytverf?",
+                    options: ["Totale beginner", "Een of twee projekte gedoen", "Ervare verfer", "Basies \u2019n pro"]
+                }
+            ]
+        };
+
         /* ===== PROMO CARDS DATA ===== */
         const promoCards = [
             { id: 'sandpaper', triggers: ['sand','prep','wood'], title: 'Sandpaper Multi-Pack', deal: 'Buy 3 for R99', aisle: 'Aisle 3', bg: '#FFF3E0', border: '#FF9800' },
@@ -1067,7 +1136,10 @@
         /* ===== URL PARAMS ===== */
         function parseUrlParams() {
             const params = new URLSearchParams(window.location.search);
-            if (params.get('sku')) urlParams.sku = params.get('sku');
+            if (params.get('sku')) {
+                urlParams.sku = params.get('sku');
+                flowMode = 'product';
+            }
             if (params.get('store')) urlParams.store = params.get('store');
         }
 
@@ -1121,21 +1193,54 @@
         function enterChat() {
             showScreen('chatScreen');
             var s = uiStrings[currentLanguage];
-            var greeting = leadData.name
-                ? s.greetingName.replace('{name}', leadData.name)
-                : s.greetingAnon;
+            var greeting;
+
+            if (flowMode === 'product') {
+                document.getElementById('productBadge').style.display = 'flex';
+                document.getElementById('headerDoneBtn').style.display = 'none';
+                greeting = leadData.name
+                    ? s.greetingName.replace('{name}', leadData.name)
+                    : s.greetingAnon;
+            } else {
+                document.getElementById('productBadge').style.display = 'none';
+                document.getElementById('headerDoneBtn').style.display = 'inline-block';
+                consultAnswers = [];
+                greeting = leadData.name
+                    ? s.consultGreetingName.replace('{name}', leadData.name)
+                    : s.consultGreetingAnon;
+            }
+
             addBotMessage(greeting);
             setTimeout(function() { showGuidedQuestion(0); }, 800);
         }
 
+        /* ===== GUIDED QUESTION HELPERS ===== */
+        function getCurrentGuidedQuestion(index) {
+            if (flowMode === 'product') {
+                return guidedQuestions[index] || null;
+            }
+            var questions = consultGuidedData[currentLanguage];
+            if (index >= questions.length) return null;
+            var q = questions[index];
+            if (q.conditional) {
+                var prevAnswer = consultAnswers[0];
+                return q.variants[prevAnswer] || null;
+            }
+            return q;
+        }
+
+        function getGuidedQuestionsLength() {
+            if (flowMode === 'product') return guidedQuestions.length;
+            return consultGuidedData[currentLanguage].length;
+        }
+
         /* ===== GUIDED QUESTIONS ===== */
         function showGuidedQuestion(index) {
-            if (index >= guidedQuestions.length) {
-                guidedStep = guidedQuestions.length;
+            var q = getCurrentGuidedQuestion(index);
+            if (!q) {
+                guidedStep = getGuidedQuestionsLength();
                 return;
             }
-
-            var q = guidedQuestions[index];
             var container = document.getElementById('chatMessages');
             var typing = document.getElementById('typingIndicator');
 
@@ -1173,6 +1278,10 @@
                 if (btn.textContent === optionText) btn.classList.add('selected');
             });
 
+            if (flowMode === 'consultation') {
+                consultAnswers.push(optionText);
+            }
+
             addUserMessage(optionText);
             conversationHistory.push({ role: 'user', content: optionText });
 
@@ -1189,7 +1298,8 @@
                         history: conversationHistory.slice(0, -1),
                         language: currentLanguage,
                         sku: urlParams.sku,
-                        store: urlParams.store
+                        store: urlParams.store,
+                        flow: flowMode
                     })
                 });
 
@@ -1202,8 +1312,28 @@
                 checkPromoTriggers(optionText);
                 checkPromoTriggers(data.response);
 
-                if (questionIndex === 1 && !shownPromos.has('sealer')) {
-                    showPromoCard(promoCards.find(function(p) { return p.id === 'sealer'; }));
+                if (flowMode === 'product') {
+                    if (questionIndex === 1 && !shownPromos.has('sealer')) {
+                        showPromoCard(promoCards.find(function(p) { return p.id === 'sealer'; }));
+                    }
+                } else {
+                    var lowerOpt = optionText.toLowerCase();
+                    if (questionIndex === 2) {
+                        if (lowerOpt.includes('wood') || lowerOpt.includes('hout')) {
+                            showPromoCard(promoCards.find(function(p) { return p.id === 'sandpaper'; }));
+                        }
+                        if (lowerOpt.includes('kitchen') || lowerOpt.includes('tile') || lowerOpt.includes('kombuis') || lowerOpt.includes('te\u00ebl') || lowerOpt.includes('ceramic') || lowerOpt.includes('keramiek')) {
+                            showPromoCard(promoCards.find(function(p) { return p.id === 'sealer'; }));
+                        }
+                    }
+                    if (questionIndex === 3) {
+                        if (lowerOpt.includes('vintage') || lowerOpt.includes('distress') || lowerOpt.includes('verweer')) {
+                            showPromoCard(promoCards.find(function(p) { return p.id === 'sandpaper'; }));
+                        }
+                    }
+                    if (questionIndex === 4) {
+                        showPromoCard(promoCards.find(function(p) { return p.id === 'brushes'; }));
+                    }
                 }
 
                 guidedStep = questionIndex + 1;
@@ -1351,7 +1481,8 @@
                         history: conversationHistory.slice(0, -1),
                         language: currentLanguage,
                         sku: urlParams.sku,
-                        store: urlParams.store
+                        store: urlParams.store,
+                        flow: flowMode
                     })
                 });
 
@@ -1366,7 +1497,7 @@
                 checkPromoTriggers(message);
                 checkPromoTriggers(data.response);
 
-                if (guidedStep < guidedQuestions.length) {
+                if (guidedStep < getGuidedQuestionsLength()) {
                     setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
                 }
 
@@ -1424,6 +1555,7 @@
             visiblePromoEl = null;
             isWaitingForResponse = false;
             leadData = { name: '', email: '', phone: '' };
+            consultAnswers = [];
 
             var msgs = document.getElementById('chatMessages');
             var typing = document.getElementById('typingIndicator');
@@ -1457,6 +1589,7 @@
                 promoQueue = [];
                 visiblePromoEl = null;
                 isWaitingForResponse = false;
+                consultAnswers = [];
 
                 var msgs = document.getElementById('chatMessages');
                 var typing = document.getElementById('typingIndicator');
@@ -1466,9 +1599,16 @@
                 document.getElementById('messageInput').value = '';
 
                 var s = uiStrings[currentLanguage];
-                var greeting = leadData.name
-                    ? s.greetingName.replace('{name}', leadData.name)
-                    : s.greetingAnon;
+                var greeting;
+                if (flowMode === 'product') {
+                    greeting = leadData.name
+                        ? s.greetingName.replace('{name}', leadData.name)
+                        : s.greetingAnon;
+                } else {
+                    greeting = leadData.name
+                        ? s.consultGreetingName.replace('{name}', leadData.name)
+                        : s.consultGreetingAnon;
+                }
                 addBotMessage(greeting);
                 setTimeout(function() { showGuidedQuestion(0); }, 800);
             }

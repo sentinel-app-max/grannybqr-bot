@@ -33,41 +33,59 @@ grannybqr-bot/
 ## Production URL
 `https://grannybqr.summitwebcraft.co.za`
 
-## URL Schema
-QR codes point to: `https://grannybqr.summitwebcraft.co.za/?sku=81415711&store=leroy-fourways`
+## URL Schema & Dual Flow Routing
+The app supports two flows based on the `?sku=` URL parameter:
 
 | Param   | Description                                    | Default          |
 |---------|------------------------------------------------|------------------|
-| `sku`   | Product SKU scanned                            | `81415711`       |
+| `sku`   | Product SKU scanned (triggers product flow)    | _(empty)_        |
 | `store` | Store identifier (e.g. `leroy-fourways`)       | `leroy-merlin`   |
 
-These params are read by the frontend and passed to `/api/lead` and `/api/chat`.
+**Routing logic:**
+- `?sku=81415711&store=leroy-fourways` → **Product Flow** (existing single-product mode)
+- `?store=leroy-fourways` (no SKU) → **Consultation Flow** (full range advisory mode)
 
-## User Flow
-1. **Lead Form** — First screen. Captures first name, email, mobile with POPIA consent.
-   User can skip. On submit, POSTs to `/lead` with `{name, email, phone, consent, sku, store}`.
-2. **Guided Questions** — 4 sequential tap-to-select questions appear in chat:
+Both flows share the same lead form, header, promo triggers, thank you screen, and chat infrastructure.
+
+## Flow 1: Product Mode (SKU present)
+URL example: `https://grannybqr.summitwebcraft.co.za/?sku=81415711&store=leroy-fourways`
+
+1. **Lead Form** — Captures first name, email, mobile with POPIA consent. Can skip.
+2. **Product Badge** — Shows scanned product (Daisy 1L, R259, SKU) with Done button.
+3. **4 Guided Questions:**
    - Q1: What are you painting today?
    - Q2: What surface will you be painting on?
    - Q3: Have you used chalk paint before?
    - Q4: What look are you going for?
-   Each answer is sent to `/api/chat` for a contextual AI response.
-3. **Free Chat** — After all guided questions, open text input for follow-up questions.
-4. **Promo Cards** — Leroy Merlin product cards triggered by keywords in conversation.
-   Armour Sealer auto-shows after Q2.
-5. **Thank You** — Accessible via "Done" header button. Shows discount code `GRANNYB10`,
-   links to Granny B's online shop and rewards programme.
+4. **Free Chat** — Product-focused advice about the scanned item.
+5. **Promo Cards** — Keyword-triggered. Armour Sealer auto-shows after Q2.
+6. **Thank You** — Discount code GRANNYB10, shop links.
 
-## Daisy Product Knowledge
-- **Product**: Chalk Paint Granny B's Daisy 1L
-- **SKU**: 81415711
-- **Price**: R259
+### Daisy Product Knowledge
+- **Product**: Chalk Paint Granny B's Daisy 1L | **SKU**: 81415711 | **Price**: R259
 - **Colour**: Warm sunny yellow, smooth velvety matt chalk finish
-- **Prep**: No sanding or prepping needed
-- **Coverage**: 12–14 sqm per litre
-- **Dry times**: Touch-dry 30 min, recoat 1–2 hours, full cure 21 days
+- **Coverage**: 12–14 sqm/L | **Dry**: Touch-dry 30 min, recoat 1–2 hrs, full cure 21 days
 - **Surfaces**: Glass, metal, wood, ceramic, enamel, melamine, fabric
 - **Properties**: Eco-friendly, low-odour, lead-free, food-safe, kid-safe
+
+## Flow 2: Consultation Mode (no SKU)
+URL example: `https://grannybqr.summitwebcraft.co.za/?store=leroy-fourways`
+
+1. **Lead Form** — Same as product flow.
+2. **No Product Badge** — Done button moves to header.
+3. **5 Guided Questions:**
+   - Q1: What brings you here today? (project type)
+   - Q2: Conditional follow-up based on Q1 answer (specific piece/item)
+   - Q3: What surface are we working with?
+   - Q4: What's the dream? (desired aesthetic)
+   - Q5: Experience with chalk paint?
+4. **AI delivers full personalised recommendation** after Q5: colour(s), tin size, surface prep, sealer, complementary products, adjusted to experience level.
+5. **Free Chat** — Full range advisory.
+6. **Promo Cards** — Surface-based triggers after Q3, distress trigger after Q4, brush set after Q5.
+7. **Thank You** — Same as product flow.
+
+### Colour Recommendations (AI knowledge)
+Daisy, Hessian, Hurricane, Vanilla Cream, Olive Charm, Peppermint Twist, Pretty Flamingo, Tropical Cocktail, Mushroom, Midnight Sky, Classic White, French Lavender, Fired Brick — each matched to aesthetic/project types.
 
 ## Leroy Merlin Promo Card Triggers
 | Trigger Keywords                     | Product                      | Deal              | Location   |
