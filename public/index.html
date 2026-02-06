@@ -222,27 +222,34 @@
             color: #1A1A1A;
         }
 
+        .header-right-group {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
         .done-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: #DD2222;
             border: none;
             color: #FFFFFF;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 11px;
             font-weight: 700;
             transition: background 0.2s;
             flex-shrink: 0;
+            margin-left: auto;
         }
 
-        .done-btn:hover { background: rgba(255, 255, 255, 0.3); }
+        .done-btn:hover { background: #BB1A1A; }
 
         /* ===== PRODUCT BADGE ===== */
         .product-badge {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 16px;
+            padding: 8px 16px;
             background: #FFF5F5;
             border-bottom: 2px solid #DD2222;
             flex-shrink: 0;
@@ -640,11 +647,18 @@
 
         .cta-btn.secondary:hover { border-color: #DD2222; }
 
-        /* ===== LOGO ===== */
+        /* ===== LOGOS ===== */
         .header-logo {
-            height: 36px;
+            height: 40px;
             width: auto;
             border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .partner-logo {
+            height: 30px;
+            width: auto;
             cursor: pointer;
             flex-shrink: 0;
         }
@@ -729,15 +743,16 @@
         <div class="lead-container">
             <div class="lead-header">
                 <div class="lead-header-inner">
-                    <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
-                    <div>
-                        <h1>Granny B's Paint Advisor</h1>
-                        <p>Your in-store chalk paint expert</p>
-                    </div>
+                    <img src="/granny-b-logo.svg" alt="Granny B's" class="header-logo" onclick="resetApp()">
                     <select class="language-selector" id="leadLanguageSelector" onchange="changeLanguage(this.value)">
                         <option value="en" selected>EN</option>
                         <option value="af">AF</option>
                     </select>
+                    <div>
+                        <h1>Granny B's Paint Advisor</h1>
+                        <p>Your in-store chalk paint expert</p>
+                    </div>
+                    <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
                 </div>
             </div>
             <div class="lead-body">
@@ -772,7 +787,7 @@
     <div class="chat-screen" id="chatScreen">
         <div class="chat-header">
             <div class="header-left-group">
-                <img src="/granny-b-logo.png" alt="Granny B's" class="header-logo" onclick="resetApp()">
+                <img src="/granny-b-logo.svg" alt="Granny B's" class="header-logo" onclick="resetApp()">
                 <select class="language-selector" id="languageSelector" onchange="changeLanguage(this.value)">
                     <option value="en" selected>EN</option>
                     <option value="af">AF</option>
@@ -782,12 +797,15 @@
                 <h2>Granny B's Paint Advisor</h2>
                 <p class="header-subtitle">Your in-store chalk paint expert</p>
             </div>
-            <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
+            <div class="header-right-group">
+                <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
+            </div>
         </div>
 
         <div class="product-badge">
             <div class="colour-swatch"></div>
             <span>Chalk Paint Granny B's Daisy 1L &middot; R259 &middot; SKU 81415711</span>
+            <button class="done-btn" onclick="showThankYou()">Done &#10003;</button>
         </div>
 
         <div class="voice-status" id="voiceStatus">&#127908; Listening...</div>
