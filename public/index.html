@@ -771,10 +771,11 @@
         }
 
         .bot-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             object-fit: cover;
+            object-position: top;
             flex-shrink: 0;
             margin-top: 2px;
         }
@@ -1220,8 +1221,8 @@
 
             var avatar = document.createElement('img');
             avatar.className = 'bot-avatar';
-            avatar.src = '/GrannyB_Apron.png';
-            avatar.alt = "Granny B's";
+            avatar.src = '/granny-b-logo.png';
+            avatar.alt = '';
             msgDiv.appendChild(avatar);
 
             var contentDiv = document.createElement('div');
