@@ -38,6 +38,8 @@
             background: #DD2222;
             padding: 30px 24px 24px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
         .lead-header h1 {
@@ -177,6 +179,8 @@
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
 
         .header-left-group {
@@ -689,6 +693,25 @@
         .lead-screen > *,
         .lead-header > *,
         .thanks-screen > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== HEADER TIN STEP-AND-REPEAT ===== */
+        .lead-header::after,
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('/granny-b-tin.png');
+            background-size: 60px;
+            background-repeat: repeat;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .chat-header > * {
             position: relative;
             z-index: 1;
         }
