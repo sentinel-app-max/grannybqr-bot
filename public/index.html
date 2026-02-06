@@ -685,12 +685,25 @@
             z-index: 1;
         }
 
-        /* ===== PAINT TIN WATERMARK ===== */
+        /* ===== CHAT SUNBURST + TIN WATERMARK ===== */
         .chat-messages {
             position: relative;
+            overflow: hidden;
         }
 
         .chat-messages::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 200%; height: 200%;
+            transform: translate(-50%, -50%);
+            background: conic-gradient(#DD2222 0deg, #DD2222 10deg, #FFFFFF 10deg, #FFFFFF 20deg, #DD2222 20deg, #DD2222 30deg, #FFFFFF 30deg, #FFFFFF 40deg, #DD2222 40deg, #DD2222 50deg, #FFFFFF 50deg, #FFFFFF 60deg, #DD2222 60deg, #DD2222 70deg, #FFFFFF 70deg, #FFFFFF 80deg, #DD2222 80deg, #DD2222 90deg, #FFFFFF 90deg, #FFFFFF 100deg, #DD2222 100deg, #DD2222 110deg, #FFFFFF 110deg, #FFFFFF 120deg, #DD2222 120deg, #DD2222 130deg, #FFFFFF 130deg, #FFFFFF 140deg, #DD2222 140deg, #DD2222 150deg, #FFFFFF 150deg, #FFFFFF 160deg, #DD2222 160deg, #DD2222 170deg, #FFFFFF 170deg, #FFFFFF 180deg, #DD2222 180deg, #DD2222 190deg, #FFFFFF 190deg, #FFFFFF 200deg, #DD2222 200deg, #DD2222 210deg, #FFFFFF 210deg, #FFFFFF 220deg, #DD2222 220deg, #DD2222 230deg, #FFFFFF 230deg, #FFFFFF 240deg, #DD2222 240deg, #DD2222 250deg, #FFFFFF 250deg, #FFFFFF 260deg, #DD2222 260deg, #DD2222 270deg, #FFFFFF 270deg, #FFFFFF 280deg, #DD2222 280deg, #DD2222 290deg, #FFFFFF 290deg, #FFFFFF 300deg, #DD2222 300deg, #DD2222 310deg, #FFFFFF 310deg, #FFFFFF 320deg, #DD2222 320deg, #DD2222 330deg, #FFFFFF 330deg, #FFFFFF 340deg, #DD2222 340deg, #DD2222 350deg, #FFFFFF 350deg, #FFFFFF 360deg);
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .chat-messages::after {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
