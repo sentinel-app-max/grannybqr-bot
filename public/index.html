@@ -724,6 +724,61 @@
             z-index: -1;
         }
 
+        /* ===== LEAD MASCOT VIDEO ===== */
+        .lead-mascot {
+            display: block;
+            height: 150px;
+            width: auto;
+            margin: 0 auto 12px;
+            border-radius: 12px;
+        }
+
+        /* ===== FLOATING MASCOT ===== */
+        .floating-mascot {
+            position: fixed;
+            bottom: 80px;
+            left: 16px;
+            z-index: 1000;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            overflow: hidden;
+            cursor: pointer;
+            animation: mascotFloat 3s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-mascot video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        @keyframes mascotFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* ===== BOT AVATAR ===== */
+        .bot-message {
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
             .chat-input { padding: 10px 8px; gap: 6px; }
@@ -756,6 +811,9 @@
                 </div>
             </div>
             <div class="lead-body">
+                <video class="lead-mascot" autoplay loop muted playsinline>
+                    <source src="/granny-b-animated.mp4" type="video/mp4">
+                </video>
                 <div class="incentive-text">Plus 10% off your next Granny B's online order</div>
 
                 <div class="form-group">
@@ -844,6 +902,13 @@
 
             <div class="thanks-footer">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</div>
         </div>
+    </div>
+
+    <!-- ===== FLOATING MASCOT ===== -->
+    <div class="floating-mascot" id="floatingMascot" onclick="triggerPaintTip()">
+        <video autoplay loop muted playsinline>
+            <source src="/granny-b-animated.mp4" type="video/mp4">
+        </video>
     </div>
 
     <script>
@@ -1149,6 +1214,12 @@
 
             var msgDiv = document.createElement('div');
             msgDiv.className = 'message bot-message';
+
+            var avatar = document.createElement('img');
+            avatar.className = 'bot-avatar';
+            avatar.src = '/GrannyB_Apron.png';
+            avatar.alt = "Granny B's";
+            msgDiv.appendChild(avatar);
 
             var contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
@@ -1665,6 +1736,45 @@
                 utterance.rate = 0.9;
                 window.speechSynthesis.speak(utterance);
             }
+        }
+
+        /* ===== FLOATING MASCOT PAINT TIPS ===== */
+        const paintTips = {
+            en: [
+                "Did you know? Granny B's chalk paint needs zero sanding or prepping before use!",
+                "Quick tip: Granny B's chalk paint dries touch-dry in just 30 minutes.",
+                "Pro tip: Use Armour Sealer on kitchen cabinets and high-traffic furniture for lasting protection.",
+                "Fun fact: Granny B's chalk paint works on glass, metal, wood, ceramic, melamine, and even fabric!",
+                "Try this: Apply Dark Wax over a lighter chalk paint colour for an instant vintage distressed look.",
+                "Colour tip: Not sure about a colour? Try a 125ml jar from R79.90 before committing to a full litre!",
+                "Good to know: 1 litre of chalk paint covers approximately 12-14 square metres.",
+                "Save money: Granny B's offers free delivery on orders over R650 at grannyb.co.za!"
+            ],
+            af: [
+                "Het jy geweet? Hierdie krytverf het geen skuur of voorbereiding nodig nie!",
+                "Vinnige wenk: Krytverf is aanraakdroog binne net 30 minute.",
+                "Pro-wenk: Gebruik Armour Sealer op kombuiskaste en meubels wat baie gebruik word.",
+                "Prettige feit: Krytverf werk op glas, metaal, hout, keramiek, melamine en selfs materiaal!",
+                "Probeer dit: Smeer Donker Was oor 'n ligter krytverf kleur vir 'n onmiddellike vintage voorkoms.",
+                "Kleurwenk: Nie seker oor 'n kleur nie? Probeer 'n 125ml potjie vanaf R79.90!",
+                "Goed om te weet: 1 liter krytverf dek ongeveer 12-14 vierkante meter.",
+                "Spaar geld: Gratis aflewering op bestellings bo R650 by grannyb.co.za!"
+            ]
+        };
+        let lastTipIndex = -1;
+
+        function triggerPaintTip() {
+            if (document.getElementById('chatScreen').style.display !== 'flex') return;
+            if (isWaitingForResponse) return;
+
+            var tips = paintTips[currentLanguage];
+            var index;
+            do {
+                index = Math.floor(Math.random() * tips.length);
+            } while (index === lastTipIndex && tips.length > 1);
+            lastTipIndex = index;
+
+            addBotMessage(tips[index]);
         }
 
         /* ===== KEYBOARD ===== */
