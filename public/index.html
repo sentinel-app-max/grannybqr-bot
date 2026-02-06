@@ -645,6 +645,69 @@
 
         .cta-btn.secondary:hover { border-color: #DD2222; }
 
+        .wa-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 12px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .wa-btn:hover { transform: translateY(-1px); }
+
+        .wa-btn.wa-plan {
+            background: #25D366;
+            color: #FFFFFF;
+        }
+
+        .wa-btn.wa-plan:hover { box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4); }
+
+        .wa-btn.wa-share {
+            background: #FFFFFF;
+            color: #25D366;
+            border: 2px solid #25D366;
+        }
+
+        .wa-btn.wa-share:hover { box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3); }
+
+        .wa-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .wa-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        .email-confirm {
+            font-size: 13px;
+            color: #7A9B6D;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: #f0f7ed;
+            border-radius: 8px;
+        }
+
+        .recap-loading {
+            font-size: 12px;
+            color: #8C8577;
+            margin-bottom: 8px;
+        }
+
         /* ===== LOGOS ===== */
         .header-logo {
             height: 80px;
@@ -903,13 +966,26 @@
     <div class="thanks-screen" id="thankYouScreen">
         <div class="thanks-container">
             <h1 id="thanksTitle">Thanks!</h1>
-            <p>Here's your exclusive discount:</p>
+
+            <p class="email-confirm" id="emailConfirm" style="display:none;"></p>
+
+            <p id="thanksSubtitle">Here's your exclusive discount:</p>
 
             <div class="discount-box" onclick="copyCode()">
                 <div class="code">GRANNYB10</div>
                 <div class="tap-hint" id="copyHint">Tap to copy</div>
             </div>
             <p class="discount-note">10% off your next Granny B's online order</p>
+
+            <p class="recap-loading" id="recapLoading" style="display:none;">Cooking up Granny's Recipe...</p>
+            <button class="wa-btn wa-plan" id="waplanBtn" onclick="sendWhatsAppPlan()" style="display:none;">
+                <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <span id="waplanBtnText">Send Granny's Recipe via WhatsApp</span>
+            </button>
+            <button class="wa-btn wa-share" id="washareBtn" onclick="shareWithFriend()" style="display:none;">
+                <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <span id="washareBtnText">Share Granny's Recipe with a Friend</span>
+            </button>
 
             <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" class="cta-btn primary" target="_blank" rel="noopener">Shop Granny B's Online &rarr;</a>
             <a href="https://www.grannyb.co.za/pages/rewards" class="cta-btn secondary" target="_blank" rel="noopener">Join Rewards Programme</a>
@@ -944,6 +1020,7 @@
         let urlParams = { sku: '', store: 'leroy-merlin' };
         let flowMode = 'consultation';
         let consultAnswers = [];
+        let recapData = null;
 
         const speechLanguageMap = {
             'en': 'en-ZA', 'af': 'af-ZA'
@@ -982,7 +1059,23 @@
                 alertName: "Please enter your first name",
                 alertEmail: "Please enter a valid email",
                 alertPhone: "Please enter a valid SA mobile number (e.g. 0821234567)",
-                alertConsent: "Please accept the POPIA consent to continue"
+                alertConsent: "Please accept the POPIA consent to continue",
+                recapLoading: "Cooking up Granny\u2019s Recipe...",
+                emailConfirm: "We\u2019ve emailed Granny\u2019s Recipe to {email}",
+                waPlanBtn: "Send Granny\u2019s Recipe via WhatsApp",
+                waShareBtn: "Share Granny\u2019s Recipe with a Friend",
+                waHeader: "\uD83C\uDFA8 *Granny\u2019s Recipe*\nYour personal chalk paint plan\n",
+                waProject: "Project",
+                waSurface: "Surface",
+                waLook: "Look",
+                waColour: "Recommended Colour",
+                waSealer: "Sealer",
+                waPrep: "PREP",
+                waPaint: "PAINT",
+                waSeal: "SEAL",
+                waLeroyProducts: "Leroy Merlin Products",
+                waDiscount: "Discount Code: GRANNYB10 (10% off at grannyb.co.za)",
+                waShareText: "Hey! I just got a free Granny\u2019s Recipe (paint plan) from Granny B\u2019s at Leroy Merlin. Try it: "
             },
             af: {
                 headerTitle: "Jou Slim Granny B",
@@ -1015,7 +1108,23 @@
                 alertName: "Voer asseblief jou voornaam in",
                 alertEmail: "Voer asseblief \u2019n geldige e-posadres in",
                 alertPhone: "Voer asseblief \u2019n geldige SA selfoonnommer in (bv. 0821234567)",
-                alertConsent: "Aanvaar asseblief die POPIA-toestemming om voort te gaan"
+                alertConsent: "Aanvaar asseblief die POPIA-toestemming om voort te gaan",
+                recapLoading: "Granny se Resep word voorberei...",
+                emailConfirm: "Ons het Granny se Resep na {email} gestuur",
+                waPlanBtn: "Stuur Granny se Resep via WhatsApp",
+                waShareBtn: "Deel Granny se Resep met \u2019n Vriend",
+                waHeader: "\uD83C\uDFA8 *Granny se Resep*\nJou persoonlike krytverf plan\n",
+                waProject: "Projek",
+                waSurface: "Oppervlak",
+                waLook: "Voorkoms",
+                waColour: "Aanbevole Kleur",
+                waSealer: "Seler",
+                waPrep: "VOORBEREIDING",
+                waPaint: "VERF",
+                waSeal: "SEEL",
+                waLeroyProducts: "Leroy Merlin Produkte",
+                waDiscount: "Afslagkode: GRANNYB10 (10% afslag by grannyb.co.za)",
+                waShareText: "Haai! Ek het sopas \u2019n gratis Granny se Resep (verfplan) van Granny B\u2019s by Leroy Merlin gekry. Probeer dit: "
             }
         };
 
@@ -1524,7 +1633,115 @@
                 ? s.thanksTitleName.replace('{name}', leadData.name)
                 : s.thanksTitle;
             document.getElementById('thanksTitle').textContent = title;
+
+            var emailEl = document.getElementById('emailConfirm');
+            if (leadData.email) {
+                emailEl.textContent = s.emailConfirm.replace('{email}', leadData.email);
+                emailEl.style.display = 'block';
+            } else {
+                emailEl.style.display = 'none';
+            }
+
+            document.getElementById('waplanBtnText').textContent = s.waPlanBtn;
+            document.getElementById('washareBtnText').textContent = s.waShareBtn;
+
+            var shareUrl = window.location.origin + window.location.pathname;
+            document.getElementById('washareBtn').style.display = 'flex';
+
             showScreen('thankYouScreen');
+            fetchRecap();
+        }
+
+        async function fetchRecap() {
+            if (conversationHistory.length === 0) return;
+
+            var s = uiStrings[currentLanguage];
+            var loadingEl = document.getElementById('recapLoading');
+            var planBtn = document.getElementById('waplanBtn');
+            loadingEl.textContent = s.recapLoading;
+            loadingEl.style.display = 'block';
+            planBtn.style.display = 'none';
+
+            try {
+                var response = await fetch('/recap', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        history: conversationHistory,
+                        language: currentLanguage
+                    })
+                });
+
+                var data = await response.json();
+                if (data.success && data.recap) {
+                    recapData = data.recap;
+                    loadingEl.style.display = 'none';
+                    planBtn.style.display = 'flex';
+                } else {
+                    loadingEl.textContent = '';
+                    loadingEl.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Recap error:', error);
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        function formatSAPhone(phone) {
+            if (!phone) return '';
+            var cleaned = phone.replace(/\D/g, '');
+            if (cleaned.startsWith('0') && cleaned.length === 10) {
+                return '27' + cleaned.substring(1);
+            }
+            if (cleaned.startsWith('27') && cleaned.length === 11) {
+                return cleaned;
+            }
+            return cleaned;
+        }
+
+        function buildWhatsAppMessage() {
+            if (!recapData) return '';
+            var s = uiStrings[currentLanguage];
+            var r = recapData;
+
+            var lines = [s.waHeader];
+
+            if (r.projectType) lines.push(s.waProject + ': ' + r.projectType + (r.specificPiece ? ' - ' + r.specificPiece : ''));
+            if (r.surface) lines.push(s.waSurface + ': ' + r.surface);
+            if (r.dreamLook) lines.push(s.waLook + ': ' + r.dreamLook);
+            if (r.recommendedColour) lines.push(s.waColour + ': ' + r.recommendedColour);
+            if (r.sealer) lines.push(s.waSealer + ': ' + r.sealer);
+
+            if (r.prepSteps) lines.push('\n' + s.waPrep + ':\n' + r.prepSteps);
+            if (r.paintSteps) lines.push('\n' + s.waPaint + ':\n' + r.paintSteps);
+            if (r.sealSteps) lines.push('\n' + s.waSeal + ':\n' + r.sealSteps);
+            if (r.leroyProducts) lines.push('\n' + s.waLeroyProducts + ':\n' + r.leroyProducts);
+
+            lines.push('\n' + s.waDiscount);
+
+            return lines.join('\n');
+        }
+
+        function sendWhatsAppPlan() {
+            var message = buildWhatsAppMessage();
+            if (!message) return;
+
+            var phone = formatSAPhone(leadData.phone);
+            var encoded = encodeURIComponent(message);
+
+            if (phone) {
+                window.open('https://wa.me/' + phone + '?text=' + encoded, '_blank');
+            } else {
+                window.open('https://wa.me/?text=' + encoded, '_blank');
+            }
+        }
+
+        function shareWithFriend() {
+            var s = uiStrings[currentLanguage];
+            var shareUrl = window.location.origin + window.location.pathname;
+            var message = s.waShareText + shareUrl;
+            var encoded = encodeURIComponent(message);
+            window.open('https://wa.me/?text=' + encoded, '_blank');
         }
 
         function copyCode() {
@@ -1556,6 +1773,7 @@
             isWaitingForResponse = false;
             leadData = { name: '', email: '', phone: '' };
             consultAnswers = [];
+            recapData = null;
 
             var msgs = document.getElementById('chatMessages');
             var typing = document.getElementById('typingIndicator');
@@ -1568,6 +1786,11 @@
             document.getElementById('leadEmailInput').value = '';
             document.getElementById('leadPhoneInput').value = '';
             document.getElementById('consentCheck').checked = false;
+
+            document.getElementById('waplanBtn').style.display = 'none';
+            document.getElementById('washareBtn').style.display = 'none';
+            document.getElementById('recapLoading').style.display = 'none';
+            document.getElementById('emailConfirm').style.display = 'none';
 
             showScreen('leadScreen');
         }
@@ -1634,12 +1857,17 @@
             document.querySelector('.lead-submit-btn').innerHTML = s.leadSubmit;
             document.querySelector('.skip-link').textContent = s.leadSkip;
 
-            document.querySelector('.thanks-container > p').textContent = s.thanksSubtitle;
+            document.getElementById('thanksSubtitle').textContent = s.thanksSubtitle;
             document.querySelector('.discount-note').textContent = s.discountNote;
             var ctaBtns = document.querySelectorAll('.cta-btn');
             if (ctaBtns[0]) ctaBtns[0].innerHTML = s.ctaShop;
             if (ctaBtns[1]) ctaBtns[1].textContent = s.ctaRewards;
             document.getElementById('copyHint').textContent = s.tapToCopy;
+            document.getElementById('waplanBtnText').textContent = s.waPlanBtn;
+            document.getElementById('washareBtnText').textContent = s.waShareBtn;
+            if (leadData.email) {
+                document.getElementById('emailConfirm').textContent = s.emailConfirm.replace('{email}', leadData.email);
+            }
         }
 
         /* ===== VOICE: SPEECH RECOGNITION ===== */
