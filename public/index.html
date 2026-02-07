@@ -203,23 +203,6 @@
             letter-spacing: 0.5px;
         }
 
-        .language-selector {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: #FFFFFF;
-            padding: 5px 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 600;
-            outline: none;
-        }
-
-        .language-selector option {
-            background: #FFFFFF;
-            color: #1A1A1A;
-        }
-
         .header-right-group {
             display: flex;
             align-items: center;
@@ -348,26 +331,6 @@
         .message-content a { color: #DD2222; text-decoration: none; }
         .message-content a:hover { text-decoration: underline; }
         .user-message .message-content a { color: #FF8A8A; text-decoration: underline; }
-
-        /* ===== SPEAK BUTTON ===== */
-        .speak-btn {
-            background: none;
-            border: none;
-            color: #DD2222;
-            cursor: pointer;
-            font-size: 13px;
-            padding: 4px 8px;
-            margin-top: 6px;
-            border-radius: 10px;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .speak-btn:hover { background: rgba(221, 34, 34, 0.15); }
-        .speak-btn.loading { color: #8C8577; cursor: wait; }
-        .speak-btn.playing { color: #e74c3c; }
 
         /* ===== GUIDED QUESTIONS ===== */
         .guided-options {
@@ -708,6 +671,29 @@
             cursor: wait;
         }
 
+        .restart-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 12px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            background: #FFFFFF;
+            color: #DD2222;
+            border: 2px solid #DD2222;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(221, 34, 34, 0.3);
+        }
+
         .wa-icon {
             width: 20px;
             height: 20px;
@@ -901,10 +887,6 @@
             <div class="lead-header">
                 <div class="lead-header-inner">
                     <img src="/granny-b-logo.svg" alt="Granny B's" class="header-logo" onclick="resetApp()">
-                    <select class="language-selector" id="leadLanguageSelector" onchange="changeLanguage(this.value)">
-                        <option value="en" selected>EN</option>
-                        <option value="af">AF</option>
-                    </select>
                     <div>
                         <h1>Your Smart Granny B</h1>
                     </div>
@@ -947,10 +929,6 @@
         <div class="chat-header">
             <div class="header-left-group">
                 <img src="/granny-b-logo.svg" alt="Granny B's" class="header-logo" onclick="resetApp()">
-                <select class="language-selector" id="languageSelector" onchange="changeLanguage(this.value)">
-                    <option value="en" selected>EN</option>
-                    <option value="af">AF</option>
-                </select>
             </div>
             <div class="header-right-group">
                 <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
@@ -1010,6 +988,8 @@
             <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" class="cta-btn primary" target="_blank" rel="noopener">Shop Granny B's Online &rarr;</a>
             <a href="https://www.grannyb.co.za/pages/rewards" class="cta-btn secondary" target="_blank" rel="noopener">Join Rewards Programme</a>
 
+            <button class="restart-btn" onclick="resetApp()">Start a New Consultation &rarr;</button>
+
             <div class="thanks-footer">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</div>
         </div>
     </div>
@@ -1028,7 +1008,6 @@
         let currentLanguage = 'en';
         let recognition = null;
         let isRecording = false;
-        let currentAudio = null;
         let mediaRecorder = null;
         let audioChunks = [];
 
@@ -1043,7 +1022,7 @@
         let recapData = null;
 
         const speechLanguageMap = {
-            'en': 'en-ZA', 'af': 'af-ZA'
+            'en': 'en-ZA'
         };
 
         /* ===== UI TRANSLATIONS ===== */
@@ -1100,59 +1079,6 @@
                 waLeroyProducts: "Leroy Merlin Products",
                 waDiscount: "Discount Code: GRANNYB10 (10% off at grannyb.co.za)",
                 emailShareTryIt: "Try the free paint advisor here: "
-            },
-            af: {
-                headerTitle: "Jou Slim Granny B",
-                doneBtn: "Klaar \u2713",
-                inputPlaceholder: "Vra oor Granny B\u2019s verf...",
-                sendBtn: "Stuur",
-                greetingName: "Haai {name}! Ek sien jy kyk na hierdie Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het vir jou projek.",
-                greetingAnon: "Haai daar! Ek sien jy kyk na hierdie Daisy krytverf \u2014 pragtige keuse! Laat ek jou help om presies te kry wat jy nodig het.",
-                consultGreetingName: "Welkom by Granny B\u2019s, {name}! Ek is jou persoonlike verfadviseur. Vertel my van jou projek en ek sal jou help om presies te kry wat jy nodig het, van die regte kleur tot die perfekte afwerking.",
-                consultGreetingAnon: "Welkom by Granny B\u2019s! Ek is jou persoonlike verfadviseur. Vertel my van jou projek en ek sal jou help om presies te kry wat jy nodig het, van die regte kleur tot die perfekte afwerking.",
-                leadTitle: "Jou Slim Granny B",
-                leadIncentive: "Plus 10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
-                leadNameLabel: "Voornaam",
-                leadNamePlaceholder: "Voornaam",
-                leadEmailLabel: "E-pos",
-                leadEmailPlaceholder: "jy@epos.com",
-                leadPhoneLabel: "Selfoon",
-                leadPhonePlaceholder: "0821234567",
-                leadConsent: "Ek stem in dat Granny B\u2019s en Leroy Merlin my besonderhede mag stoor vir produkadvies en aanbiedinge (POPIA)",
-                leadSubmit: "Kry my verfadvies \u2192",
-                leadSkip: "Slaan oor, laat ek net blaai",
-                thanksTitle: "Dankie!",
-                thanksTitleName: "Dankie, {name}!",
-                thanksSubtitle: "Hier is jou eksklusiewe afslag:",
-                discountNote: "10% afslag op jou volgende Granny B\u2019s aanlyn bestelling",
-                ctaShop: "Koop Granny B\u2019s Aanlyn \u2192",
-                ctaRewards: "Sluit aan by Beloningsprogram",
-                tapToCopy: "Tik om te kopi\u00EBer",
-                copied: "Gekopieer!",
-                alertName: "Voer asseblief jou voornaam in",
-                alertEmail: "Voer asseblief \u2019n geldige e-posadres in",
-                alertPhone: "Voer asseblief \u2019n geldige SA selfoonnommer in (bv. 0821234567)",
-                alertConsent: "Aanvaar asseblief die POPIA-toestemming om voort te gaan",
-                recipeReadyMsg: "Jou resep is gereed! Tik hieronder om dit per e-pos en WhatsApp te kry.",
-                getRecipeInline: "Kry Granny se Resep \uD83C\uDFA8",
-                recapLoading: "Granny se Resep word voorberei...",
-                emailConfirm: "Ons het Granny se Resep na {email} gestuur",
-                waPlanBtn: "Stuur Granny se Resep via WhatsApp",
-                emailShareBtn: "E-pos Granny se Resep aan \u2019n Vriend",
-                emailShareSubject: "Kyk na hierdie verfplan van Granny B\u2019s!",
-                emailShareIntro: "Haai!\n\nEk het sopas \u2019n persoonlike krytverf resep van Granny B\u2019s by Leroy Merlin gekry. Kyk gerus:\n\n",
-                waHeader: "\uD83C\uDFA8 *Granny se Resep*\nJou persoonlike krytverf plan\n",
-                waProject: "Projek",
-                waSurface: "Oppervlak",
-                waLook: "Voorkoms",
-                waColour: "Aanbevole Kleur",
-                waSealer: "Seler",
-                waPrep: "VOORBEREIDING",
-                waPaint: "VERF",
-                waSeal: "SEEL",
-                waLeroyProducts: "Leroy Merlin Produkte",
-                waDiscount: "Afslagkode: GRANNYB10 (10% afslag by grannyb.co.za)",
-                emailShareTryIt: "Probeer die gratis verfadviseur hier: "
             }
         };
 
@@ -1175,28 +1101,10 @@
                     question: "What look are you going for?",
                     options: ["Vintage / distressed", "Smooth & modern", "Rustic farmhouse", "Bold statement colour", "Not sure, advise me"]
                 }
-            ],
-            af: [
-                {
-                    question: "Wat verf jy vandag?",
-                    options: ["Meubels", "Kombuiskaste", "Huisversiering / kunsvlyt", "Mure / kenmuuur", "Hergebruik / opknap", "Kyk net rond"]
-                },
-                {
-                    question: "Watter oppervlak gaan jy verf?",
-                    options: ["Hout", "Metaal", "Keramiek / pottebakkery", "Melamine / laminaat", "Materiaal", "Nie seker nie"]
-                },
-                {
-                    question: "Het jy al krytverf gebruik?",
-                    options: ["Nee, eerste keer!", "Een of twee projekte gedoen", "Ervare krytverfer", "Ek is \u2019n pro / herverkoper"]
-                },
-                {
-                    question: "Watter voorkoms soek jy?",
-                    options: ["Vintage / verweer", "Glad & modern", "Rustiese plaashuis", "Vet stelling kleur", "Nie seker, adviseer my"]
-                }
             ]
         };
 
-        var guidedQuestions = guidedQuestionsData[currentLanguage];
+        var guidedQuestions = guidedQuestionsData.en;
 
         /* ===== CONSULTATION GUIDED QUESTIONS (5 questions, Q2 conditional) ===== */
         const consultGuidedData = {
@@ -1227,35 +1135,6 @@
                 {
                     question: "And your experience with chalk paint?",
                     options: ["Total beginner", "Done a project or two", "Experienced painter", "Basically a pro"]
-                }
-            ],
-            af: [
-                {
-                    question: "Wat bring jou vandag hier?",
-                    options: ["Meubelprojek", "Kombuiskaste", "Herwin / thrift flip", "Muur of kenmuur", "Kuns, handwerk & dekor", "Soek net inspirasie"]
-                },
-                {
-                    conditional: true,
-                    variants: {
-                        "Meubelprojek": { question: "Watter stuk werk jy aan?", options: ["Laaikas / kas", "Eetkamertafel", "Bytafel / nagkassie", "Boekrak / vertoonkas", "Bedraam / kopstuk", "Ander meubels"] },
-                        "Kombuiskaste": { question: "Wat spesifiek?", options: ["Kasdeure", "Kombuisblaaie", "Oop rakke", "Kombuiseiland", "Volle kombuis oormaak"] },
-                        "Herwin / thrift flip": { question: "Wat het jy gevind?", options: ["Ou stoel", "Prentlys / spi\u00ebl", "Houtkis of krat", "Bytafel of stoeltjie", "Tweedehandse vonds", "Iets anders"] },
-                        "Muur of kenmuur": { question: "Watter soort muur?", options: ["Slaapkamer aksentmuur", "Sitkamer kenmuur", "Kinderkamer", "Badkamermuur", "Buite muur"] },
-                        "Kuns, handwerk & dekor": { question: "Wat maak jy?", options: ["Potte of vase", "Doek of bordkuns", "Huisdekor bykomstighede", "Stensil projek", "Geskenk of aandenking"] },
-                        "Soek net inspirasie": { question: "Wat het jou oog gevang?", options: ["Die kleure", "Krytverf tegniek", "Meubel oormaaksels", "Iemand het dit aanbeveel", "Net nuuskierig"] }
-                    }
-                },
-                {
-                    question: "Watter oppervlak werk ons mee?",
-                    options: ["Kaal hout", "Gebeitste of gelakte hout", "Melamien / laminaat", "Metaal", "Keramiek / te\u00ebls / glas", "Nie seker nie"]
-                },
-                {
-                    question: "Wat is die droom?",
-                    options: ["Vintage verweerde sjarme", "Skoon moderne afwerking", "Rustiese plaashuis", "Vet kleurpop", "Sagte neutrale tone", "Wys my wat trending is"]
-                },
-                {
-                    question: "En jou ervaring met krytverf?",
-                    options: ["Totale beginner", "Een of twee projekte gedoen", "Ervare verfer", "Basies \u2019n pro"]
                 }
             ]
         };
@@ -1354,7 +1233,7 @@
             if (flowMode === 'product') {
                 return guidedQuestions[index] || null;
             }
-            var questions = consultGuidedData[currentLanguage];
+            var questions = consultGuidedData.en;
             if (index >= questions.length) return null;
             var q = questions[index];
             if (q.conditional) {
@@ -1366,7 +1245,7 @@
 
         function getGuidedQuestionsLength() {
             if (flowMode === 'product') return guidedQuestions.length;
-            return consultGuidedData[currentLanguage].length;
+            return consultGuidedData.en.length;
         }
 
         function activateRecipeButton() {
@@ -1544,12 +1423,6 @@
                 .replace(/([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>')
                 .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
             contentDiv.innerHTML = linkedContent;
-
-            var speakBtn = document.createElement('button');
-            speakBtn.className = 'speak-btn';
-            speakBtn.textContent = '\uD83D\uDD0A Listen';
-            speakBtn.onclick = function() { speakText(this, text); };
-            contentDiv.appendChild(speakBtn);
 
             msgDiv.appendChild(contentDiv);
             container.insertBefore(msgDiv, typing);
@@ -1882,48 +1755,6 @@
             showScreen('leadScreen');
         }
 
-        /* ===== LANGUAGE ===== */
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            guidedQuestions = guidedQuestionsData[currentLanguage];
-
-            document.getElementById('languageSelector').value = lang;
-            document.getElementById('leadLanguageSelector').value = lang;
-
-            applyLanguage();
-
-            if (document.getElementById('chatScreen').style.display === 'flex') {
-                conversationHistory = [];
-                guidedStep = 0;
-                shownPromos = new Set();
-                promoQueue = [];
-                visiblePromoEl = null;
-                isWaitingForResponse = false;
-                consultAnswers = [];
-
-                var msgs = document.getElementById('chatMessages');
-                var typing = document.getElementById('typingIndicator');
-                msgs.innerHTML = '';
-                msgs.appendChild(typing);
-                typing.classList.remove('active');
-                document.getElementById('messageInput').value = '';
-
-                var s = uiStrings[currentLanguage];
-                var greeting;
-                if (flowMode === 'product') {
-                    greeting = leadData.name
-                        ? s.greetingName.replace('{name}', leadData.name)
-                        : s.greetingAnon;
-                } else {
-                    greeting = leadData.name
-                        ? s.consultGreetingName.replace('{name}', leadData.name)
-                        : s.consultGreetingAnon;
-                }
-                addBotMessage(greeting);
-                setTimeout(function() { showGuidedQuestion(0); }, 800);
-            }
-        }
-
         function applyLanguage() {
             var s = uiStrings[currentLanguage];
 
@@ -2128,80 +1959,6 @@
             }
         }
 
-        /* ===== VOICE: TEXT-TO-SPEECH ===== */
-        async function speakText(button, text) {
-            if (currentAudio && !currentAudio.paused) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-                button.classList.remove('playing');
-                button.textContent = '\uD83D\uDD0A Listen';
-                currentAudio = null;
-                return;
-            }
-
-            button.classList.add('loading');
-            button.textContent = '\u23F3 Loading...';
-
-            try {
-                var response = await fetch('/tts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        text: text.replace(/\*\*/g, "").replace(/[\u{1F300}-\u{1F9FF}]/gu, "").replace(/[\u{2600}-\u{26FF}]/gu, ""),
-                        language: currentLanguage
-                    })
-                });
-
-                if (!response.ok) throw new Error('TTS request failed');
-
-                var data = await response.json();
-                if (data.error) throw new Error(data.error);
-
-                var byteCharacters = atob(data.audio);
-                var byteNumbers = new Array(byteCharacters.length);
-                for (var i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                var byteArray = new Uint8Array(byteNumbers);
-                var blob = new Blob([byteArray], { type: 'audio/mpeg' });
-                var audioSrc = URL.createObjectURL(blob);
-                currentAudio = new Audio(audioSrc);
-
-                button.classList.remove('loading');
-                button.classList.add('playing');
-                button.textContent = '\u23F9\uFE0F Stop';
-
-                currentAudio.onended = function() {
-                    button.classList.remove('playing');
-                    button.textContent = '\uD83D\uDD0A Listen';
-                    currentAudio = null;
-                };
-
-                currentAudio.onerror = function() {
-                    button.classList.remove('playing');
-                    button.textContent = '\uD83D\uDD0A Listen';
-                    currentAudio = null;
-                };
-
-                currentAudio.play();
-
-            } catch (error) {
-                console.error('TTS Error:', error);
-                button.classList.remove('loading');
-                button.textContent = '\uD83D\uDD0A Listen';
-                fallbackBrowserTTS(text);
-            }
-        }
-
-        function fallbackBrowserTTS(text) {
-            if ('speechSynthesis' in window) {
-                var utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = speechLanguageMap[currentLanguage];
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
         /* ===== FLOATING MASCOT PAINT TIPS ===== */
         const paintTips = {
             en: [
@@ -2213,16 +1970,6 @@
                 "Colour tip: Not sure about a colour? Try a 125ml jar from R79.90 before committing to a full litre!",
                 "Good to know: 1 litre of chalk paint covers approximately 12-14 square metres.",
                 "Save money: Granny B's offers free delivery on orders over R650 at grannyb.co.za!"
-            ],
-            af: [
-                "Het jy geweet? Hierdie krytverf het geen skuur of voorbereiding nodig nie!",
-                "Vinnige wenk: Krytverf is aanraakdroog binne net 30 minute.",
-                "Pro-wenk: Gebruik Armour Sealer op kombuiskaste en meubels wat baie gebruik word.",
-                "Prettige feit: Krytverf werk op glas, metaal, hout, keramiek, melamine en selfs materiaal!",
-                "Probeer dit: Smeer Donker Was oor 'n ligter krytverf kleur vir 'n onmiddellike vintage voorkoms.",
-                "Kleurwenk: Nie seker oor 'n kleur nie? Probeer 'n 125ml potjie vanaf R79.90!",
-                "Goed om te weet: 1 liter krytverf dek ongeveer 12-14 vierkante meter.",
-                "Spaar geld: Gratis aflewering op bestellings bo R650 by grannyb.co.za!"
             ]
         };
         let lastTipIndex = -1;
@@ -2231,7 +1978,7 @@
             if (document.getElementById('chatScreen').style.display !== 'flex') return;
             if (isWaitingForResponse) return;
 
-            var tips = paintTips[currentLanguage];
+            var tips = paintTips.en;
             var index;
             do {
                 index = Math.floor(Math.random() * tips.length);
