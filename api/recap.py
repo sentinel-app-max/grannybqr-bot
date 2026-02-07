@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import json
 import urllib.request
 import os
+import re
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -154,7 +155,7 @@ Extract what was actually discussed. Do not invent information not present in th
         if r.get('dreamLook'):
             detail_rows += self._email_row(lbl_look, r['dreamLook'])
         if r.get('recommendedColour'):
-            detail_rows += self._email_row(lbl_colour, r['recommendedColour'], '#DD2222')
+            detail_rows += self._email_row(lbl_colour, r['recommendedColour'], '#DD2222', 'https://www.grannyb.co.za/collections/old-fashioned-paint')
         if r.get('sealer'):
             detail_rows += self._email_row(lbl_sealer, r['sealer'])
 
@@ -169,10 +170,11 @@ Extract what was actually discussed. Do not invent information not present in th
 
         leroy_html = ""
         if r.get('leroyProducts'):
+            linked_products = self._linkify_leroy_products(r['leroyProducts'])
             leroy_html = f"""
             <div style="margin-top:20px;padding:16px;background:#F5F5F5;border-radius:8px;">
                 <h3 style="margin:0 0 8px 0;font-size:14px;color:#1A1A1A;">{lbl_leroy}</h3>
-                <p style="margin:0;font-size:13px;color:#555;white-space:pre-line;">{self._escape(r['leroyProducts'])}</p>
+                <p style="margin:0;font-size:13px;color:#555;line-height:1.8;white-space:pre-line;">{linked_products}</p>
             </div>"""
 
         email_html = f"""<!DOCTYPE html>
@@ -274,10 +276,15 @@ Extract what was actually discussed. Do not invent information not present in th
             print(f"Recap Email Error: {str(e)}")
             return False
 
-    def _email_row(self, label, value, value_color='#1A1A1A'):
+    def _email_row(self, label, value, value_color='#1A1A1A', link=None):
+        escaped_value = self._escape(value)
+        if link:
+            value_html = f'<a href="{link}" target="_blank" style="color:#DD2222;text-decoration:underline;">{escaped_value}</a>'
+        else:
+            value_html = escaped_value
         return f"""<tr>
                 <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#8C8577;width:140px;border-bottom:1px solid #F5F5F5;">{self._escape(label)}</td>
-                <td style="padding:10px 14px;font-size:14px;color:{value_color};border-bottom:1px solid #F5F5F5;">{self._escape(value)}</td>
+                <td style="padding:10px 14px;font-size:14px;color:{value_color};border-bottom:1px solid #F5F5F5;">{value_html}</td>
             </tr>"""
 
     def _email_step_section(self, label, content, accent_color):
@@ -285,6 +292,35 @@ Extract what was actually discussed. Do not invent information not present in th
                 <h3 style="margin:0 0 8px 0;font-size:14px;color:{accent_color};">{self._escape(label)}</h3>
                 <p style="margin:0;font-size:13px;color:#555;line-height:1.6;white-space:pre-line;">{self._escape(content)}</p>
             </div>"""
+
+    LEROY_PRODUCT_LINKS = [
+        ('sandpaper', 'https://www.leroymerlin.co.za/search?q=sandpaper'),
+        ('skuurpapier', 'https://www.leroymerlin.co.za/search?q=sandpaper'),
+        ('paint brush', 'https://www.leroymerlin.co.za/search?q=paint+brush+set'),
+        ('brush set', 'https://www.leroymerlin.co.za/search?q=paint+brush+set'),
+        ('verfkwas', 'https://www.leroymerlin.co.za/search?q=paint+brush+set'),
+        ('masking tape', 'https://www.leroymerlin.co.za/search?q=masking+tape'),
+        ('maskeerband', 'https://www.leroymerlin.co.za/search?q=masking+tape'),
+        ('drop cloth', 'https://www.leroymerlin.co.za/search?q=drop+cloth'),
+        ('stooflap', 'https://www.leroymerlin.co.za/search?q=drop+cloth'),
+        ('armour sealer', 'https://www.leroymerlin.co.za/search?q=granny+b+armour'),
+        ('armour', 'https://www.leroymerlin.co.za/search?q=granny+b+armour'),
+    ]
+
+    def _linkify_leroy_products(self, text):
+        escaped = self._escape(text)
+        linked_urls = set()
+        for keyword, url in self.LEROY_PRODUCT_LINKS:
+            if url in linked_urls:
+                continue
+            pattern = re.compile(re.escape(self._escape(keyword)), re.IGNORECASE)
+            match = pattern.search(escaped)
+            if match:
+                matched_text = match.group(0)
+                link_html = f'<a href="{url}" target="_blank" style="color:#DD2222;text-decoration:underline;">{matched_text}</a>'
+                escaped = escaped[:match.start()] + link_html + escaped[match.end():]
+                linked_urls.add(url)
+        return escaped
 
     @staticmethod
     def _escape(text):
