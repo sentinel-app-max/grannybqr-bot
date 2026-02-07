@@ -242,20 +242,6 @@
 
         .done-btn:hover { background: #BB1A1A; }
 
-        .done-btn.pulse-active {
-            background: #DD2222;
-            color: #FFFFFF;
-            padding: 8px 16px;
-            font-size: 13px;
-            animation: donePulse 1.5s infinite;
-        }
-
-        @keyframes donePulse {
-            0% { box-shadow: 0 0 0 0 rgba(221, 34, 34, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(221, 34, 34, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(221, 34, 34, 0); }
-        }
-
         .inline-recipe-btn {
             display: block;
             width: 100%;
@@ -967,7 +953,6 @@
                 </select>
             </div>
             <div class="header-right-group">
-                <button class="done-btn" id="headerDoneBtn" onclick="showThankYou()" style="display:none;">Done &#10003;</button>
                 <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
             </div>
         </div>
@@ -1095,7 +1080,6 @@
                 alertEmail: "Please enter a valid email",
                 alertPhone: "Please enter a valid SA mobile number (e.g. 0821234567)",
                 alertConsent: "Please accept the POPIA consent to continue",
-                getRecipeBtn: "Get My Recipe \u2713",
                 recipeReadyMsg: "Your recipe is ready! Tap below to get it via email and WhatsApp.",
                 getRecipeInline: "Get Granny\u2019s Recipe \uD83C\uDFA8",
                 recapLoading: "Cooking up Granny\u2019s Recipe...",
@@ -1149,7 +1133,6 @@
                 alertEmail: "Voer asseblief \u2019n geldige e-posadres in",
                 alertPhone: "Voer asseblief \u2019n geldige SA selfoonnommer in (bv. 0821234567)",
                 alertConsent: "Aanvaar asseblief die POPIA-toestemming om voort te gaan",
-                getRecipeBtn: "Kry My Resep \u2713",
                 recipeReadyMsg: "Jou resep is gereed! Tik hieronder om dit per e-pos en WhatsApp te kry.",
                 getRecipeInline: "Kry Granny se Resep \uD83C\uDFA8",
                 recapLoading: "Granny se Resep word voorberei...",
@@ -1351,13 +1334,11 @@
 
             if (flowMode === 'product') {
                 document.getElementById('productBadge').style.display = 'flex';
-                document.getElementById('headerDoneBtn').style.display = 'none';
                 greeting = leadData.name
                     ? s.greetingName.replace('{name}', leadData.name)
                     : s.greetingAnon;
             } else {
                 document.getElementById('productBadge').style.display = 'none';
-                document.getElementById('headerDoneBtn').style.display = 'inline-block';
                 consultAnswers = [];
                 greeting = leadData.name
                     ? s.consultGreetingName.replace('{name}', leadData.name)
@@ -1390,9 +1371,6 @@
 
         function activateRecipeButton() {
             var s = uiStrings[currentLanguage];
-            var doneBtn = document.getElementById('headerDoneBtn');
-            doneBtn.innerHTML = s.getRecipeBtn;
-            doneBtn.classList.add('pulse-active');
 
             var container = document.getElementById('chatMessages');
             var typing = document.getElementById('typingIndicator');
@@ -1901,10 +1879,6 @@
             document.getElementById('recapLoading').style.display = 'none';
             document.getElementById('emailConfirm').style.display = 'none';
 
-            var doneBtn = document.getElementById('headerDoneBtn');
-            doneBtn.classList.remove('pulse-active');
-            doneBtn.innerHTML = uiStrings[currentLanguage].doneBtn;
-
             showScreen('leadScreen');
         }
 
@@ -1926,10 +1900,6 @@
                 visiblePromoEl = null;
                 isWaitingForResponse = false;
                 consultAnswers = [];
-
-                var doneBtn = document.getElementById('headerDoneBtn');
-                doneBtn.classList.remove('pulse-active');
-                doneBtn.innerHTML = uiStrings[currentLanguage].doneBtn;
 
                 var msgs = document.getElementById('chatMessages');
                 var typing = document.getElementById('typingIndicator');
