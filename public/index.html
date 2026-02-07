@@ -674,13 +674,13 @@
 
         .wa-btn.wa-plan:hover { box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4); }
 
-        .wa-btn.wa-share {
+        .email-share-btn {
             background: #FFFFFF;
-            color: #25D366;
-            border: 2px solid #25D366;
+            color: #DD2222;
+            border: 2px solid #DD2222;
         }
 
-        .wa-btn.wa-share:hover { box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3); }
+        .email-share-btn:hover { box-shadow: 0 4px 16px rgba(221, 34, 34, 0.3); }
 
         .wa-btn:disabled {
             opacity: 0.6;
@@ -982,9 +982,9 @@
                 <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 <span id="waplanBtnText">Send Granny's Recipe via WhatsApp</span>
             </button>
-            <button class="wa-btn wa-share" id="washareBtn" onclick="shareWithFriend()" style="display:none;">
-                <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                <span id="washareBtnText">Share Granny's Recipe with a Friend</span>
+            <button class="wa-btn email-share-btn" id="emailShareBtn" onclick="emailShareRecipe()" style="display:none;">
+                <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <span id="emailShareBtnText">Email Granny's Recipe to a Friend</span>
             </button>
 
             <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" class="cta-btn primary" target="_blank" rel="noopener">Shop Granny B's Online &rarr;</a>
@@ -1063,7 +1063,9 @@
                 recapLoading: "Cooking up Granny\u2019s Recipe...",
                 emailConfirm: "We\u2019ve emailed Granny\u2019s Recipe to {email}",
                 waPlanBtn: "Send Granny\u2019s Recipe via WhatsApp",
-                waShareBtn: "Share Granny\u2019s Recipe with a Friend",
+                emailShareBtn: "Email Granny\u2019s Recipe to a Friend",
+                emailShareSubject: "Check out this paint plan from Granny B\u2019s!",
+                emailShareIntro: "Hey!\n\nI just got a personalised chalk paint recipe from Granny B\u2019s at Leroy Merlin. Check it out:\n\n",
                 waHeader: "\uD83C\uDFA8 *Granny\u2019s Recipe*\nYour personal chalk paint plan\n",
                 waProject: "Project",
                 waSurface: "Surface",
@@ -1075,7 +1077,7 @@
                 waSeal: "SEAL",
                 waLeroyProducts: "Leroy Merlin Products",
                 waDiscount: "Discount Code: GRANNYB10 (10% off at grannyb.co.za)",
-                waShareText: "Hey! I just got a free Granny\u2019s Recipe (paint plan) from Granny B\u2019s at Leroy Merlin. Try it: "
+                emailShareTryIt: "Try the free paint advisor here: "
             },
             af: {
                 headerTitle: "Jou Slim Granny B",
@@ -1112,7 +1114,9 @@
                 recapLoading: "Granny se Resep word voorberei...",
                 emailConfirm: "Ons het Granny se Resep na {email} gestuur",
                 waPlanBtn: "Stuur Granny se Resep via WhatsApp",
-                waShareBtn: "Deel Granny se Resep met \u2019n Vriend",
+                emailShareBtn: "E-pos Granny se Resep aan \u2019n Vriend",
+                emailShareSubject: "Kyk na hierdie verfplan van Granny B\u2019s!",
+                emailShareIntro: "Haai!\n\nEk het sopas \u2019n persoonlike krytverf resep van Granny B\u2019s by Leroy Merlin gekry. Kyk gerus:\n\n",
                 waHeader: "\uD83C\uDFA8 *Granny se Resep*\nJou persoonlike krytverf plan\n",
                 waProject: "Projek",
                 waSurface: "Oppervlak",
@@ -1124,7 +1128,7 @@
                 waSeal: "SEEL",
                 waLeroyProducts: "Leroy Merlin Produkte",
                 waDiscount: "Afslagkode: GRANNYB10 (10% afslag by grannyb.co.za)",
-                waShareText: "Haai! Ek het sopas \u2019n gratis Granny se Resep (verfplan) van Granny B\u2019s by Leroy Merlin gekry. Probeer dit: "
+                emailShareTryIt: "Probeer die gratis verfadviseur hier: "
             }
         };
 
@@ -1643,10 +1647,9 @@
             }
 
             document.getElementById('waplanBtnText').textContent = s.waPlanBtn;
-            document.getElementById('washareBtnText').textContent = s.waShareBtn;
+            document.getElementById('emailShareBtnText').textContent = s.emailShareBtn;
 
-            var shareUrl = window.location.origin + window.location.pathname;
-            document.getElementById('washareBtn').style.display = 'flex';
+            document.getElementById('emailShareBtn').style.display = 'flex';
 
             showScreen('thankYouScreen');
             fetchRecap();
@@ -1742,12 +1745,30 @@
             }
         }
 
-        function shareWithFriend() {
+        function emailShareRecipe() {
             var s = uiStrings[currentLanguage];
-            var shareUrl = window.location.origin + window.location.pathname;
-            var message = s.waShareText + shareUrl;
-            var encoded = encodeURIComponent(message);
-            window.open('https://wa.me/?text=' + encoded, '_blank');
+            var advisorUrl = 'https://grannybqr.summitwebcraft.co.za/?store=leroy-fourways';
+
+            var body = s.emailShareIntro;
+
+            if (recapData) {
+                var r = recapData;
+                if (r.projectType) body += s.waProject + ': ' + r.projectType + (r.specificPiece ? ' - ' + r.specificPiece : '') + '\n';
+                if (r.surface) body += s.waSurface + ': ' + r.surface + '\n';
+                if (r.dreamLook) body += s.waLook + ': ' + r.dreamLook + '\n';
+                if (r.recommendedColour) body += s.waColour + ': ' + r.recommendedColour + '\n';
+                if (r.sealer) body += s.waSealer + ': ' + r.sealer + '\n';
+                if (r.prepSteps) body += '\n' + s.waPrep + ':\n' + r.prepSteps + '\n';
+                if (r.paintSteps) body += '\n' + s.waPaint + ':\n' + r.paintSteps + '\n';
+                if (r.sealSteps) body += '\n' + s.waSeal + ':\n' + r.sealSteps + '\n';
+                if (r.leroyProducts) body += '\n' + s.waLeroyProducts + ':\n' + r.leroyProducts + '\n';
+                body += '\n' + s.waDiscount + '\n';
+            }
+
+            body += '\n' + s.emailShareTryIt + advisorUrl;
+
+            var mailto = 'mailto:?subject=' + encodeURIComponent(s.emailShareSubject) + '&body=' + encodeURIComponent(body);
+            window.location.href = mailto;
         }
 
         function copyCode() {
@@ -1794,7 +1815,7 @@
             document.getElementById('consentCheck').checked = false;
 
             document.getElementById('waplanBtn').style.display = 'none';
-            document.getElementById('washareBtn').style.display = 'none';
+            document.getElementById('emailShareBtn').style.display = 'none';
             document.getElementById('recapLoading').style.display = 'none';
             document.getElementById('emailConfirm').style.display = 'none';
 
@@ -1870,7 +1891,7 @@
             if (ctaBtns[1]) ctaBtns[1].textContent = s.ctaRewards;
             document.getElementById('copyHint').textContent = s.tapToCopy;
             document.getElementById('waplanBtnText').textContent = s.waPlanBtn;
-            document.getElementById('washareBtnText').textContent = s.waShareBtn;
+            document.getElementById('emailShareBtnText').textContent = s.emailShareBtn;
             if (leadData.email) {
                 document.getElementById('emailConfirm').textContent = s.emailConfirm.replace('{email}', leadData.email);
             }
