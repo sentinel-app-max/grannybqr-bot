@@ -110,6 +110,10 @@ class handler(BaseHTTPRequestHandler):
                 {
                     "email": "hello@grannyb.co.za",
                     "name": "Granny B's"
+                },
+                {
+                    "email": "dcwgw@hotmail.com",
+                    "name": "Granny B's Backup"
                 }
             ],
             "replyTo": {
