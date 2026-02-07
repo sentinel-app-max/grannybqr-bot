@@ -106,6 +106,10 @@ class handler(BaseHTTPRequestHandler):
                 {
                     "email": "design@summitwebcraft.co.za",
                     "name": "Granny B's Paint Advisor"
+                },
+                {
+                    "email": "hello@grannyb.co.za",
+                    "name": "Granny B's"
                 }
             ],
             "replyTo": {
