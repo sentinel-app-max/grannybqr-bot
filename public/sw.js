@@ -1,13 +1,17 @@
-var CACHE_NAME = 'grannybqr-v1';
+var CACHE_NAME = 'grannybqr-v2';
 var URLS_TO_CACHE = [
   '/',
   '/granny-b-logo.png',
   '/granny-b-logo.svg',
   '/granny-b-tin.png',
-  '/granny-b-animated.mp4'
+  '/granny-b-animated.mp4',
+  '/pwa-icon-192.png',
+  '/pwa-icon-512.png',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', function(event) {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(URLS_TO_CACHE);
@@ -25,6 +29,8 @@ self.addEventListener('activate', function(event) {
           return caches.delete(name);
         })
       );
+    }).then(function() {
+      return self.clients.claim();
     })
   );
 });
