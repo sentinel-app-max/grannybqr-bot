@@ -243,7 +243,7 @@ Extract what was actually discussed. Do not invent information not present in th
         brevo_data = {
             "sender": {
                 "name": "Granny B's Paint Advisor",
-                "email": "ai@haibophanda.org.za"
+                "email": "hello@grannyb.co.za"
             },
             "to": [
                 {

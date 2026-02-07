@@ -99,8 +99,8 @@ class handler(BaseHTTPRequestHandler):
 
         brevo_data = {
             "sender": {
-                "name": "Granny B's Paint Advisor",
-                "email": "design@summitwebcraft.co.za"
+                "name": "Granny B's QR Advisor",
+                "email": "hello@grannyb.co.za"
             },
             "to": [
                 {
