@@ -242,6 +242,41 @@
 
         .done-btn:hover { background: #BB1A1A; }
 
+        .done-btn.pulse-active {
+            background: #DD2222;
+            color: #FFFFFF;
+            padding: 8px 16px;
+            font-size: 13px;
+            animation: donePulse 1.5s infinite;
+        }
+
+        @keyframes donePulse {
+            0% { box-shadow: 0 0 0 0 rgba(221, 34, 34, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(221, 34, 34, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(221, 34, 34, 0); }
+        }
+
+        .inline-recipe-btn {
+            display: block;
+            width: 100%;
+            background: #DD2222;
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .inline-recipe-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(221, 34, 34, 0.4);
+        }
+
         /* ===== PRODUCT BADGE ===== */
         .product-badge {
             display: flex;
@@ -1060,6 +1095,9 @@
                 alertEmail: "Please enter a valid email",
                 alertPhone: "Please enter a valid SA mobile number (e.g. 0821234567)",
                 alertConsent: "Please accept the POPIA consent to continue",
+                getRecipeBtn: "Get My Recipe \u2713",
+                recipeReadyMsg: "Your recipe is ready! Tap below to get it via email and WhatsApp.",
+                getRecipeInline: "Get Granny\u2019s Recipe \uD83C\uDFA8",
                 recapLoading: "Cooking up Granny\u2019s Recipe...",
                 emailConfirm: "We\u2019ve emailed Granny\u2019s Recipe to {email}",
                 waPlanBtn: "Send Granny\u2019s Recipe via WhatsApp",
@@ -1111,6 +1149,9 @@
                 alertEmail: "Voer asseblief \u2019n geldige e-posadres in",
                 alertPhone: "Voer asseblief \u2019n geldige SA selfoonnommer in (bv. 0821234567)",
                 alertConsent: "Aanvaar asseblief die POPIA-toestemming om voort te gaan",
+                getRecipeBtn: "Kry My Resep \u2713",
+                recipeReadyMsg: "Jou resep is gereed! Tik hieronder om dit per e-pos en WhatsApp te kry.",
+                getRecipeInline: "Kry Granny se Resep \uD83C\uDFA8",
                 recapLoading: "Granny se Resep word voorberei...",
                 emailConfirm: "Ons het Granny se Resep na {email} gestuur",
                 waPlanBtn: "Stuur Granny se Resep via WhatsApp",
@@ -1347,6 +1388,39 @@
             return consultGuidedData[currentLanguage].length;
         }
 
+        function activateRecipeButton() {
+            var s = uiStrings[currentLanguage];
+            var doneBtn = document.getElementById('headerDoneBtn');
+            doneBtn.innerHTML = s.getRecipeBtn;
+            doneBtn.classList.add('pulse-active');
+
+            var container = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot-message';
+
+            var avatar = document.createElement('img');
+            avatar.className = 'bot-avatar';
+            avatar.src = '/granny-b-logo.png';
+            avatar.alt = '';
+            msgDiv.appendChild(avatar);
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = s.recipeReadyMsg;
+
+            var recipeBtn = document.createElement('button');
+            recipeBtn.className = 'inline-recipe-btn';
+            recipeBtn.textContent = s.getRecipeInline;
+            recipeBtn.onclick = function() { showThankYou(); };
+            contentDiv.appendChild(recipeBtn);
+
+            msgDiv.appendChild(contentDiv);
+            container.insertBefore(msgDiv, typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
         /* ===== GUIDED QUESTIONS ===== */
         function showGuidedQuestion(index) {
             var q = getCurrentGuidedQuestion(index);
@@ -1450,13 +1524,21 @@
                 }
 
                 guidedStep = questionIndex + 1;
-                setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+                if (guidedStep >= getGuidedQuestionsLength()) {
+                    setTimeout(function() { activateRecipeButton(); }, 800);
+                } else {
+                    setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+                }
 
             } catch (error) {
                 typing.classList.remove('active');
                 addBotMessage("Oops, had a little hiccup. Let\u2019s keep going!");
                 guidedStep = questionIndex + 1;
-                setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+                if (guidedStep >= getGuidedQuestionsLength()) {
+                    setTimeout(function() { activateRecipeButton(); }, 800);
+                } else {
+                    setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
+                }
             } finally {
                 isWaitingForResponse = false;
             }
@@ -1819,6 +1901,10 @@
             document.getElementById('recapLoading').style.display = 'none';
             document.getElementById('emailConfirm').style.display = 'none';
 
+            var doneBtn = document.getElementById('headerDoneBtn');
+            doneBtn.classList.remove('pulse-active');
+            doneBtn.innerHTML = uiStrings[currentLanguage].doneBtn;
+
             showScreen('leadScreen');
         }
 
@@ -1840,6 +1926,10 @@
                 visiblePromoEl = null;
                 isWaitingForResponse = false;
                 consultAnswers = [];
+
+                var doneBtn = document.getElementById('headerDoneBtn');
+                doneBtn.classList.remove('pulse-active');
+                doneBtn.innerHTML = uiStrings[currentLanguage].doneBtn;
 
                 var msgs = document.getElementById('chatMessages');
                 var typing = document.getElementById('typingIndicator');
