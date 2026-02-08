@@ -29,45 +29,25 @@
             padding: 20px;
         }
 
-        .auth-wall {
-            display: flex;
+        .back-btn {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-        }
-
-        .auth-wall h2 { margin-bottom: 16px; }
-
-        .auth-input {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
             color: var(--text-primary);
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-right: 8px;
-        }
-
-        .auth-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .auth-error {
-            color: var(--danger);
-            margin-top: 12px;
             font-size: 13px;
-            display: none;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
         }
 
-        .dashboard { display: none; }
+        .back-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--text-secondary);
+        }
 
         .header {
             display: flex;
@@ -281,18 +261,9 @@
     </style>
 </head>
 <body>
-    <div class="auth-wall" id="authWall">
-        <div>
-            <h2>Granny B's Analytics</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Enter password to continue</p>
-            <input type="password" class="auth-input" id="authInput" placeholder="Password" onkeypress="if(event.key==='Enter')authenticate()">
-            <button class="auth-btn" onclick="authenticate()">Enter</button>
-            <p class="auth-error" id="authError">Incorrect password</p>
-        </div>
-    </div>
-
     <div class="dashboard" id="dashboard">
         <header class="header">
+            <a href="/" class="back-btn">&#8592; Back to App</a>
             <div>
                 <div class="logo">Granny B's Analytics</div>
                 <p class="logo-sub">In-Store QR Bot Tracking</p>
@@ -411,17 +382,6 @@
     </div>
 
     <script>
-        function authenticate() {
-            var pw = document.getElementById('authInput').value;
-            if (pw === 'grannybdata2026') {
-                document.getElementById('authWall').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadData();
-            } else {
-                document.getElementById('authError').style.display = 'block';
-            }
-        }
-
         function getDateCutoff(range) {
             var now = new Date();
             if (range === 'today') {
@@ -643,13 +603,11 @@
             return '';
         }
 
-        // Auto-refresh every 30 seconds
-        setInterval(function() {
-            if (document.getElementById('dashboard').style.display === 'block') loadData();
-        }, 30000);
+        // Load on start
+        loadData();
 
-        // Enter key on password
-        document.getElementById('authInput').focus();
+        // Auto-refresh every 30 seconds
+        setInterval(loadData, 30000);
     </script>
 </body>
 </html>
