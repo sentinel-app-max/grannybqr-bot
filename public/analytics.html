@@ -273,6 +273,56 @@
             font-weight: 600;
         }
 
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .revenue-box {
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--success);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .revenue-box.total {
+            grid-column: 1 / -1;
+            border-width: 2px;
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .revenue-label {
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .revenue-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .revenue-box.total .revenue-value {
+            font-size: 36px;
+        }
+
+        .revenue-note {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        @media (max-width: 640px) {
+            .revenue-grid { grid-template-columns: 1fr; }
+            .revenue-box.total { grid-column: auto; }
+            .revenue-value { font-size: 24px; }
+            .revenue-box.total .revenue-value { font-size: 28px; }
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -403,6 +453,27 @@
         </div>
 
         <div class="section">
+            <h2 class="section-title">Revenue Estimates</h2>
+            <div class="revenue-grid">
+                <div class="revenue-box">
+                    <div class="revenue-label">Estimated Promo Revenue</div>
+                    <div class="revenue-value" id="rev-promo">R0.00</div>
+                    <div class="revenue-note">Based on R0.50/impression + R2.00/click</div>
+                </div>
+                <div class="revenue-box">
+                    <div class="revenue-label">Estimated Lead Value</div>
+                    <div class="revenue-value" id="rev-leads">R0.00</div>
+                    <div class="revenue-note">Based on R15 per qualified lead</div>
+                </div>
+                <div class="revenue-box total">
+                    <div class="revenue-label">Total Platform Revenue</div>
+                    <div class="revenue-value" id="rev-total">R0.00</div>
+                    <div class="revenue-note">Promo placements + Lead capture</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
             <h2 class="section-title">Guided Answer Breakdown</h2>
             <div id="guidedBreakdown" class="empty-state">Loading...</div>
         </div>
@@ -452,6 +523,7 @@
                 renderStats(filtered);
                 renderFunnel(filtered);
                 renderPromoTable(filtered);
+                renderRevenue(filtered);
                 renderGuidedBreakdown(filtered);
                 renderEvents(filtered);
             } catch (err) {
@@ -541,6 +613,20 @@
                     var avgView = d.dismissCount > 0 ? (d.totalViewTime / d.dismissCount / 1000).toFixed(1) : '-';
                     return '<tr><td>' + name + '</td><td>' + d.shown + '</td><td>' + d.clicked + '</td><td>' + d.dismissed + '</td><td>' + avgView + '</td></tr>';
                 }).join('');
+        }
+
+        function renderRevenue(events) {
+            var impressions = countType(events, 'promo_shown');
+            var clicks = countType(events, 'promo_click');
+            var leads = countType(events, 'lead_submit');
+
+            var promoRevenue = (impressions * 0.50) + (clicks * 2.00);
+            var leadValue = leads * 15;
+            var total = promoRevenue + leadValue;
+
+            document.getElementById('rev-promo').textContent = 'R' + promoRevenue.toFixed(2);
+            document.getElementById('rev-leads').textContent = 'R' + leadValue.toFixed(2);
+            document.getElementById('rev-total').textContent = 'R' + total.toFixed(2);
         }
 
         function renderGuidedBreakdown(events) {
