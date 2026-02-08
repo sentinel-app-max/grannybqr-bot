@@ -1167,14 +1167,21 @@
         };
 
         /* ===== PROMO CARDS DATA ===== */
+        /* Paired cards: each trigger group has a Dexter (value) and premium (brand) card.
+           checkPromoTriggers alternates: first match shows Dexter, second shows premium via queue. */
         const promoCards = [
-            { id: 'brushes', triggers: ['brush','paintbrush'], title: 'Dexter Paint Brush Set (3-pack)', deal: 'R89', aisle: 'Aisle 4', bg: '#E3F2FD', border: '#2196F3' },
-            { id: 'sandpaper', triggers: ['sand','prep','abrasive'], title: 'Dexter Sandpaper Assorted Pack', deal: 'R59', aisle: 'Aisle 3', bg: '#FFF3E0', border: '#FF9800' },
-            { id: 'tape', triggers: ['tape','masking','edge'], title: 'Dexter Masking Tape 48mm', deal: 'R39', aisle: 'Aisle 5', bg: '#E8F5E9', border: '#4CAF50' },
-            { id: 'dropcloth', triggers: ['floor','mess','drop cloth','drop sheet','splatter'], title: 'Dexter Drop Sheet 4\u00d75m', deal: 'R35', aisle: 'Aisle 3', bg: '#F3E5F5', border: '#9C27B0' },
-            { id: 'roller', triggers: ['roller','foam roll'], title: 'Dexter Paint Roller Set', deal: 'R69', aisle: 'Aisle 4', bg: '#E0F7FA', border: '#00BCD4' },
-            { id: 'sealer', triggers: ['seal','protect','kitchen','water','durable'], title: "Granny B's Armour Sealer 1L", deal: 'R289', aisle: 'Same shelf', bg: '#FFF8E1', border: '#FFC107' },
-            { id: 'colours', triggers: ['colour','color','other','different','range'], title: '65+ Chalk Paint Colours', deal: 'From R79.90', aisle: 'Same shelf', bg: '#FCE4EC', border: '#E91E63' }
+            { id: 'brushes-dexter', group: 'brushes', triggers: ['brush','paintbrush'], title: 'Dexter Paint Brush Set (3-pack)', deal: 'R89', aisle: 'Aisle 4', brand: 'Dexter', bg: '#E3F2FD', border: '#2196F3' },
+            { id: 'brushes-dulux', group: 'brushes', triggers: ['brush','paintbrush'], title: 'Dulux Precision Brush Set (3-pack)', deal: 'R149', aisle: 'Aisle 4', brand: 'Dulux', bg: '#E3F2FD', border: '#1565C0' },
+            { id: 'sandpaper-dexter', group: 'sandpaper', triggers: ['sand','prep','abrasive'], title: 'Dexter Sandpaper Assorted Pack', deal: 'R59', aisle: 'Aisle 3', brand: 'Dexter', bg: '#FFF3E0', border: '#FF9800' },
+            { id: 'sandpaper-3m', group: 'sandpaper', triggers: ['sand','prep','abrasive'], title: '3M Sandpaper Assorted 10-pack', deal: 'R79', aisle: 'Aisle 3', brand: '3M', bg: '#FFF3E0', border: '#CC6600' },
+            { id: 'tape-dexter', group: 'tape', triggers: ['tape','masking','edge'], title: 'Dexter Masking Tape 48mm', deal: 'R39', aisle: 'Aisle 5', brand: 'Dexter', bg: '#E8F5E9', border: '#4CAF50' },
+            { id: 'tape-3m', group: 'tape', triggers: ['tape','masking','edge'], title: '3M ScotchBlue Painter\'s Tape 48mm', deal: 'R89', aisle: 'Aisle 5', brand: '3M', bg: '#E8F5E9', border: '#1B5E20' },
+            { id: 'roller-dexter', group: 'roller', triggers: ['roller','foam roll','smooth'], title: 'Dexter Paint Roller Set', deal: 'R69', aisle: 'Aisle 4', brand: 'Dexter', bg: '#E0F7FA', border: '#00BCD4' },
+            { id: 'roller-plascon', group: 'roller', triggers: ['roller','foam roll','smooth'], title: 'Plascon Double Velvet Roller 200mm', deal: 'R59', aisle: 'Aisle 4', brand: 'Plascon', bg: '#E0F7FA', border: '#006064' },
+            { id: 'dropcloth', group: 'dropcloth', triggers: ['floor','mess','drop cloth','drop sheet','splatter'], title: 'Dexter Drop Sheet 4\u00d75m', deal: 'R35', aisle: 'Aisle 3', brand: 'Dexter', bg: '#F3E5F5', border: '#9C27B0' },
+            { id: 'sugarsoap', group: 'sugarsoap', triggers: ['clean','sugar soap','wash'], title: 'Dulux Prep & Clean Sugar Soap 1L', deal: 'R49', aisle: 'Aisle 3', brand: 'Dulux', bg: '#FFF8E1', border: '#F9A825' },
+            { id: 'sealer', group: 'sealer', triggers: ['seal','protect','kitchen','water','durable'], title: "Granny B's Armour Sealer 1L", deal: 'R289', aisle: 'Same shelf', brand: "Granny B's", bg: '#FFF8E1', border: '#FFC107' },
+            { id: 'colours', group: 'colours', triggers: ['colour','color','other','different','range'], title: '65+ Chalk Paint Colours', deal: 'From R79.90', aisle: 'Same shelf', brand: "Granny B's", bg: '#FCE4EC', border: '#E91E63' }
         ];
 
         /* ===== URL PARAMS ===== */
@@ -1394,7 +1401,7 @@
                     var lowerOpt = optionText.toLowerCase();
                     if (questionIndex === 2) {
                         if (lowerOpt.includes('wood') || lowerOpt.includes('hout')) {
-                            showPromoCard(promoCards.find(function(p) { return p.id === 'sandpaper'; }));
+                            showPromoGroupCards('sandpaper');
                         }
                         if (lowerOpt.includes('kitchen') || lowerOpt.includes('tile') || lowerOpt.includes('kombuis') || lowerOpt.includes('te\u00ebl') || lowerOpt.includes('ceramic') || lowerOpt.includes('keramiek')) {
                             showPromoCard(promoCards.find(function(p) { return p.id === 'sealer'; }));
@@ -1402,11 +1409,11 @@
                     }
                     if (questionIndex === 3) {
                         if (lowerOpt.includes('vintage') || lowerOpt.includes('distress') || lowerOpt.includes('verweer')) {
-                            showPromoCard(promoCards.find(function(p) { return p.id === 'sandpaper'; }));
+                            showPromoGroupCards('sandpaper');
                         }
                     }
                     if (questionIndex === 4) {
-                        showPromoCard(promoCards.find(function(p) { return p.id === 'brushes'; }));
+                        showPromoGroupCards('brushes');
                     }
                 }
 
@@ -1476,16 +1483,24 @@
         }
 
         /* ===== PROMO CARDS ===== */
+        var shownGroups = new Set();
+
         function checkPromoTriggers(text) {
             var lower = text.toLowerCase();
+            var triggeredGroups = new Set();
             promoCards.forEach(function(card) {
-                if (!shownPromos.has(card.id) && card.triggers.some(function(t) { return lower.includes(t); })) {
-                    shownPromos.add(card.id);
-                    if (visiblePromoEl) {
-                        promoQueue.push(card);
-                    } else {
-                        displayPromoCard(card);
-                    }
+                if (!shownPromos.has(card.id) && !triggeredGroups.has(card.group) && card.triggers.some(function(t) { return lower.includes(t); })) {
+                    triggeredGroups.add(card.group);
+                    // Find all cards in this group that haven't been shown yet
+                    var groupCards = promoCards.filter(function(c) { return c.group === card.group && !shownPromos.has(c.id); });
+                    groupCards.forEach(function(gc) {
+                        shownPromos.add(gc.id);
+                        if (visiblePromoEl) {
+                            promoQueue.push(gc);
+                        } else {
+                            displayPromoCard(gc);
+                        }
+                    });
                 }
             });
         }
@@ -1498,6 +1513,11 @@
             } else {
                 displayPromoCard(card);
             }
+        }
+
+        function showPromoGroupCards(groupName) {
+            var groupCards = promoCards.filter(function(c) { return c.group === groupName && !shownPromos.has(c.id); });
+            groupCards.forEach(function(gc) { showPromoCard(gc); });
         }
 
         function displayPromoCard(card) {
@@ -1517,7 +1537,7 @@
                 '<div class="promo-aisle">' + card.aisle + '</div>';
 
             promoDiv.querySelector('.promo-dismiss').onclick = function() {
-                GBAnalytics.promoDismiss(card.title);
+                GBAnalytics.promoDismiss(card.title, card.brand);
                 promoDiv.remove();
                 visiblePromoEl = null;
                 if (promoQueue.length > 0) {
@@ -1528,7 +1548,7 @@
             visiblePromoEl = promoDiv;
             container.insertBefore(promoDiv, typing);
             container.scrollTop = container.scrollHeight;
-            GBAnalytics.promoShown(card.title, card.deal);
+            GBAnalytics.promoShown(card.title, card.deal, card.brand);
         }
 
         /* ===== SEND MESSAGE (free chat) ===== */
@@ -2058,14 +2078,14 @@
             scan() { this.track('scan', { sku: urlParams.sku, flow: flowMode }); },
             leadSubmit(name, email) { this.track('lead_submit', { name: name, email: email }); },
             guidedAnswer(question, answer) { this.track('guided_answer', { question: question, answer: answer }); },
-            promoShown(product, price) {
+            promoShown(product, price, brand) {
                 this.promoTimers[product] = Date.now();
-                this.track('promo_shown', { product: product, price: price });
+                this.track('promo_shown', { product: product, price: price, brand: brand || '' });
             },
-            promoClick(product) { this.track('promo_click', { product: product }); },
-            promoDismiss(product) {
+            promoClick(product, brand) { this.track('promo_click', { product: product, brand: brand || '' }); },
+            promoDismiss(product, brand) {
                 var duration = this.promoTimers[product] ? Date.now() - this.promoTimers[product] : 0;
-                this.track('promo_dismiss', { product: product, viewDuration: duration });
+                this.track('promo_dismiss', { product: product, brand: brand || '', viewDuration: duration });
             },
             chatMessage(role) { this.track('chat_message', { role: role }); },
             recipeTap() { this.track('recipe_tap', {}); },

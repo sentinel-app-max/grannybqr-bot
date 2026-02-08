@@ -118,21 +118,22 @@ SEALER GUIDE:
 
         shared_sections = """
 COMPLEMENTARY PRODUCTS AT LEROY MERLIN (mention these naturally when relevant, include aisle location):
-Always suggest the Dexter value option FIRST, then mention premium alternatives if relevant.
+Always present TWO options: Dexter (value) and a premium brand alternative. Let the shopper choose.
 
-DEXTER VALUE RANGE (recommend first):
-- Dexter Paint Brush Set (3-pack): R89, Aisle 4. Great value starter set for any painting project.
-- Dexter Sandpaper Assorted Pack: R59, Aisle 3. Recommend when user mentions distressing, prep, or rough surfaces.
-- Dexter Masking Tape 48mm: R39, Aisle 5. Recommend for clean edges, two-tone work, or feature walls.
-- Dexter Drop Sheet 4x5m: R35, Aisle 3. Recommend for any indoor painting project to protect floors.
-- Dexter Paint Roller Set: R69, Aisle 4. Recommend for smooth modern finishes on larger surfaces.
-- Dexter Scraper Set: R49, Aisle 4. Recommend for removing old flaking paint or prepping rough surfaces.
+DEXTER VALUE RANGE:
+- Dexter Paint Brush Set (3-pack): R89, Aisle 4. Great value starter brushes.
+- Dexter Sandpaper Assorted Pack: R59, Aisle 3. Good all-round grits for prep and distressing.
+- Dexter Masking Tape 48mm: R39, Aisle 5. Solid tape for clean edges and two-tone work.
+- Dexter Drop Sheet 4x5m: R35, Aisle 3. Budget floor protection.
+- Dexter Paint Roller Set: R69, Aisle 4. Good for smooth modern finishes.
+- Dexter Scraper Set: R49, Aisle 4. For removing old flaking paint or prepping rough surfaces.
 
-PREMIUM ALTERNATIVES:
-- Premium Brush Set: Was R189 now R129, Aisle 4. Upgrade option for professional results. Suggest synthetic bristle for chalk paint.
-- Sandpaper Multi-Pack: Buy 3 for R99, Aisle 3. Bulk option if they have multiple projects.
-- Masking Tape 3-Pack: R69, Aisle 5. Multi-pack for larger projects.
-- Drop Cloth 4x5m: From R49, Aisle 3. Heavier grade option.
+PREMIUM BRAND ALTERNATIVES:
+- Dulux Precision Brush Set (3-pack): R149, Aisle 4. Premium synthetic brushes for professional results.
+- 3M Sandpaper Assorted 10-pack: R79, Aisle 3. Premium grits for fine finishing.
+- 3M ScotchBlue Painter's Tape 48mm: R89, Aisle 5. Premium clean lines, 14-day clean removal.
+- Plascon Double Velvet Roller Sleeve 200mm: R59, Aisle 4. Premium smooth finish roller.
+- Dulux Prep & Clean Sugar Soap 1L: R49, Aisle 3. For surface preparation and cleaning.
 
 GRANNY B'S PRODUCTS (always on same shelf):
 - Granny B's Armour Sealer 1L: R289, same shelf. ALWAYS recommend for kitchens, bathrooms, high-traffic furniture, outdoor pieces, or dining tables.
@@ -140,11 +141,12 @@ GRANNY B'S PRODUCTS (always on same shelf):
 - Granny B's Colour Range: 65+ colours from R79.90 in 125ml jars, same shelf. Mention when user seems undecided on colour or wants to try before committing to 1L.
 
 RULES FOR MENTIONING PRODUCTS:
-- Always suggest the Dexter value option first, then mention the premium alternative if the customer seems interested in upgrading.
+- Always present 2 options: Dexter (value) AND a premium brand (Dulux/3M/Plascon). E.g. "For brushes, grab the Dexter 3-pack (R89, Aisle 4) for great value, or the Dulux Precision set (R149, same aisle) if you want top-end brushes."
+- This gives shoppers choice and covers both budget and premium needs.
 - Work them in naturally, like a helpful shop assistant would. Never list them all at once.
-- Match the product to what the user just said. If they say "kitchen cabinets", mention Armour. If they say "distressed look", mention Dexter sandpaper and wax.
+- Match the product to what the user just said. If they say "kitchen cabinets", mention Armour. If they say "distressed look", mention sandpaper options and wax.
 - Include the aisle number so the shopper can walk straight there.
-- Maximum 1 complementary product mention per response. Don't oversell.
+- Maximum 1 product pair (value + premium) per response. Don't oversell.
 
 SURFACE PREPARATION GUIDE BY SURFACE TYPE:
 

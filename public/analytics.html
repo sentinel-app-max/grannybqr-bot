@@ -453,12 +453,31 @@
         </div>
 
         <div class="section">
+            <h2 class="section-title">Revenue by Brand</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Brand</th>
+                        <th>Impressions</th>
+                        <th>Clicks</th>
+                        <th>Imp. Rev</th>
+                        <th>Click Rev</th>
+                        <th>Total Rev</th>
+                    </tr>
+                </thead>
+                <tbody id="brandRevenueTable">
+                    <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
             <h2 class="section-title">Revenue Estimates</h2>
             <div class="revenue-grid">
                 <div class="revenue-box">
-                    <div class="revenue-label">Estimated Promo Revenue</div>
+                    <div class="revenue-label">Supplier Promo Revenue</div>
                     <div class="revenue-value" id="rev-promo">R0.00</div>
-                    <div class="revenue-note">Based on R0.50/impression + R2.00/click</div>
+                    <div class="revenue-note">Third-party brands: R0.50/impression + R2.00/click</div>
                 </div>
                 <div class="revenue-box">
                     <div class="revenue-label">Estimated Lead Value</div>
@@ -468,7 +487,7 @@
                 <div class="revenue-box total">
                     <div class="revenue-label">Total Platform Revenue</div>
                     <div class="revenue-value" id="rev-total">R0.00</div>
-                    <div class="revenue-note">Promo placements + Lead capture</div>
+                    <div class="revenue-note">Supplier promo revenue + Lead capture</div>
                 </div>
             </div>
         </div>
@@ -615,16 +634,56 @@
                 }).join('');
         }
 
+        var hostBrand = "Granny B's";
+
         function renderRevenue(events) {
-            var impressions = countType(events, 'promo_shown');
-            var clicks = countType(events, 'promo_click');
+            // Build brand stats from promo events that have a brand field
+            var brandStats = {};
+            events.forEach(function(e) {
+                if (e.event_type === 'promo_shown' || e.event_type === 'promo_click') {
+                    var brand = (e.event_data && e.event_data.brand) || 'Unknown';
+                    if (!brandStats[brand]) brandStats[brand] = { impressions: 0, clicks: 0 };
+                    if (e.event_type === 'promo_shown') brandStats[brand].impressions++;
+                    if (e.event_type === 'promo_click') brandStats[brand].clicks++;
+                }
+            });
+
+            // Render brand revenue table
+            var tbody = document.getElementById('brandRevenueTable');
+            var entries = Object.entries(brandStats);
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No brand data yet</td></tr>';
+            } else {
+                tbody.innerHTML = entries
+                    .sort(function(a, b) { return b[1].impressions - a[1].impressions; })
+                    .map(function(entry) {
+                        var brand = entry[0];
+                        var d = entry[1];
+                        var isHost = brand === hostBrand;
+                        var impRev = isHost ? 0 : d.impressions * 0.50;
+                        var clickRev = isHost ? 0 : d.clicks * 2.00;
+                        var totalRev = impRev + clickRev;
+                        return '<tr><td><strong>' + brand + '</strong>' + (isHost ? ' <span style="color:var(--text-secondary);font-size:11px">(host)</span>' : '') + '</td>' +
+                            '<td>' + d.impressions + '</td><td>' + d.clicks + '</td>' +
+                            '<td>' + (isHost ? '\u2014' : 'R' + impRev.toFixed(2)) + '</td>' +
+                            '<td>' + (isHost ? '\u2014' : 'R' + clickRev.toFixed(2)) + '</td>' +
+                            '<td>' + (isHost ? '\u2014' : 'R' + totalRev.toFixed(2)) + '</td></tr>';
+                    }).join('');
+            }
+
+            // Calculate supplier promo revenue (exclude host brand)
+            var supplierRevenue = 0;
+            entries.forEach(function(entry) {
+                if (entry[0] !== hostBrand) {
+                    supplierRevenue += (entry[1].impressions * 0.50) + (entry[1].clicks * 2.00);
+                }
+            });
+
             var leads = countType(events, 'lead_submit');
-
-            var promoRevenue = (impressions * 0.50) + (clicks * 2.00);
             var leadValue = leads * 15;
-            var total = promoRevenue + leadValue;
+            var total = supplierRevenue + leadValue;
 
-            document.getElementById('rev-promo').textContent = 'R' + promoRevenue.toFixed(2);
+            document.getElementById('rev-promo').textContent = 'R' + supplierRevenue.toFixed(2);
             document.getElementById('rev-leads').textContent = 'R' + leadValue.toFixed(2);
             document.getElementById('rev-total').textContent = 'R' + total.toFixed(2);
         }
