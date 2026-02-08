@@ -101,6 +101,38 @@
 
         .refresh-btn:hover { opacity: 0.9; }
 
+        .export-btn {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1.5px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .export-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--text-secondary);
+        }
+
+        @media print {
+            body { background: #fff; color: #000; padding: 10px; }
+            .back-btn, .filters, .export-btn, .refresh-btn { display: none !important; }
+            .dashboard { display: block !important; }
+            .header { border-bottom: 2px solid #000; }
+            .logo { color: #DD2222; }
+            .logo-sub, .stat-label, .funnel-label, .event-time, .event-details { color: #555; }
+            .stat-card, .section { background: #fff; border: 1px solid #ccc; }
+            .stat-value { color: #000; }
+            .funnel-bar { color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .data-table th, .data-table td { border-color: #ccc; color: #000; }
+            .event-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .events-list { max-height: none; overflow: visible; }
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -281,6 +313,8 @@
                     <option value="all">All Time</option>
                 </select>
                 <button class="refresh-btn" onclick="loadData()">Refresh</button>
+                <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+                <button class="export-btn" onclick="exportPDF()">Export PDF</button>
             </div>
         </header>
 
@@ -396,6 +430,8 @@
             return '1970-01-01T00:00:00.000Z';
         }
 
+        var currentFilteredEvents = [];
+
         async function loadData() {
             try {
                 var resp = await fetch('/analytics');
@@ -412,6 +448,7 @@
                     return true;
                 });
 
+                currentFilteredEvents = filtered;
                 renderStats(filtered);
                 renderFunnel(filtered);
                 renderPromoTable(filtered);
@@ -601,6 +638,33 @@
             if (e.event_type === 'scan') return (d.sku ? 'SKU ' + d.sku : 'No SKU') + ' - ' + (d.flow || '');
             if (e.event_type === 'chat_message') return d.role || '';
             return '';
+        }
+
+        function exportCSV() {
+            if (currentFilteredEvents.length === 0) { alert('No data to export'); return; }
+            var headers = ['Timestamp', 'Session ID', 'Store', 'Client', 'Event Type', 'Details'];
+            var rows = currentFilteredEvents.map(function(e) {
+                return [
+                    e.timestamp || '',
+                    e.sessionId || '',
+                    e.store || '',
+                    e.client || '',
+                    e.event_type || '',
+                    formatDetails(e).replace(/,/g, ';')
+                ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+            });
+            var csv = headers.join(',') + '\n' + rows.join('\n');
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'grannybqr-analytics-' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportPDF() {
+            window.print();
         }
 
         // Load on start
