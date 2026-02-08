@@ -20,6 +20,7 @@
     { "source": "/tts", "destination": "/api/tts" },
     { "source": "/stt", "destination": "/api/stt" },
     { "source": "/recap", "destination": "/api/recap" },
+    { "source": "/analytics", "destination": "/api/analytics" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ]
 }

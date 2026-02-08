@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granny B's Analytics Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #DD2222;
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3e;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-wall {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .auth-wall h2 { margin-bottom: 16px; }
+
+        .auth-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .auth-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-error {
+            color: var(--danger);
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .dashboard { display: none; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-sub {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filters select {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover { opacity: 0.9; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-pct {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .funnel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        .funnel-step {
+            flex: 1;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .funnel-bar {
+            height: 60px;
+            background: var(--primary);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .funnel-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .funnel-arrow {
+            color: var(--text-secondary);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+
+        .events-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .event-item:last-child { border-bottom: none; }
+
+        .event-type {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .event-details {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .event-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .event-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-value { font-size: 22px; }
+            .funnel { overflow-x: auto; }
+            .section { padding: 16px; }
+            .data-table { font-size: 13px; }
+            .data-table th, .data-table td { padding: 8px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-wall" id="authWall">
+        <div>
+            <h2>Granny B's Analytics</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Enter password to continue</p>
+            <input type="password" class="auth-input" id="authInput" placeholder="Password" onkeypress="if(event.key==='Enter')authenticate()">
+            <button class="auth-btn" onclick="authenticate()">Enter</button>
+            <p class="auth-error" id="authError">Incorrect password</p>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <header class="header">
+            <div>
+                <div class="logo">Granny B's Analytics</div>
+                <p class="logo-sub">In-Store QR Bot Tracking</p>
+            </div>
+            <div class="filters">
+                <select id="storeFilter">
+                    <option value="all">All Stores</option>
+                    <option value="leroy-merlin">Leroy Merlin</option>
+                    <option value="leroy-fourways">Leroy Fourways</option>
+                </select>
+                <select id="dateRange">
+                    <option value="today">Today</option>
+                    <option value="7days" selected>Last 7 Days</option>
+                    <option value="30days">Last 30 Days</option>
+                    <option value="all">All Time</option>
+                </select>
+                <button class="refresh-btn" onclick="loadData()">Refresh</button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">QR Scans</div>
+                <div class="stat-value" id="stat-scans">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Leads Captured</div>
+                <div class="stat-value" id="stat-leads">0</div>
+                <div class="stat-pct" id="stat-leads-pct"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Guided Completed</div>
+                <div class="stat-value" id="stat-guided">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Chat Messages</div>
+                <div class="stat-value" id="stat-chats">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Promos Shown</div>
+                <div class="stat-value" id="stat-promos">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Recipe Taps</div>
+                <div class="stat-value" id="stat-recipes">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">WhatsApp Sends</div>
+                <div class="stat-value" id="stat-wa">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Discount Copies</div>
+                <div class="stat-value" id="stat-discounts">0</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Conversion Funnel</h2>
+            <div class="funnel">
+                <div class="funnel-step">
+                    <div class="funnel-bar" style="opacity:1" id="funnel-scans">0</div>
+                    <div class="funnel-label">Scans</div>
+                </div>
+                <span class="funnel-arrow">&rarr;</span>
+                <div class="funnel-step">
+                    <div class="funnel-bar" style="opacity:0.85" id="funnel-leads">0</div>
+                    <div class="funnel-label">Leads</div>
+                </div>
+                <span class="funnel-arrow">&rarr;</span>
+                <div class="funnel-step">
+                    <div class="funnel-bar" style="opacity:0.7" id="funnel-guided">0</div>
+                    <div class="funnel-label">Guided Done</div>
+                </div>
+                <span class="funnel-arrow">&rarr;</span>
+                <div class="funnel-step">
+                    <div class="funnel-bar" style="opacity:0.55" id="funnel-recipes">0</div>
+                    <div class="funnel-label">Recipe Tap</div>
+                </div>
+                <span class="funnel-arrow">&rarr;</span>
+                <div class="funnel-step">
+                    <div class="funnel-bar" style="background:var(--success)" id="funnel-wa">0</div>
+                    <div class="funnel-label">WhatsApp</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Promo Card Performance</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Shown</th>
+                        <th>Clicked</th>
+                        <th>Dismissed</th>
+                        <th>Avg View (s)</th>
+                    </tr>
+                </thead>
+                <tbody id="promoTable">
+                    <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Guided Answer Breakdown</h2>
+            <div id="guidedBreakdown" class="empty-state">Loading...</div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Recent Events</h2>
+            <div class="events-list" id="eventsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function authenticate() {
+            var pw = document.getElementById('authInput').value;
+            if (pw === 'grannybdata2026') {
+                document.getElementById('authWall').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('authError').style.display = 'block';
+            }
+        }
+
+        function getDateCutoff(range) {
+            var now = new Date();
+            if (range === 'today') {
+                return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+            }
+            if (range === '7days') {
+                return new Date(now.getTime() - 7 * 86400000).toISOString();
+            }
+            if (range === '30days') {
+                return new Date(now.getTime() - 30 * 86400000).toISOString();
+            }
+            return '1970-01-01T00:00:00.000Z';
+        }
+
+        async function loadData() {
+            try {
+                var resp = await fetch('/analytics');
+                var data = await resp.json();
+                var events = data.events || [];
+
+                var store = document.getElementById('storeFilter').value;
+                var range = document.getElementById('dateRange').value;
+                var cutoff = getDateCutoff(range);
+
+                var filtered = events.filter(function(e) {
+                    if (store !== 'all' && e.store !== store) return false;
+                    if (e.timestamp && e.timestamp < cutoff) return false;
+                    return true;
+                });
+
+                renderStats(filtered);
+                renderFunnel(filtered);
+                renderPromoTable(filtered);
+                renderGuidedBreakdown(filtered);
+                renderEvents(filtered);
+            } catch (err) {
+                console.error('Load error:', err);
+            }
+        }
+
+        function countType(events, type) {
+            return events.filter(function(e) { return e.event_type === type; }).length;
+        }
+
+        function renderStats(events) {
+            var scans = countType(events, 'scan');
+            var leads = countType(events, 'lead_submit');
+            var guided = countType(events, 'guided_answer');
+            var chats = countType(events, 'chat_message');
+            var promos = countType(events, 'promo_shown');
+            var recipes = countType(events, 'recipe_tap');
+            var wa = countType(events, 'whatsapp_send');
+            var discounts = countType(events, 'discount_copy');
+
+            document.getElementById('stat-scans').textContent = scans;
+            document.getElementById('stat-leads').textContent = leads;
+            document.getElementById('stat-leads-pct').textContent = scans > 0 ? Math.round(leads / scans * 100) + '% capture rate' : '';
+            document.getElementById('stat-guided').textContent = guided;
+            document.getElementById('stat-chats').textContent = chats;
+            document.getElementById('stat-promos').textContent = promos;
+            document.getElementById('stat-recipes').textContent = recipes;
+            document.getElementById('stat-wa').textContent = wa;
+            document.getElementById('stat-discounts').textContent = discounts;
+        }
+
+        function renderFunnel(events) {
+            var scans = countType(events, 'scan');
+            var leads = countType(events, 'lead_submit');
+
+            // Count unique sessions that completed all guided questions
+            var guidedSessions = {};
+            events.filter(function(e) { return e.event_type === 'guided_answer'; }).forEach(function(e) {
+                if (!guidedSessions[e.sessionId]) guidedSessions[e.sessionId] = 0;
+                guidedSessions[e.sessionId]++;
+            });
+            var guidedComplete = Object.values(guidedSessions).filter(function(c) { return c >= 4; }).length;
+
+            var recipes = countType(events, 'recipe_tap');
+            var wa = countType(events, 'whatsapp_send');
+
+            document.getElementById('funnel-scans').textContent = scans;
+            document.getElementById('funnel-leads').textContent = leads;
+            document.getElementById('funnel-guided').textContent = guidedComplete;
+            document.getElementById('funnel-recipes').textContent = recipes;
+            document.getElementById('funnel-wa').textContent = wa;
+        }
+
+        function renderPromoTable(events) {
+            var promoStats = {};
+
+            events.forEach(function(e) {
+                if (e.event_type === 'promo_shown' || e.event_type === 'promo_click' || e.event_type === 'promo_dismiss') {
+                    var product = (e.event_data && e.event_data.product) || 'Unknown';
+                    if (!promoStats[product]) {
+                        promoStats[product] = { shown: 0, clicked: 0, dismissed: 0, totalViewTime: 0, dismissCount: 0 };
+                    }
+                    if (e.event_type === 'promo_shown') promoStats[product].shown++;
+                    if (e.event_type === 'promo_click') promoStats[product].clicked++;
+                    if (e.event_type === 'promo_dismiss') {
+                        promoStats[product].dismissed++;
+                        promoStats[product].totalViewTime += (e.event_data && e.event_data.viewDuration) || 0;
+                        promoStats[product].dismissCount++;
+                    }
+                }
+            });
+
+            var tbody = document.getElementById('promoTable');
+            var entries = Object.entries(promoStats);
+
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No promo data yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries
+                .sort(function(a, b) { return b[1].shown - a[1].shown; })
+                .map(function(entry) {
+                    var name = entry[0];
+                    var d = entry[1];
+                    var avgView = d.dismissCount > 0 ? (d.totalViewTime / d.dismissCount / 1000).toFixed(1) : '-';
+                    return '<tr><td>' + name + '</td><td>' + d.shown + '</td><td>' + d.clicked + '</td><td>' + d.dismissed + '</td><td>' + avgView + '</td></tr>';
+                }).join('');
+        }
+
+        function renderGuidedBreakdown(events) {
+            var questionMap = {};
+            events.filter(function(e) { return e.event_type === 'guided_answer'; }).forEach(function(e) {
+                var q = (e.event_data && e.event_data.question) || 'Unknown';
+                var a = (e.event_data && e.event_data.answer) || 'Unknown';
+                if (!questionMap[q]) questionMap[q] = {};
+                if (!questionMap[q][a]) questionMap[q][a] = 0;
+                questionMap[q][a]++;
+            });
+
+            var container = document.getElementById('guidedBreakdown');
+            var questions = Object.keys(questionMap);
+
+            if (questions.length === 0) {
+                container.innerHTML = '<div class="empty-state">No guided answer data yet</div>';
+                return;
+            }
+
+            var html = '';
+            questions.forEach(function(q) {
+                html += '<div style="margin-bottom:20px"><strong style="color:var(--text-secondary);font-size:13px">' + q + '</strong>';
+                var answers = Object.entries(questionMap[q]).sort(function(a, b) { return b[1] - a[1]; });
+                var total = answers.reduce(function(s, a) { return s + a[1]; }, 0);
+                answers.forEach(function(entry) {
+                    var pct = total > 0 ? Math.round(entry[1] / total * 100) : 0;
+                    html += '<div style="display:flex;align-items:center;gap:10px;margin:6px 0">';
+                    html += '<div style="flex:1;font-size:13px">' + entry[0] + '</div>';
+                    html += '<div style="width:120px;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--primary);border-radius:4px"></div></div>';
+                    html += '<div style="width:60px;text-align:right;font-size:12px;color:var(--text-secondary)">' + entry[1] + ' (' + pct + '%)</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        var eventLabels = {
+            'scan': 'QR Scan',
+            'lead_submit': 'Lead Captured',
+            'guided_answer': 'Guided Answer',
+            'promo_shown': 'Promo Shown',
+            'promo_click': 'Promo Click',
+            'promo_dismiss': 'Promo Dismissed',
+            'chat_message': 'Chat Message',
+            'recipe_tap': 'Recipe Tap',
+            'whatsapp_send': 'WhatsApp Send',
+            'email_share': 'Email Share',
+            'discount_copy': 'Discount Copy'
+        };
+
+        var eventColors = {
+            'scan': '#6366f1',
+            'lead_submit': '#10b981',
+            'guided_answer': '#3b82f6',
+            'promo_shown': '#f59e0b',
+            'promo_click': '#10b981',
+            'promo_dismiss': '#ef4444',
+            'chat_message': '#8b5cf6',
+            'recipe_tap': '#ec4899',
+            'whatsapp_send': '#25D366',
+            'email_share': '#DD2222',
+            'discount_copy': '#f97316'
+        };
+
+        function renderEvents(events) {
+            var container = document.getElementById('eventsList');
+            var recent = events.slice(-30).reverse();
+
+            if (recent.length === 0) {
+                container.innerHTML = '<div class="empty-state">No events recorded yet</div>';
+                return;
+            }
+
+            container.innerHTML = recent.map(function(e) {
+                var label = eventLabels[e.event_type] || e.event_type;
+                var color = eventColors[e.event_type] || '#6366f1';
+                var details = formatDetails(e);
+                var time = e.timestamp ? new Date(e.timestamp).toLocaleString('en-ZA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                return '<div class="event-item"><div><span class="event-badge" style="background:' + color + '22;color:' + color + '">' + label + '</span>' +
+                    (details ? '<div class="event-details">' + details + '</div>' : '') +
+                    '</div><div class="event-time">' + time + '<br><span style="font-size:11px;color:var(--border)">' + (e.store || '') + '</span></div></div>';
+            }).join('');
+        }
+
+        function formatDetails(e) {
+            var d = e.event_data || {};
+            if (e.event_type === 'guided_answer') return d.question + ': ' + d.answer;
+            if (e.event_type === 'lead_submit') return d.name + (d.email ? ' (' + d.email + ')' : '');
+            if (e.event_type === 'promo_shown') return d.product + ' - ' + d.price;
+            if (e.event_type === 'promo_dismiss') return d.product + ' (' + (d.viewDuration ? (d.viewDuration / 1000).toFixed(1) + 's' : '-') + ')';
+            if (e.event_type === 'promo_click') return d.product;
+            if (e.event_type === 'scan') return (d.sku ? 'SKU ' + d.sku : 'No SKU') + ' - ' + (d.flow || '');
+            if (e.event_type === 'chat_message') return d.role || '';
+            return '';
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(function() {
+            if (document.getElementById('dashboard').style.display === 'block') loadData();
+        }, 30000);
+
+        // Enter key on password
+        document.getElementById('authInput').focus();
+    </script>
+</body>
+</html>

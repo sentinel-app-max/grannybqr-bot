@@ -229,6 +229,26 @@
 
         .done-btn:hover { background: #BB1A1A; }
 
+        .analytics-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            border-radius: 14px;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .analytics-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: #FFFFFF;
+        }
+
         .inline-recipe-btn {
             display: block;
             width: 100%;
@@ -935,6 +955,7 @@
                 <img src="/granny-b-logo.svg" alt="Granny B's" class="header-logo" onclick="resetApp()">
             </div>
             <div class="header-right-group">
+                <a href="/analytics.html" target="_blank" rel="noopener" class="analytics-btn">&#128202; Analytics</a>
                 <a href="https://www.leroymerlin.co.za" target="_blank" rel="noopener"><img src="/leroy-merlin-logo.svg" alt="Leroy Merlin" class="partner-logo"></a>
             </div>
         </div>
@@ -1145,10 +1166,11 @@
 
         /* ===== PROMO CARDS DATA ===== */
         const promoCards = [
-            { id: 'sandpaper', triggers: ['sand','prep','wood'], title: 'Sandpaper Multi-Pack', deal: 'Buy 3 for R99', aisle: 'Aisle 3', bg: '#FFF3E0', border: '#FF9800' },
-            { id: 'brushes', triggers: ['brush','tool','roller'], title: 'Premium Brush Set', deal: 'Was R189 \u2192 R129', aisle: 'Aisle 4', bg: '#E3F2FD', border: '#2196F3' },
-            { id: 'tape', triggers: ['edge','clean','line','tape'], title: 'Masking Tape 3-Pack', deal: 'Only R69', aisle: 'Aisle 5', bg: '#E8F5E9', border: '#4CAF50' },
-            { id: 'dropcloth', triggers: ['floor','protect','mess'], title: 'Drop Cloth 4\u00d75m', deal: 'From R49', aisle: 'Aisle 3', bg: '#F3E5F5', border: '#9C27B0' },
+            { id: 'brushes', triggers: ['brush','tool'], title: 'Dexter Paint Brush Set (3-pack)', deal: 'R89', aisle: 'Aisle 4', bg: '#E3F2FD', border: '#2196F3' },
+            { id: 'sandpaper', triggers: ['sand','prep'], title: 'Dexter Sandpaper Assorted Pack', deal: 'R59', aisle: 'Aisle 3', bg: '#FFF3E0', border: '#FF9800' },
+            { id: 'tape', triggers: ['tape','edge','line'], title: 'Dexter Masking Tape 48mm', deal: 'R39', aisle: 'Aisle 5', bg: '#E8F5E9', border: '#4CAF50' },
+            { id: 'dropcloth', triggers: ['drop','protect','floor'], title: 'Dexter Drop Sheet 4\u00d75m', deal: 'R35', aisle: 'Aisle 3', bg: '#F3E5F5', border: '#9C27B0' },
+            { id: 'roller', triggers: ['roller','smooth'], title: 'Dexter Paint Roller Set', deal: 'R69', aisle: 'Aisle 4', bg: '#E0F7FA', border: '#00BCD4' },
             { id: 'sealer', triggers: ['seal','protect','kitchen','water','durable'], title: "Granny B's Armour Sealer 1L", deal: 'R289', aisle: 'Same shelf', bg: '#FFF8E1', border: '#FFC107' },
             { id: 'colours', triggers: ['colour','color','other','different','range'], title: '65+ Chalk Paint Colours', deal: 'From R79.90', aisle: 'Same shelf', bg: '#FCE4EC', border: '#E91E63' }
         ];
@@ -1189,6 +1211,7 @@
             if (!consent) { alert(s.alertConsent); return; }
 
             leadData = { name, email, phone };
+            GBAnalytics.leadSubmit(name, email);
 
             fetch('/lead', {
                 method: 'POST',
@@ -1274,7 +1297,7 @@
             var recipeBtn = document.createElement('button');
             recipeBtn.className = 'inline-recipe-btn';
             recipeBtn.textContent = s.getRecipeInline;
-            recipeBtn.onclick = function() { showThankYou(); };
+            recipeBtn.onclick = function() { GBAnalytics.recipeTap(); showThankYou(); };
             contentDiv.appendChild(recipeBtn);
 
             msgDiv.appendChild(contentDiv);
@@ -1332,6 +1355,7 @@
 
             addUserMessage(optionText);
             conversationHistory.push({ role: 'user', content: optionText });
+            GBAnalytics.guidedAnswer(getCurrentGuidedQuestion(questionIndex).question, optionText);
 
             isWaitingForResponse = true;
             var typing = document.getElementById('typingIndicator');
@@ -1491,6 +1515,7 @@
                 '<div class="promo-aisle">' + card.aisle + '</div>';
 
             promoDiv.querySelector('.promo-dismiss').onclick = function() {
+                GBAnalytics.promoDismiss(card.title);
                 promoDiv.remove();
                 visiblePromoEl = null;
                 if (promoQueue.length > 0) {
@@ -1501,6 +1526,7 @@
             visiblePromoEl = promoDiv;
             container.insertBefore(promoDiv, typing);
             container.scrollTop = container.scrollHeight;
+            GBAnalytics.promoShown(card.title, card.deal);
         }
 
         /* ===== SEND MESSAGE (free chat) ===== */
@@ -1516,6 +1542,7 @@
 
             addUserMessage(message);
             input.value = '';
+            GBAnalytics.chatMessage('user');
 
             conversationHistory.push({ role: 'user', content: message });
 
@@ -1671,6 +1698,7 @@
         function sendWhatsAppPlan() {
             var message = buildWhatsAppMessage();
             if (!message) return;
+            GBAnalytics.whatsappSend();
 
             var phone = formatSAPhone(leadData.phone);
             var encoded = encodeURIComponent(message);
@@ -1683,6 +1711,7 @@
         }
 
         function emailShareRecipe() {
+            GBAnalytics.emailShare();
             var s = uiStrings[currentLanguage];
             var advisorUrl = 'https://grannybqr.summitwebcraft.co.za/?store=leroy-fourways';
 
@@ -1709,6 +1738,7 @@
         }
 
         function copyCode() {
+            GBAnalytics.discountCopy();
             var s = uiStrings[currentLanguage];
             if (navigator.clipboard) {
                 navigator.clipboard.writeText('GRANNYB10').then(function() {
@@ -2000,9 +2030,52 @@
             }
         });
 
+        /* ===== ANALYTICS TRACKING ===== */
+        const GBAnalytics = {
+            sessionId: 'ss_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            clientId: new URLSearchParams(window.location.search).get('client') || 'direct',
+            store: new URLSearchParams(window.location.search).get('store') || 'leroy-merlin',
+            promoTimers: {},
+
+            track(eventType, eventData) {
+                var payload = {
+                    sessionId: this.sessionId,
+                    store: this.store,
+                    event_type: eventType,
+                    event_data: eventData || {},
+                    client: this.clientId,
+                    timestamp: new Date().toISOString()
+                };
+                fetch('/analytics', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(function() {});
+            },
+
+            scan() { this.track('scan', { sku: urlParams.sku, flow: flowMode }); },
+            leadSubmit(name, email) { this.track('lead_submit', { name: name, email: email }); },
+            guidedAnswer(question, answer) { this.track('guided_answer', { question: question, answer: answer }); },
+            promoShown(product, price) {
+                this.promoTimers[product] = Date.now();
+                this.track('promo_shown', { product: product, price: price });
+            },
+            promoClick(product) { this.track('promo_click', { product: product }); },
+            promoDismiss(product) {
+                var duration = this.promoTimers[product] ? Date.now() - this.promoTimers[product] : 0;
+                this.track('promo_dismiss', { product: product, viewDuration: duration });
+            },
+            chatMessage(role) { this.track('chat_message', { role: role }); },
+            recipeTap() { this.track('recipe_tap', {}); },
+            whatsappSend() { this.track('whatsapp_send', {}); },
+            emailShare() { this.track('email_share', {}); },
+            discountCopy() { this.track('discount_copy', {}); }
+        };
+
         /* ===== INIT ===== */
         parseUrlParams();
         initSpeechRecognition();
+        GBAnalytics.scan();
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 </body>
