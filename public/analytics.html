@@ -406,6 +406,7 @@
             <button class="export-btn" onclick="exportPDF()">Export PDF</button>
         </div>
         <div class="store-badge" id="storeBadge">Store: All</div>
+        <div class="store-badge" id="storageBadge" style="background: var(--warning); font-size: 12px; padding: 6px 12px;">Storage: ...</div>
     </header>
 
     <!-- KPI CARDS -->
@@ -559,6 +560,17 @@
                 var resp = await fetch('/analytics');
                 var data = await resp.json();
                 var events = data.events || [];
+                var storage = data.storage || 'file';
+
+                // Update storage badge
+                var badge = document.getElementById('storageBadge');
+                if (storage === 'kv') {
+                    badge.textContent = 'Storage: Redis KV';
+                    badge.style.background = 'var(--success)';
+                } else {
+                    badge.textContent = 'Storage: /tmp (volatile)';
+                    badge.style.background = 'var(--warning)';
+                }
 
                 var store = document.getElementById('storeFilter').value;
                 var range = document.getElementById('dateRange').value;
