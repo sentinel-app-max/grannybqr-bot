@@ -383,7 +383,7 @@
 <body>
     <header class="header">
         <div>
-            <a href="/" class="back-btn">&#8592; Back to App</a>
+            <a href="/" class="back-btn" onclick="event.preventDefault(); if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/'; }">&#8592; Back to App</a>
             <div>
                 <div class="logo">Granny B's Analytics</div>
                 <p class="logo-sub">In-Store QR Bot Tracking</p>
