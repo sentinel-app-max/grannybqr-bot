@@ -10,7 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary: #DD2222;
+            --primary: #6366f1;
             --bg-dark: #0f0f1a;
             --bg-card: #1a1a2e;
             --text-primary: #ffffff;
@@ -19,6 +19,11 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --dexter: #2196F3;
+            --dulux: #F9A825;
+            --threem: #4CAF50;
+            --plascon: #9C27B0;
+            --grannyb: #DD2222;
         }
 
         body {
@@ -28,6 +33,19 @@
             min-height: 100vh;
             padding: 20px;
         }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header > div:first-child { display: flex; align-items: center; gap: 16px; }
 
         .back-btn {
             display: inline-flex;
@@ -49,21 +67,12 @@
             border-color: var(--text-secondary);
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
         .logo {
             font-size: 24px;
             font-weight: 700;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .logo-sub {
@@ -72,14 +81,14 @@
             margin-top: 4px;
         }
 
-        .filters {
+        .date-filter {
             display: flex;
             gap: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
 
-        .filters select {
+        .date-filter select {
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-primary);
@@ -99,7 +108,7 @@
             cursor: pointer;
         }
 
-        .refresh-btn:hover { opacity: 0.9; }
+        .refresh-btn:hover { background: #4f46e5; }
 
         .export-btn {
             background: transparent;
@@ -118,24 +127,19 @@
             border-color: var(--text-secondary);
         }
 
-        @media print {
-            body { background: #fff; color: #000; padding: 10px; }
-            .back-btn, .filters, .export-btn, .refresh-btn { display: none !important; }
-            .dashboard { display: block !important; }
-            .header { border-bottom: 2px solid #000; }
-            .logo { color: #DD2222; }
-            .logo-sub, .stat-label, .funnel-label, .event-time, .event-details { color: #555; }
-            .stat-card, .section { background: #fff; border: 1px solid #ccc; }
-            .stat-value { color: #000; }
-            .funnel-bar { color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .data-table th, .data-table td { border-color: #ccc; color: #000; }
-            .event-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .events-list { max-height: none; overflow: visible; }
+        .store-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
+        /* === KPI CARDS === */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
             margin-bottom: 30px;
         }
@@ -154,16 +158,18 @@
         }
 
         .stat-value {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
         }
 
-        .stat-pct {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+        .stat-change {
+            font-size: 13px;
+            margin-top: 8px;
         }
 
+        .stat-change.positive { color: var(--success); }
+
+        /* === SECTIONS === */
         .section {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -178,50 +184,111 @@
             margin-bottom: 20px;
         }
 
+        /* === FUNNEL (shopshop pill style) === */
         .funnel {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            overflow-x: auto;
+            gap: 20px;
         }
 
         .funnel-step {
             flex: 1;
             text-align: center;
-            min-width: 80px;
         }
 
         .funnel-bar {
             height: 60px;
             background: var(--primary);
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 20px;
         }
 
         .funnel-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
 
         .funnel-arrow {
             color: var(--text-secondary);
-            font-size: 20px;
+            font-size: 24px;
+        }
+
+        /* === BRAND TABLE (shopshop retailer-table style) === */
+        .retailer-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .retailer-table th, .retailer-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .retailer-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .retailer-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .retailer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .retailer-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
             flex-shrink: 0;
         }
 
+        /* === COMMISSION BOX (shopshop style) === */
+        .commission-highlight {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+
+        .commission-title {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .commission-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .commission-note {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* === PROMO PERFORMANCE TABLE === */
         .data-table {
             width: 100%;
             border-collapse: collapse;
         }
 
         .data-table th, .data-table td {
-            padding: 12px;
+            padding: 14px;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
@@ -234,6 +301,7 @@
 
         .data-table tr:last-child td { border-bottom: none; }
 
+        /* === EVENTS === */
         .events-list {
             max-height: 400px;
             overflow-y: auto;
@@ -249,10 +317,7 @@
 
         .event-item:last-child { border-bottom: none; }
 
-        .event-type {
-            font-weight: 500;
-            font-size: 14px;
-        }
+        .event-type { font-weight: 500; }
 
         .event-details {
             font-size: 13px;
@@ -273,250 +338,217 @@
             font-weight: 600;
         }
 
-        .revenue-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .revenue-box {
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--success);
-            background: rgba(16, 185, 129, 0.08);
-        }
-
-        .revenue-box.total {
-            grid-column: 1 / -1;
-            border-width: 2px;
-            background: rgba(16, 185, 129, 0.12);
-        }
-
-        .revenue-label {
-            font-size: 13px;
-            color: var(--success);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .revenue-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--success);
-        }
-
-        .revenue-box.total .revenue-value {
-            font-size: 36px;
-        }
-
-        .revenue-note {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-        }
-
-        @media (max-width: 640px) {
-            .revenue-grid { grid-template-columns: 1fr; }
-            .revenue-box.total { grid-column: auto; }
-            .revenue-value { font-size: 24px; }
-            .revenue-box.total .revenue-value { font-size: 28px; }
-        }
-
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: var(--text-secondary);
         }
 
+        /* === PRINT === */
+        @media print {
+            body { background: #fff; color: #000; padding: 10px; }
+            .back-btn, .date-filter, .export-btn, .refresh-btn, .store-badge { display: none !important; }
+            .header { border-bottom: 2px solid #000; }
+            .logo { color: #6366f1; -webkit-text-fill-color: #6366f1; background: none; }
+            .logo-sub, .stat-label, .funnel-label, .event-time, .event-details, .commission-note { color: #555; }
+            .stat-card, .section { background: #fff; border: 1px solid #ccc; }
+            .stat-value { color: #000; }
+            .funnel-bar { color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .retailer-table th, .retailer-table td, .data-table th, .data-table td { border-color: #ccc; color: #000; }
+            .retailer-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .event-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .events-list { max-height: none; overflow: visible; }
+            .commission-highlight { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+
+        /* === RESPONSIVE === */
         @media (max-width: 640px) {
-            body { padding: 12px; }
-            .header { flex-direction: column; align-items: flex-start; }
+            body { padding: 12px; overflow-x: hidden; }
+            .header { flex-wrap: wrap; gap: 10px; }
+            .header > div:first-child { width: 100%; margin-bottom: 4px; }
+            .logo { font-size: 20px; }
+            .date-filter { flex: 1; }
+            .date-filter select { padding: 8px 10px; font-size: 13px; }
+            .refresh-btn { padding: 8px 12px; font-size: 13px; }
+            .store-badge { padding: 8px 10px; font-size: 12px; }
             .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .stat-card { padding: 14px; }
+            .stat-card { padding: 12px; }
             .stat-value { font-size: 22px; }
-            .funnel { overflow-x: auto; }
-            .section { padding: 16px; }
-            .data-table { font-size: 13px; }
-            .data-table th, .data-table td { padding: 8px 6px; }
+            .funnel { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            table { font-size: 12px; }
+            th, td { padding: 8px 6px; }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard" id="dashboard">
-        <header class="header">
+    <header class="header">
+        <div>
             <a href="/" class="back-btn">&#8592; Back to App</a>
             <div>
                 <div class="logo">Granny B's Analytics</div>
                 <p class="logo-sub">In-Store QR Bot Tracking</p>
             </div>
-            <div class="filters">
-                <select id="storeFilter">
-                    <option value="all">All Stores</option>
-                    <option value="leroy-merlin">Leroy Merlin</option>
-                    <option value="leroy-fourways">Leroy Fourways</option>
-                </select>
-                <select id="dateRange">
-                    <option value="today">Today</option>
-                    <option value="7days" selected>Last 7 Days</option>
-                    <option value="30days">Last 30 Days</option>
-                    <option value="all">All Time</option>
-                </select>
-                <button class="refresh-btn" onclick="loadData()">Refresh</button>
-                <button class="export-btn" onclick="exportCSV()">Export CSV</button>
-                <button class="export-btn" onclick="exportPDF()">Export PDF</button>
-            </div>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">QR Scans</div>
-                <div class="stat-value" id="stat-scans">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Leads Captured</div>
-                <div class="stat-value" id="stat-leads">0</div>
-                <div class="stat-pct" id="stat-leads-pct"></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Guided Completed</div>
-                <div class="stat-value" id="stat-guided">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Chat Messages</div>
-                <div class="stat-value" id="stat-chats">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Promos Shown</div>
-                <div class="stat-value" id="stat-promos">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Recipe Taps</div>
-                <div class="stat-value" id="stat-recipes">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">WhatsApp Sends</div>
-                <div class="stat-value" id="stat-wa">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Discount Copies</div>
-                <div class="stat-value" id="stat-discounts">0</div>
-            </div>
         </div>
+        <div class="date-filter">
+            <select id="storeFilter">
+                <option value="all">All Stores</option>
+                <option value="leroy-merlin">Leroy Merlin</option>
+                <option value="leroy-fourways">Leroy Fourways</option>
+            </select>
+            <select id="dateRange">
+                <option value="today">Today</option>
+                <option value="7days" selected>Last 7 Days</option>
+                <option value="30days">Last 30 Days</option>
+                <option value="all">All Time</option>
+            </select>
+            <button class="refresh-btn" onclick="loadData()">Refresh</button>
+            <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+            <button class="export-btn" onclick="exportPDF()">Export PDF</button>
+        </div>
+        <div class="store-badge" id="storeBadge">Store: All</div>
+    </header>
 
-        <div class="section">
-            <h2 class="section-title">Conversion Funnel</h2>
-            <div class="funnel">
-                <div class="funnel-step">
-                    <div class="funnel-bar" style="opacity:1" id="funnel-scans">0</div>
-                    <div class="funnel-label">Scans</div>
-                </div>
-                <span class="funnel-arrow">&rarr;</span>
-                <div class="funnel-step">
-                    <div class="funnel-bar" style="opacity:0.85" id="funnel-leads">0</div>
-                    <div class="funnel-label">Leads</div>
-                </div>
-                <span class="funnel-arrow">&rarr;</span>
-                <div class="funnel-step">
-                    <div class="funnel-bar" style="opacity:0.7" id="funnel-guided">0</div>
-                    <div class="funnel-label">Guided Done</div>
-                </div>
-                <span class="funnel-arrow">&rarr;</span>
-                <div class="funnel-step">
-                    <div class="funnel-bar" style="opacity:0.55" id="funnel-recipes">0</div>
-                    <div class="funnel-label">Recipe Tap</div>
-                </div>
-                <span class="funnel-arrow">&rarr;</span>
-                <div class="funnel-step">
-                    <div class="funnel-bar" style="background:var(--success)" id="funnel-wa">0</div>
-                    <div class="funnel-label">WhatsApp</div>
-                </div>
+    <!-- KPI CARDS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Scans</div>
+            <div class="stat-value" id="stat-scans">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Leads</div>
+            <div class="stat-value" id="stat-leads">0</div>
+            <div class="stat-change positive" id="stat-leads-pct"></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Consultations</div>
+            <div class="stat-value" id="stat-consultations">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Recipes Sent</div>
+            <div class="stat-value" id="stat-recipes">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">WhatsApp Sends</div>
+            <div class="stat-value" id="stat-wa">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Promo Revenue</div>
+            <div class="stat-value" id="stat-revenue">R0</div>
+        </div>
+    </div>
+
+    <!-- CONVERSION FUNNEL -->
+    <div class="section">
+        <h2 class="section-title">Conversion Funnel</h2>
+        <div class="funnel">
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: var(--primary); opacity: 1;" id="funnel-scans">0</div>
+                <div class="funnel-label">Scans</div>
             </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Promo Card Performance</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Shown</th>
-                        <th>Clicked</th>
-                        <th>Dismissed</th>
-                        <th>Avg View (s)</th>
-                    </tr>
-                </thead>
-                <tbody id="promoTable">
-                    <tr><td colspan="5" class="empty-state">Loading...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Revenue by Brand</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Brand</th>
-                        <th>Impressions</th>
-                        <th>Clicks</th>
-                        <th>Imp. Rev</th>
-                        <th>Click Rev</th>
-                        <th>Total Rev</th>
-                    </tr>
-                </thead>
-                <tbody id="brandRevenueTable">
-                    <tr><td colspan="6" class="empty-state">Loading...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Revenue Estimates</h2>
-            <div class="revenue-grid">
-                <div class="revenue-box">
-                    <div class="revenue-label">Supplier Promo Revenue</div>
-                    <div class="revenue-value" id="rev-promo">R0.00</div>
-                    <div class="revenue-note">Third-party brands: R0.50/impression + R2.00/click</div>
-                </div>
-                <div class="revenue-box">
-                    <div class="revenue-label">Estimated Lead Value</div>
-                    <div class="revenue-value" id="rev-leads">R0.00</div>
-                    <div class="revenue-note">Based on R15 per qualified lead</div>
-                </div>
-                <div class="revenue-box total">
-                    <div class="revenue-label">Total Platform Revenue</div>
-                    <div class="revenue-value" id="rev-total">R0.00</div>
-                    <div class="revenue-note">Supplier promo revenue + Lead capture</div>
-                </div>
+            <span class="funnel-arrow">&rarr;</span>
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: var(--primary); opacity: 0.8;" id="funnel-leads">0</div>
+                <div class="funnel-label">Leads</div>
             </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Guided Answer Breakdown</h2>
-            <div id="guidedBreakdown" class="empty-state">Loading...</div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">Recent Events</h2>
-            <div class="events-list" id="eventsList">
-                <div class="empty-state">Loading...</div>
+            <span class="funnel-arrow">&rarr;</span>
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: var(--primary); opacity: 0.6;" id="funnel-consultations">0</div>
+                <div class="funnel-label">Consultations</div>
+            </div>
+            <span class="funnel-arrow">&rarr;</span>
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: var(--primary); opacity: 0.4;" id="funnel-recipes">0</div>
+                <div class="funnel-label">Recipes</div>
+            </div>
+            <span class="funnel-arrow">&rarr;</span>
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: var(--success);" id="funnel-wa">0</div>
+                <div class="funnel-label">WhatsApp</div>
             </div>
         </div>
     </div>
 
+    <!-- CLICKS BY BRAND -->
+    <div class="section">
+        <h2 class="section-title">Clicks by Brand</h2>
+        <table class="retailer-table">
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Impressions</th>
+                    <th>Clicks</th>
+                    <th>Click Value</th>
+                    <th>Revenue</th>
+                    <th>Conversion</th>
+                </tr>
+            </thead>
+            <tbody id="brandTable">
+                <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+            </tbody>
+        </table>
+
+        <div class="commission-highlight">
+            <div class="commission-title">Estimated Platform Revenue</div>
+            <div class="commission-value" id="commission-value">R0.00</div>
+            <div class="commission-note">Based on R0.50/impression + R2.00/click + R15/lead</div>
+        </div>
+    </div>
+
+    <!-- PROMO CARD PERFORMANCE -->
+    <div class="section">
+        <h2 class="section-title">Promo Card Performance</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Shown</th>
+                    <th>Clicked</th>
+                    <th>Dismissed</th>
+                    <th>Avg View (s)</th>
+                </tr>
+            </thead>
+            <tbody id="promoTable">
+                <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- GUIDED ANSWER BREAKDOWN -->
+    <div class="section">
+        <h2 class="section-title">Guided Answer Breakdown</h2>
+        <div id="guidedBreakdown" class="empty-state">Loading...</div>
+    </div>
+
+    <!-- RECENT EVENTS -->
+    <div class="section">
+        <h2 class="section-title">Recent Events</h2>
+        <div class="events-list" id="eventsList">
+            <div class="empty-state">No events yet</div>
+        </div>
+    </div>
+
     <script>
+        var brandConfig = {
+            'Dexter':      { color: 'var(--dexter)',  dot: '#2196F3' },
+            'Dulux':       { color: 'var(--dulux)',   dot: '#F9A825' },
+            '3M':          { color: 'var(--threem)',  dot: '#4CAF50' },
+            'Plascon':     { color: 'var(--plascon)', dot: '#9C27B0' },
+            "Granny B's":  { color: 'var(--grannyb)', dot: '#DD2222' }
+        };
+        var hostBrand = "Granny B's";
+
+        // Store badge
+        document.getElementById('storeFilter').addEventListener('change', function() {
+            var v = this.value;
+            document.getElementById('storeBadge').textContent = 'Store: ' + (v === 'all' ? 'All' : v);
+            loadData();
+        });
+
         function getDateCutoff(range) {
             var now = new Date();
-            if (range === 'today') {
-                return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-            }
-            if (range === '7days') {
-                return new Date(now.getTime() - 7 * 86400000).toISOString();
-            }
-            if (range === '30days') {
-                return new Date(now.getTime() - 30 * 86400000).toISOString();
-            }
+            if (range === 'today') return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+            if (range === '7days') return new Date(now.getTime() - 7 * 86400000).toISOString();
+            if (range === '30days') return new Date(now.getTime() - 30 * 86400000).toISOString();
             return '1970-01-01T00:00:00.000Z';
         }
 
@@ -541,8 +573,8 @@
                 currentFilteredEvents = filtered;
                 renderStats(filtered);
                 renderFunnel(filtered);
+                renderBrandTable(filtered);
                 renderPromoTable(filtered);
-                renderRevenue(filtered);
                 renderGuidedBreakdown(filtered);
                 renderEvents(filtered);
             } catch (err) {
@@ -557,49 +589,109 @@
         function renderStats(events) {
             var scans = countType(events, 'scan');
             var leads = countType(events, 'lead_submit');
-            var guided = countType(events, 'guided_answer');
-            var chats = countType(events, 'chat_message');
-            var promos = countType(events, 'promo_shown');
             var recipes = countType(events, 'recipe_tap');
             var wa = countType(events, 'whatsapp_send');
-            var discounts = countType(events, 'discount_copy');
 
-            document.getElementById('stat-scans').textContent = scans;
-            document.getElementById('stat-leads').textContent = leads;
-            document.getElementById('stat-leads-pct').textContent = scans > 0 ? Math.round(leads / scans * 100) + '% capture rate' : '';
-            document.getElementById('stat-guided').textContent = guided;
-            document.getElementById('stat-chats').textContent = chats;
-            document.getElementById('stat-promos').textContent = promos;
-            document.getElementById('stat-recipes').textContent = recipes;
-            document.getElementById('stat-wa').textContent = wa;
-            document.getElementById('stat-discounts').textContent = discounts;
-        }
-
-        function renderFunnel(events) {
-            var scans = countType(events, 'scan');
-            var leads = countType(events, 'lead_submit');
-
-            // Count unique sessions that completed all guided questions
+            // Consultations = unique sessions completing 4+ guided answers
             var guidedSessions = {};
             events.filter(function(e) { return e.event_type === 'guided_answer'; }).forEach(function(e) {
                 if (!guidedSessions[e.sessionId]) guidedSessions[e.sessionId] = 0;
                 guidedSessions[e.sessionId]++;
             });
-            var guidedComplete = Object.values(guidedSessions).filter(function(c) { return c >= 4; }).length;
+            var consultations = Object.values(guidedSessions).filter(function(c) { return c >= 4; }).length;
 
+            // Revenue from third-party brands
+            var revenue = 0;
+            events.forEach(function(e) {
+                var brand = e.event_data && e.event_data.brand;
+                if (brand && brand !== hostBrand) {
+                    if (e.event_type === 'promo_shown') revenue += 0.50;
+                    if (e.event_type === 'promo_click') revenue += 2.00;
+                }
+            });
+
+            document.getElementById('stat-scans').textContent = scans;
+            document.getElementById('stat-leads').textContent = leads;
+            document.getElementById('stat-leads-pct').textContent = scans > 0 ? Math.round(leads / scans * 100) + '% capture rate' : '';
+            document.getElementById('stat-consultations').textContent = consultations;
+            document.getElementById('stat-recipes').textContent = recipes;
+            document.getElementById('stat-wa').textContent = wa;
+            document.getElementById('stat-revenue').textContent = 'R' + revenue.toFixed(0);
+        }
+
+        function renderFunnel(events) {
+            var scans = countType(events, 'scan');
+            var leads = countType(events, 'lead_submit');
+            var guidedSessions = {};
+            events.filter(function(e) { return e.event_type === 'guided_answer'; }).forEach(function(e) {
+                if (!guidedSessions[e.sessionId]) guidedSessions[e.sessionId] = 0;
+                guidedSessions[e.sessionId]++;
+            });
+            var consultations = Object.values(guidedSessions).filter(function(c) { return c >= 4; }).length;
             var recipes = countType(events, 'recipe_tap');
             var wa = countType(events, 'whatsapp_send');
 
             document.getElementById('funnel-scans').textContent = scans;
             document.getElementById('funnel-leads').textContent = leads;
-            document.getElementById('funnel-guided').textContent = guidedComplete;
+            document.getElementById('funnel-consultations').textContent = consultations;
             document.getElementById('funnel-recipes').textContent = recipes;
             document.getElementById('funnel-wa').textContent = wa;
         }
 
+        function renderBrandTable(events) {
+            var brandStats = {};
+            events.forEach(function(e) {
+                if (e.event_type === 'promo_shown' || e.event_type === 'promo_click') {
+                    var brand = (e.event_data && e.event_data.brand) || 'Unknown';
+                    if (!brandStats[brand]) brandStats[brand] = { impressions: 0, clicks: 0 };
+                    if (e.event_type === 'promo_shown') brandStats[brand].impressions++;
+                    if (e.event_type === 'promo_click') brandStats[brand].clicks++;
+                }
+            });
+
+            var tbody = document.getElementById('brandTable');
+            var entries = Object.entries(brandStats);
+
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No brand data yet</td></tr>';
+            } else {
+                tbody.innerHTML = entries
+                    .sort(function(a, b) { return b[1].impressions - a[1].impressions; })
+                    .map(function(entry) {
+                        var brand = entry[0];
+                        var d = entry[1];
+                        var isHost = brand === hostBrand;
+                        var cfg = brandConfig[brand] || { dot: '#666' };
+                        var clickValue = isHost ? 0 : d.clicks * 2.00;
+                        var totalRev = isHost ? 0 : (d.impressions * 0.50) + (d.clicks * 2.00);
+                        var conversion = d.impressions > 0 ? ((d.clicks / d.impressions) * 100).toFixed(1) : '0.0';
+                        return '<tr>' +
+                            '<td><span class="retailer-badge"><span class="retailer-dot" style="background:' + cfg.dot + '"></span>' + brand + (isHost ? ' <span style="color:var(--text-secondary);font-size:11px">(host)</span>' : '') + '</span></td>' +
+                            '<td>' + d.impressions + '</td>' +
+                            '<td>' + d.clicks + '</td>' +
+                            '<td>' + (isHost ? '\u2014' : 'R' + clickValue.toFixed(2)) + '</td>' +
+                            '<td>' + (isHost ? '\u2014' : 'R' + totalRev.toFixed(2)) + '</td>' +
+                            '<td>' + conversion + '%</td>' +
+                            '</tr>';
+                    }).join('');
+            }
+
+            // Platform revenue: supplier promo + leads
+            var supplierRevenue = 0;
+            entries.forEach(function(entry) {
+                if (entry[0] !== hostBrand) {
+                    supplierRevenue += (entry[1].impressions * 0.50) + (entry[1].clicks * 2.00);
+                }
+            });
+            var leads = countType(events, 'lead_submit');
+            var leadValue = leads * 15;
+            var total = supplierRevenue + leadValue;
+
+            document.getElementById('commission-value').textContent = 'R' + total.toFixed(2);
+        }
+
         function renderPromoTable(events) {
             var promoStats = {};
-
             events.forEach(function(e) {
                 if (e.event_type === 'promo_shown' || e.event_type === 'promo_click' || e.event_type === 'promo_dismiss') {
                     var product = (e.event_data && e.event_data.product) || 'Unknown';
@@ -618,12 +710,10 @@
 
             var tbody = document.getElementById('promoTable');
             var entries = Object.entries(promoStats);
-
             if (entries.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No promo data yet</td></tr>';
                 return;
             }
-
             tbody.innerHTML = entries
                 .sort(function(a, b) { return b[1].shown - a[1].shown; })
                 .map(function(entry) {
@@ -632,60 +722,6 @@
                     var avgView = d.dismissCount > 0 ? (d.totalViewTime / d.dismissCount / 1000).toFixed(1) : '-';
                     return '<tr><td>' + name + '</td><td>' + d.shown + '</td><td>' + d.clicked + '</td><td>' + d.dismissed + '</td><td>' + avgView + '</td></tr>';
                 }).join('');
-        }
-
-        var hostBrand = "Granny B's";
-
-        function renderRevenue(events) {
-            // Build brand stats from promo events that have a brand field
-            var brandStats = {};
-            events.forEach(function(e) {
-                if (e.event_type === 'promo_shown' || e.event_type === 'promo_click') {
-                    var brand = (e.event_data && e.event_data.brand) || 'Unknown';
-                    if (!brandStats[brand]) brandStats[brand] = { impressions: 0, clicks: 0 };
-                    if (e.event_type === 'promo_shown') brandStats[brand].impressions++;
-                    if (e.event_type === 'promo_click') brandStats[brand].clicks++;
-                }
-            });
-
-            // Render brand revenue table
-            var tbody = document.getElementById('brandRevenueTable');
-            var entries = Object.entries(brandStats);
-            if (entries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No brand data yet</td></tr>';
-            } else {
-                tbody.innerHTML = entries
-                    .sort(function(a, b) { return b[1].impressions - a[1].impressions; })
-                    .map(function(entry) {
-                        var brand = entry[0];
-                        var d = entry[1];
-                        var isHost = brand === hostBrand;
-                        var impRev = isHost ? 0 : d.impressions * 0.50;
-                        var clickRev = isHost ? 0 : d.clicks * 2.00;
-                        var totalRev = impRev + clickRev;
-                        return '<tr><td><strong>' + brand + '</strong>' + (isHost ? ' <span style="color:var(--text-secondary);font-size:11px">(host)</span>' : '') + '</td>' +
-                            '<td>' + d.impressions + '</td><td>' + d.clicks + '</td>' +
-                            '<td>' + (isHost ? '\u2014' : 'R' + impRev.toFixed(2)) + '</td>' +
-                            '<td>' + (isHost ? '\u2014' : 'R' + clickRev.toFixed(2)) + '</td>' +
-                            '<td>' + (isHost ? '\u2014' : 'R' + totalRev.toFixed(2)) + '</td></tr>';
-                    }).join('');
-            }
-
-            // Calculate supplier promo revenue (exclude host brand)
-            var supplierRevenue = 0;
-            entries.forEach(function(entry) {
-                if (entry[0] !== hostBrand) {
-                    supplierRevenue += (entry[1].impressions * 0.50) + (entry[1].clicks * 2.00);
-                }
-            });
-
-            var leads = countType(events, 'lead_submit');
-            var leadValue = leads * 15;
-            var total = supplierRevenue + leadValue;
-
-            document.getElementById('rev-promo').textContent = 'R' + supplierRevenue.toFixed(2);
-            document.getElementById('rev-leads').textContent = 'R' + leadValue.toFixed(2);
-            document.getElementById('rev-total').textContent = 'R' + total.toFixed(2);
         }
 
         function renderGuidedBreakdown(events) {
@@ -700,7 +736,6 @@
 
             var container = document.getElementById('guidedBreakdown');
             var questions = Object.keys(questionMap);
-
             if (questions.length === 0) {
                 container.innerHTML = '<div class="empty-state">No guided answer data yet</div>';
                 return;
@@ -721,47 +756,30 @@
                 });
                 html += '</div>';
             });
-
             container.innerHTML = html;
         }
 
         var eventLabels = {
-            'scan': 'QR Scan',
-            'lead_submit': 'Lead Captured',
-            'guided_answer': 'Guided Answer',
-            'promo_shown': 'Promo Shown',
-            'promo_click': 'Promo Click',
-            'promo_dismiss': 'Promo Dismissed',
-            'chat_message': 'Chat Message',
-            'recipe_tap': 'Recipe Tap',
-            'whatsapp_send': 'WhatsApp Send',
-            'email_share': 'Email Share',
-            'discount_copy': 'Discount Copy'
+            'scan': 'QR Scan', 'lead_submit': 'Lead Captured', 'guided_answer': 'Guided Answer',
+            'promo_shown': 'Promo Shown', 'promo_click': 'Promo Click', 'promo_dismiss': 'Promo Dismissed',
+            'chat_message': 'Chat Message', 'recipe_tap': 'Recipe Tap', 'whatsapp_send': 'WhatsApp Send',
+            'email_share': 'Email Share', 'discount_copy': 'Discount Copy'
         };
 
         var eventColors = {
-            'scan': '#6366f1',
-            'lead_submit': '#10b981',
-            'guided_answer': '#3b82f6',
-            'promo_shown': '#f59e0b',
-            'promo_click': '#10b981',
-            'promo_dismiss': '#ef4444',
-            'chat_message': '#8b5cf6',
-            'recipe_tap': '#ec4899',
-            'whatsapp_send': '#25D366',
-            'email_share': '#DD2222',
-            'discount_copy': '#f97316'
+            'scan': '#6366f1', 'lead_submit': '#10b981', 'guided_answer': '#3b82f6',
+            'promo_shown': '#f59e0b', 'promo_click': '#10b981', 'promo_dismiss': '#ef4444',
+            'chat_message': '#8b5cf6', 'recipe_tap': '#ec4899', 'whatsapp_send': '#25D366',
+            'email_share': '#DD2222', 'discount_copy': '#f97316'
         };
 
         function renderEvents(events) {
             var container = document.getElementById('eventsList');
             var recent = events.slice(-30).reverse();
-
             if (recent.length === 0) {
-                container.innerHTML = '<div class="empty-state">No events recorded yet</div>';
+                container.innerHTML = '<div class="empty-state">No events recorded yet.<br><br>Visit the <a href="/" style="color: var(--primary)">main app</a> to generate some activity.</div>';
                 return;
             }
-
             container.innerHTML = recent.map(function(e) {
                 var label = eventLabels[e.event_type] || e.event_type;
                 var color = eventColors[e.event_type] || '#6366f1';
@@ -769,7 +787,7 @@
                 var time = e.timestamp ? new Date(e.timestamp).toLocaleString('en-ZA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
                 return '<div class="event-item"><div><span class="event-badge" style="background:' + color + '22;color:' + color + '">' + label + '</span>' +
                     (details ? '<div class="event-details">' + details + '</div>' : '') +
-                    '</div><div class="event-time">' + time + '<br><span style="font-size:11px;color:var(--border)">' + (e.store || '') + '</span></div></div>';
+                    '</div><div class="event-time">' + time + '</div></div>';
             }).join('');
         }
 
@@ -777,7 +795,7 @@
             var d = e.event_data || {};
             if (e.event_type === 'guided_answer') return d.question + ': ' + d.answer;
             if (e.event_type === 'lead_submit') return d.name + (d.email ? ' (' + d.email + ')' : '');
-            if (e.event_type === 'promo_shown') return d.product + ' - ' + d.price;
+            if (e.event_type === 'promo_shown') return (d.brand ? '[' + d.brand + '] ' : '') + d.product + ' - ' + d.price;
             if (e.event_type === 'promo_dismiss') return d.product + ' (' + (d.viewDuration ? (d.viewDuration / 1000).toFixed(1) + 's' : '-') + ')';
             if (e.event_type === 'promo_click') return d.product;
             if (e.event_type === 'scan') return (d.sku ? 'SKU ' + d.sku : 'No SKU') + ' - ' + (d.flow || '');
@@ -790,12 +808,8 @@
             var headers = ['Timestamp', 'Session ID', 'Store', 'Client', 'Event Type', 'Details'];
             var rows = currentFilteredEvents.map(function(e) {
                 return [
-                    e.timestamp || '',
-                    e.sessionId || '',
-                    e.store || '',
-                    e.client || '',
-                    e.event_type || '',
-                    formatDetails(e).replace(/,/g, ';')
+                    e.timestamp || '', e.sessionId || '', e.store || '',
+                    e.client || '', e.event_type || '', formatDetails(e).replace(/,/g, ';')
                 ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
             });
             var csv = headers.join(',') + '\n' + rows.join('\n');
@@ -808,9 +822,7 @@
             URL.revokeObjectURL(url);
         }
 
-        function exportPDF() {
-            window.print();
-        }
+        function exportPDF() { window.print(); }
 
         // Load on start
         loadData();
