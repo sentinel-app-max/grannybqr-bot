@@ -564,8 +564,8 @@
 
                 // Update storage badge
                 var badge = document.getElementById('storageBadge');
-                if (storage === 'kv') {
-                    badge.textContent = 'Storage: Redis KV';
+                if (storage === 'redis' || storage === 'kv') {
+                    badge.textContent = 'Storage: Redis';
                     badge.style.background = 'var(--success)';
                 } else {
                     badge.textContent = 'Storage: /tmp (volatile)';

@@ -5,40 +5,36 @@ import time
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 
-# Vercel KV (Upstash Redis) REST API config
+# --- Redis via REDIS_URL (primary) ---
+REDIS_URL = os.environ.get('REDIS_URL', '')
+_redis_client = None
+_redis_error = None
+
+try:
+    import redis as _redis_mod
+    if REDIS_URL:
+        try:
+            _redis_client = _redis_mod.from_url(REDIS_URL, decode_responses=True, socket_timeout=5)
+            _redis_client.ping()
+        except Exception as e:
+            _redis_error = str(e)
+            _redis_client = None
+except ImportError:
+    _redis_error = 'redis package not installed'
+
+# --- Vercel KV REST API (secondary) ---
 KV_REST_API_URL = os.environ.get('KV_REST_API_URL', '')
 KV_REST_API_TOKEN = os.environ.get('KV_REST_API_TOKEN', '')
 
-# Fallback file storage when KV is not configured
+# Fallback file storage
 EVENTS_FILE = '/tmp/analytics_events.json'
 
-def kv_available():
-    return bool(KV_REST_API_URL and KV_REST_API_TOKEN)
-
-def kv_request(commands):
-    """Send a pipeline of commands to Vercel KV REST API.
-    commands: list of lists, e.g. [["RPUSH", "events", "..."], ["INCR", "count:scans"]]
-    Returns list of results."""
-    url = KV_REST_API_URL + '/pipeline'
-    body = json.dumps(commands).encode()
-    req = Request(url, data=body, method='POST')
-    req.add_header('Authorization', 'Bearer ' + KV_REST_API_TOKEN)
-    req.add_header('Content-Type', 'application/json')
-    resp = urlopen(req, timeout=5)
-    return json.loads(resp.read())
-
-def kv_single(command):
-    """Send a single command to Vercel KV REST API.
-    command: list, e.g. ["LRANGE", "events", "0", "-1"]
-    Returns the result value."""
-    url = KV_REST_API_URL
-    body = json.dumps(command).encode()
-    req = Request(url, data=body, method='POST')
-    req.add_header('Authorization', 'Bearer ' + KV_REST_API_TOKEN)
-    req.add_header('Content-Type', 'application/json')
-    resp = urlopen(req, timeout=10)
-    data = json.loads(resp.read())
-    return data.get('result')
+def get_storage_type():
+    if _redis_client:
+        return 'redis'
+    if KV_REST_API_URL and KV_REST_API_TOKEN:
+        return 'kv'
+    return 'file'
 
 # --- Counter key mapping ---
 COUNTER_MAP = {
@@ -55,22 +51,67 @@ COUNTER_MAP = {
     'discount_copy': 'count:discount_copy',
 }
 
-def kv_write_event(event):
-    """Write event to KV: RPUSH to events list + INCR relevant counter."""
+# --- Redis client operations ---
+def redis_write_event(event):
     event_json = json.dumps(event)
-    commands = [
-        ['RPUSH', 'events', event_json],
-    ]
-    # Increment the counter for this event type
+    pipe = _redis_client.pipeline()
+    pipe.rpush('events', event_json)
+    counter_key = COUNTER_MAP.get(event.get('event_type'))
+    if counter_key:
+        pipe.incr(counter_key)
+    pipe.ltrim('events', -10000, -1)
+    pipe.execute()
+
+def redis_read_events():
+    items = _redis_client.lrange('events', 0, -1)
+    events = []
+    for item in items:
+        try:
+            events.append(json.loads(item))
+        except (json.JSONDecodeError, TypeError):
+            pass
+    return events
+
+def redis_read_counters():
+    pipe = _redis_client.pipeline()
+    for key in COUNTER_MAP.values():
+        pipe.get(key)
+    results = pipe.execute()
+    counters = {}
+    for key, val in zip(COUNTER_MAP.values(), results):
+        counters[key] = int(val) if val else 0
+    return counters
+
+# --- KV REST API operations ---
+def kv_request(commands):
+    url = KV_REST_API_URL + '/pipeline'
+    body = json.dumps(commands).encode()
+    req = Request(url, data=body, method='POST')
+    req.add_header('Authorization', 'Bearer ' + KV_REST_API_TOKEN)
+    req.add_header('Content-Type', 'application/json')
+    resp = urlopen(req, timeout=5)
+    return json.loads(resp.read())
+
+def kv_single(command):
+    url = KV_REST_API_URL
+    body = json.dumps(command).encode()
+    req = Request(url, data=body, method='POST')
+    req.add_header('Authorization', 'Bearer ' + KV_REST_API_TOKEN)
+    req.add_header('Content-Type', 'application/json')
+    resp = urlopen(req, timeout=10)
+    data = json.loads(resp.read())
+    return data.get('result')
+
+def kv_write_event(event):
+    event_json = json.dumps(event)
+    commands = [['RPUSH', 'events', event_json]]
     counter_key = COUNTER_MAP.get(event.get('event_type'))
     if counter_key:
         commands.append(['INCR', counter_key])
-    # Cap list at 10000 events
     commands.append(['LTRIM', 'events', '-10000', '-1'])
     kv_request(commands)
 
 def kv_read_events():
-    """Read all events from KV."""
     result = kv_single(['LRANGE', 'events', '0', '-1'])
     if not result:
         return []
@@ -83,7 +124,6 @@ def kv_read_events():
     return events
 
 def kv_read_counters():
-    """Read all counter values in a single pipeline call."""
     commands = [['GET', key] for key in COUNTER_MAP.values()]
     results = kv_request(commands)
     counters = {}
@@ -108,6 +148,34 @@ def file_write_event(event):
         events = events[-10000:]
     with open(EVENTS_FILE, 'w') as f:
         f.write(json.dumps(events))
+
+# --- Dispatch helpers ---
+def write_event(event):
+    st = get_storage_type()
+    if st == 'redis':
+        redis_write_event(event)
+    elif st == 'kv':
+        kv_write_event(event)
+    else:
+        file_write_event(event)
+
+def read_events():
+    st = get_storage_type()
+    if st == 'redis':
+        return redis_read_events()
+    elif st == 'kv':
+        return kv_read_events()
+    else:
+        return file_read_events()
+
+def read_counters():
+    st = get_storage_type()
+    if st == 'redis':
+        return redis_read_counters()
+    elif st == 'kv':
+        return kv_read_counters()
+    else:
+        return None
 
 # --- Handler ---
 class handler(BaseHTTPRequestHandler):
@@ -134,16 +202,13 @@ class handler(BaseHTTPRequestHandler):
                 'server_time': time.time()
             }
 
-            if kv_available():
-                kv_write_event(event)
-            else:
-                file_write_event(event)
+            write_event(event)
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(json.dumps({'ok': True, 'storage': 'kv' if kv_available() else 'file'}).encode())
+            self.wfile.write(json.dumps({'ok': True, 'storage': get_storage_type()}).encode())
 
         except Exception as e:
             self.send_response(400)
@@ -154,20 +219,26 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            if kv_available():
-                events = kv_read_events()
-                counters = kv_read_counters()
-            else:
-                events = file_read_events()
-                counters = None
+            events = read_events()
+            counters = read_counters()
+            storage = get_storage_type()
 
             response = {
                 'events': events,
                 'count': len(events),
-                'storage': 'kv' if kv_available() else 'file'
+                'storage': storage,
             }
             if counters:
                 response['counters'] = counters
+
+            # Debug info when not using Redis
+            if storage == 'file':
+                response['debug'] = {
+                    'REDIS_URL_set': bool(REDIS_URL),
+                    'redis_error': _redis_error,
+                    'KV_REST_API_URL_set': bool(KV_REST_API_URL),
+                    'KV_REST_API_TOKEN_set': bool(KV_REST_API_TOKEN),
+                }
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
