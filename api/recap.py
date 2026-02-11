@@ -254,8 +254,11 @@ Extract what was actually discussed. Do not invent information not present in th
 </table>
 </body></html>"""
 
-        print(f"Email HTML length: {len(email_html)}, detail_rows: {len(detail_rows)}, steps: {len(steps_html)}")
-        print(f"Email HTML preview: ...{email_html[200:500]}...")
+        # Debug: verify HTML contains real <a> tags, not escaped
+        has_a_tags = '<a href=' in email_html
+        has_escaped_tags = '&lt;a href=' in email_html
+        print(f"Email HTML length: {len(email_html)}, has <a> tags: {has_a_tags}, has escaped tags: {has_escaped_tags}")
+        print(f"Email htmlContent first 500 chars: {email_html[:500]}")
 
         brevo_url = "https://api.brevo.com/v3/smtp/email"
 
@@ -274,11 +277,15 @@ Extract what was actually discussed. Do not invent information not present in th
             "htmlContent": email_html
         }
 
+        payload = json.dumps(brevo_data, ensure_ascii=False).encode('utf-8')
+        print(f"Brevo payload keys: {list(brevo_data.keys())}, payload size: {len(payload)}")
+
         req = urllib.request.Request(
             brevo_url,
-            json.dumps(brevo_data).encode(),
+            payload,
             {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Accept': 'application/json',
                 'api-key': brevo_key
             }
         )
