@@ -248,21 +248,10 @@
             border-bottom: none;
         }
 
-        .retailer-table td:first-child,
-        .data-table td:first-child {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
         .retailer-badge {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
         }
 
         .retailer-dot {
@@ -398,21 +387,59 @@
             th, td { padding: 8px 6px; }
         }
 
-        /* === MOBILE TABLES === */
+        /* === MOBILE TABLES (480px) === */
         @media (max-width: 480px) {
+            .section { padding: 12px; }
+
             .retailer-table th,
             .retailer-table td,
             .data-table th,
             .data-table td {
-                font-size: 12px;
-                padding: 6px 4px;
+                font-size: 11px;
+                padding: 4px 3px;
             }
 
+            /* Hide Click Value + Conversion on brand table */
             .col-click-value,
             .col-conversion {
-                display: none;
+                display: none !important;
             }
 
+            /* Hide Avg View on promo table */
+            .col-avg-view {
+                display: none !important;
+            }
+
+            /* Brand column: constrain width, allow wrapping */
+            .retailer-table td:first-child,
+            .retailer-table th:first-child {
+                max-width: 80px;
+                word-break: break-word;
+                white-space: normal;
+            }
+
+            /* Product column: constrain width, allow wrapping */
+            .data-table td:first-child,
+            .data-table th:first-child {
+                max-width: 70px;
+                word-break: break-word;
+                white-space: normal;
+            }
+
+            .retailer-badge {
+                gap: 4px;
+                font-size: 11px;
+            }
+            .retailer-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            /* Short product names visible only on mobile */
+            .mobile-name { display: inline; }
+            .desktop-name { display: none; }
+
+            /* Funnel: stack vertically */
             .funnel {
                 flex-direction: column;
                 gap: 8px;
@@ -427,6 +454,12 @@
                 height: 44px;
                 font-size: 16px;
             }
+        }
+
+        /* Desktop: show full name, hide short name */
+        @media (min-width: 481px) {
+            .mobile-name { display: none; }
+            .desktop-name { display: inline; }
         }
     </style>
 </head>
@@ -558,7 +591,7 @@
                     <th>Shown</th>
                     <th>Clicked</th>
                     <th>Dismissed</th>
-                    <th>Avg View (s)</th>
+                    <th class="col-avg-view">Avg View (s)</th>
                 </tr>
             </thead>
             <tbody id="promoTable">
@@ -756,6 +789,11 @@
             document.getElementById('commission-value').textContent = 'R' + total.toFixed(2);
         }
 
+        function shortName(name) {
+            var words = name.split(/\s+/);
+            return words.length <= 2 ? name : words.slice(0, 2).join(' ');
+        }
+
         function renderPromoTable(events) {
             var promoStats = {};
             events.forEach(function(e) {
@@ -786,7 +824,7 @@
                     var name = entry[0];
                     var d = entry[1];
                     var avgView = d.dismissCount > 0 ? (d.totalViewTime / d.dismissCount / 1000).toFixed(1) : '-';
-                    return '<tr><td>' + name + '</td><td>' + d.shown + '</td><td>' + d.clicked + '</td><td>' + d.dismissed + '</td><td>' + avgView + '</td></tr>';
+                    return '<tr><td><span class="desktop-name">' + name + '</span><span class="mobile-name">' + shortName(name) + '</span></td><td>' + d.shown + '</td><td>' + d.clicked + '</td><td>' + d.dismissed + '</td><td class="col-avg-view">' + avgView + '</td></tr>';
                 }).join('');
         }
 
