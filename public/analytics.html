@@ -401,7 +401,8 @@
 
             /* Hide Click Value + Conversion on brand table */
             .col-click-value,
-            .col-conversion {
+            .col-conversion,
+            .col-source {
                 display: none !important;
             }
 
@@ -562,13 +563,14 @@
                     <th>Brand</th>
                     <th>Impressions</th>
                     <th>Clicks</th>
+                    <th class="col-source">Source</th>
                     <th class="col-click-value">Click Value</th>
                     <th>Revenue</th>
                     <th class="col-conversion">Conversion</th>
                 </tr>
             </thead>
             <tbody id="brandTable">
-                <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+                <tr><td colspan="7" class="empty-state">Loading...</td></tr>
             </tbody>
         </table>
         </div>
@@ -742,9 +744,14 @@
             events.forEach(function(e) {
                 if (e.event_type === 'promo_shown' || e.event_type === 'promo_click') {
                     var brand = (e.event_data && e.event_data.brand) || 'Unknown';
-                    if (!brandStats[brand]) brandStats[brand] = { impressions: 0, clicks: 0 };
+                    if (!brandStats[brand]) brandStats[brand] = { impressions: 0, clicks: 0, cardClicks: 0, summaryClicks: 0 };
                     if (e.event_type === 'promo_shown') brandStats[brand].impressions++;
-                    if (e.event_type === 'promo_click') brandStats[brand].clicks++;
+                    if (e.event_type === 'promo_click') {
+                        brandStats[brand].clicks++;
+                        var src = (e.event_data && e.event_data.source) || 'card';
+                        if (src === 'summary') brandStats[brand].summaryClicks++;
+                        else brandStats[brand].cardClicks++;
+                    }
                 }
             });
 
@@ -752,7 +759,7 @@
             var entries = Object.entries(brandStats);
 
             if (entries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No brand data yet</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No brand data yet</td></tr>';
             } else {
                 tbody.innerHTML = entries
                     .sort(function(a, b) { return b[1].impressions - a[1].impressions; })
@@ -764,10 +771,12 @@
                         var clickValue = isHost ? 0 : d.clicks * 2.00;
                         var totalRev = isHost ? 0 : (d.impressions * 0.50) + (d.clicks * 2.00);
                         var conversion = d.impressions > 0 ? ((d.clicks / d.impressions) * 100).toFixed(1) : '0.0';
+                        var sourceText = d.cardClicks + ' card' + (d.summaryClicks > 0 ? ', ' + d.summaryClicks + ' summary' : '');
                         return '<tr>' +
                             '<td><span class="retailer-badge"><span class="retailer-dot" style="background:' + cfg.dot + '"></span>' + brand + (isHost ? ' <span style="color:var(--text-secondary);font-size:11px">(host)</span>' : '') + '</span></td>' +
                             '<td>' + d.impressions + '</td>' +
                             '<td>' + d.clicks + '</td>' +
+                            '<td class="col-source" style="font-size:11px;color:var(--text-secondary)">' + sourceText + '</td>' +
                             '<td class="col-click-value">' + (isHost ? '\u2014' : 'R' + clickValue.toFixed(2)) + '</td>' +
                             '<td>' + (isHost ? '\u2014' : 'R' + totalRev.toFixed(2)) + '</td>' +
                             '<td class="col-conversion">' + conversion + '%</td>' +

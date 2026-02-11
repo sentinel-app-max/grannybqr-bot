@@ -491,6 +491,63 @@
 
         .promo-dismiss:hover { background: rgba(0,0,0,0.05); }
 
+        /* ===== SUMMARY SHOPPING LIST ===== */
+        .summary-shoplist {
+            background: #FFFFFF;
+            border: 1px solid #F0E0E0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-top: 10px;
+        }
+        .summary-shoplist-header {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .summary-shoplist-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0efe8;
+        }
+        .summary-shoplist-row:last-child { border-bottom: none; }
+        .summary-shoplist-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .summary-shoplist-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+        .summary-shoplist-meta {
+            font-size: 11px;
+            color: #8C8577;
+        }
+        .summary-check {
+            background: none;
+            border: 2px solid #8C8577;
+            color: #8C8577;
+            cursor: pointer;
+            font-size: 14px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            padding: 0;
+            flex-shrink: 0;
+            margin-left: 10px;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+        }
+        .summary-check.checked {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: #FFFFFF;
+        }
+
         /* ===== TYPING INDICATOR ===== */
         .typing-indicator {
             display: none;
@@ -1315,6 +1372,112 @@
             return consultGuidedData.en.length;
         }
 
+        /* ===== SUMMARY PRODUCT DETECTION ===== */
+        var summaryProductMap = [
+            { keyword: 'armour', card: promoCards.find(function(c) { return c.id === 'sealer'; }) },
+            { keyword: 'black magic', card: { id: 'blackmagic', title: "Granny B's Black Magic Wax", deal: 'R199', aisle: 'Same shelf', brand: "Granny B's" } }
+        ];
+        promoCards.forEach(function(c) {
+            if (c.brand !== "Granny B's") {
+                summaryProductMap.push({ keyword: c.title.toLowerCase(), card: c });
+            }
+        });
+        // Add brand-level fallbacks
+        [
+            { keyword: 'dexter', brand: 'Dexter' },
+            { keyword: 'dulux', brand: 'Dulux' },
+            { keyword: '3m ', brand: '3M' },
+            { keyword: 'plascon', brand: 'Plascon' }
+        ].forEach(function(b) {
+            summaryProductMap.push({ keyword: b.keyword, card: null, brand: b.brand });
+        });
+
+        function extractProductMentions(text) {
+            var lower = text.toLowerCase();
+            var found = [];
+            var seenIds = new Set();
+            // Skip products already in shoppingList
+            shoppingList.forEach(function(item) { seenIds.add(item.id); });
+
+            summaryProductMap.forEach(function(entry) {
+                if (!lower.includes(entry.keyword)) return;
+                if (entry.card && !seenIds.has(entry.card.id)) {
+                    seenIds.add(entry.card.id);
+                    found.push(entry.card);
+                } else if (!entry.card && entry.brand) {
+                    // Find first unshown card for this brand
+                    var brandCard = promoCards.find(function(c) { return c.brand === entry.brand && !seenIds.has(c.id); });
+                    if (brandCard) {
+                        seenIds.add(brandCard.id);
+                        found.push(brandCard);
+                    }
+                }
+            });
+            return found;
+        }
+
+        function showSummaryShoplist(products) {
+            if (!products || products.length === 0) return;
+            var container = document.getElementById('chatMessages');
+            var typing = document.getElementById('typingIndicator');
+
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot-message';
+
+            var avatar = document.createElement('img');
+            avatar.className = 'bot-avatar';
+            avatar.src = '/granny-b-logo.png';
+            avatar.alt = '';
+            msgDiv.appendChild(avatar);
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            var listDiv = document.createElement('div');
+            listDiv.className = 'summary-shoplist';
+            listDiv.innerHTML = '<div class="summary-shoplist-header">\uD83D\uDED2 Add to your shopping list?</div>';
+
+            products.forEach(function(card) {
+                var row = document.createElement('div');
+                row.className = 'summary-shoplist-row';
+
+                var info = document.createElement('div');
+                info.className = 'summary-shoplist-info';
+                info.innerHTML = '<div class="summary-shoplist-name">' + card.title + '</div>' +
+                    '<div class="summary-shoplist-meta">' + card.deal + ' · ' + card.aisle + '</div>';
+
+                var checkBtn = document.createElement('button');
+                checkBtn.className = 'summary-check';
+
+                checkBtn.onclick = function() {
+                    checkBtn.style.transform = 'scale(1.2)';
+                    setTimeout(function() { checkBtn.style.transform = 'scale(1)'; }, 100);
+                    if (navigator.vibrate) navigator.vibrate(50);
+
+                    if (checkBtn.classList.contains('checked')) {
+                        checkBtn.classList.remove('checked');
+                        checkBtn.textContent = '';
+                        shoppingList = shoppingList.filter(function(item) { return item.id !== card.id; });
+                        GBAnalytics.track('promo_unclick', { product: card.title, brand: card.brand || '', source: 'summary' });
+                    } else {
+                        checkBtn.classList.add('checked');
+                        checkBtn.textContent = '\u2713';
+                        shoppingList.push({ id: card.id, product: card.title, deal: card.deal, brand: card.brand, aisle: card.aisle });
+                        GBAnalytics.track('promo_click', { product: card.title, brand: card.brand || '', source: 'summary' });
+                    }
+                };
+
+                row.appendChild(info);
+                row.appendChild(checkBtn);
+                listDiv.appendChild(row);
+            });
+
+            contentDiv.appendChild(listDiv);
+            msgDiv.appendChild(contentDiv);
+            container.insertBefore(msgDiv, typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
         function activateRecipeButton() {
             var s = uiStrings[currentLanguage];
 
@@ -1450,7 +1613,13 @@
 
                 guidedStep = questionIndex + 1;
                 if (guidedStep >= getGuidedQuestionsLength()) {
-                    setTimeout(function() { activateRecipeButton(); }, 800);
+                    var mentionedProducts = extractProductMentions(data.response);
+                    if (mentionedProducts.length > 0) {
+                        setTimeout(function() { showSummaryShoplist(mentionedProducts); }, 500);
+                        setTimeout(function() { activateRecipeButton(); }, 1200);
+                    } else {
+                        setTimeout(function() { activateRecipeButton(); }, 800);
+                    }
                 } else {
                     setTimeout(function() { showGuidedQuestion(guidedStep); }, 600);
                 }
