@@ -497,55 +497,11 @@
             border: 1px solid #F0E0E0;
             border-radius: 14px;
             padding: 12px 14px;
-            margin-top: 10px;
         }
         .summary-shoplist-header {
             font-size: 14px;
             font-weight: 700;
             margin-bottom: 8px;
-        }
-        .summary-shoplist-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0efe8;
-        }
-        .summary-shoplist-row:last-child { border-bottom: none; }
-        .summary-shoplist-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .summary-shoplist-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1A1A1A;
-        }
-        .summary-shoplist-meta {
-            font-size: 11px;
-            color: #8C8577;
-        }
-        .summary-check {
-            background: none;
-            border: 2px solid #8C8577;
-            color: #8C8577;
-            cursor: pointer;
-            font-size: 14px;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            padding: 0;
-            flex-shrink: 0;
-            margin-left: 10px;
-            transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
-        }
-        .summary-check.checked {
-            background: #4CAF50;
-            border-color: #4CAF50;
-            color: #FFFFFF;
         }
 
         /* ===== TYPING INDICATOR ===== */
@@ -1373,47 +1329,101 @@
         }
 
         /* ===== SUMMARY PRODUCT DETECTION ===== */
-        var summaryProductMap = [
-            { keyword: 'armour', card: promoCards.find(function(c) { return c.id === 'sealer'; }) },
-            { keyword: 'black magic', card: { id: 'blackmagic', title: "Granny B's Black Magic Wax", deal: 'R199', aisle: 'Same shelf', brand: "Granny B's" } }
+        var summaryBrandPatterns = [
+            { regex: /\b(Dexter\s+[\w\s&']+?)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: 'Dexter' },
+            { regex: /\b(Dulux\s+[\w\s&']+?)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: 'Dulux' },
+            { regex: /\b(3M\s+[\w\s&']+?)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: '3M' },
+            { regex: /\b(Plascon\s+[\w\s&']+?)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: 'Plascon' },
+            { regex: /\b((?:Granny B'?s?\s+)?Armour\s+[\w\s]+?)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: "Granny B's" },
+            { regex: /\b((?:Granny B'?s?\s+)?Black Magic\s*[\w\s]*)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: "Granny B's" },
+            { regex: /\b((?:Granny B'?s?\s+)?Classic Seal\s*[\w\s]*)(?:\s*[\(\u2013\u2014\-]\s*R(\d+[\d,.]*)|,?\s*R(\d+[\d,.]*))/gi, brand: "Granny B's" }
         ];
-        promoCards.forEach(function(c) {
-            if (c.brand !== "Granny B's") {
-                summaryProductMap.push({ keyword: c.title.toLowerCase(), card: c });
-            }
-        });
-        // Add brand-level fallbacks
-        [
+
+        // Fallback: brand keyword mentioned without price — match against promoCards
+        var summaryBrandFallbacks = [
             { keyword: 'dexter', brand: 'Dexter' },
             { keyword: 'dulux', brand: 'Dulux' },
             { keyword: '3m ', brand: '3M' },
-            { keyword: 'plascon', brand: 'Plascon' }
-        ].forEach(function(b) {
-            summaryProductMap.push({ keyword: b.keyword, card: null, brand: b.brand });
-        });
+            { keyword: 'plascon', brand: 'Plascon' },
+            { keyword: 'armour', brand: "Granny B's", fallbackCard: 'sealer' },
+            { keyword: 'black magic', brand: "Granny B's", fallbackCard: null }
+        ];
 
         function extractProductMentions(text) {
-            var lower = text.toLowerCase();
             var found = [];
-            var seenIds = new Set();
+            var seenNames = new Set();
             // Skip products already in shoppingList
-            shoppingList.forEach(function(item) { seenIds.add(item.id); });
+            shoppingList.forEach(function(item) { seenNames.add(item.product.toLowerCase()); });
 
-            summaryProductMap.forEach(function(entry) {
-                if (!lower.includes(entry.keyword)) return;
-                if (entry.card && !seenIds.has(entry.card.id)) {
-                    seenIds.add(entry.card.id);
-                    found.push(entry.card);
-                } else if (!entry.card && entry.brand) {
-                    // Find first unshown card for this brand
-                    var brandCard = promoCards.find(function(c) { return c.brand === entry.brand && !seenIds.has(c.id); });
-                    if (brandCard) {
-                        seenIds.add(brandCard.id);
-                        found.push(brandCard);
+            // Try regex patterns first
+            summaryBrandPatterns.forEach(function(pat) {
+                pat.regex.lastIndex = 0;
+                var m;
+                while ((m = pat.regex.exec(text)) !== null) {
+                    var name = m[1].trim().replace(/[\s,]+$/, '');
+                    var price = 'R' + (m[2] || m[3] || '');
+                    if (seenNames.has(name.toLowerCase())) continue;
+                    seenNames.add(name.toLowerCase());
+                    // Try to find matching aisle from promoCards
+                    var aisle = '';
+                    var lower = name.toLowerCase();
+                    for (var i = 0; i < promoCards.length; i++) {
+                        if (promoCards[i].title.toLowerCase().includes(lower.split(' ').slice(0, 2).join(' '))) {
+                            aisle = promoCards[i].aisle;
+                            break;
+                        }
                     }
+                    // Also extract aisle from text like "Aisle 3" near the match
+                    if (!aisle) {
+                        var aisleMatch = text.substring(m.index, m.index + m[0].length + 30).match(/Aisle\s+(\d+|Same shelf)/i);
+                        if (aisleMatch) aisle = 'Aisle ' + aisleMatch[1];
+                    }
+                    found.push({ name: name, price: price, aisle: aisle || '', brand: pat.brand });
                 }
             });
+
+            // Fallback: brand keyword without regex price match
+            if (found.length === 0) {
+                var lower = text.toLowerCase();
+                summaryBrandFallbacks.forEach(function(fb) {
+                    if (!lower.includes(fb.keyword)) return;
+                    // Find matching promoCard
+                    var card = fb.fallbackCard
+                        ? promoCards.find(function(c) { return c.id === fb.fallbackCard; })
+                        : promoCards.find(function(c) { return c.brand === fb.brand; });
+                    if (card && !seenNames.has(card.title.toLowerCase())) {
+                        seenNames.add(card.title.toLowerCase());
+                        found.push({ name: card.title, price: card.deal, aisle: card.aisle, brand: card.brand });
+                    }
+                });
+            }
+
             return found;
+        }
+
+        function toggleSummaryProduct(el) {
+            var product = el.getAttribute('data-product');
+            var price = el.getAttribute('data-price');
+            var brand = el.getAttribute('data-brand');
+            var aisle = el.getAttribute('data-aisle') || '';
+
+            el.style.transform = 'scale(1.2)';
+            setTimeout(function() { el.style.transform = 'scale(1)'; }, 100);
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            if (el.getAttribute('data-checked') === 'true') {
+                el.setAttribute('data-checked', 'false');
+                el.textContent = '\u25CB';
+                el.style.color = '#8C8577';
+                shoppingList = shoppingList.filter(function(item) { return item.product !== product; });
+                GBAnalytics.track('promo_unclick', { product: product, brand: brand, source: 'summary' });
+            } else {
+                el.setAttribute('data-checked', 'true');
+                el.textContent = '\u2705';
+                el.style.color = '';
+                shoppingList.push({ id: 'summary_' + product.replace(/\s+/g, '_'), product: product, deal: price, brand: brand, aisle: aisle });
+                GBAnalytics.track('promo_click', { product: product, price: price, brand: brand, source: 'summary' });
+            }
         }
 
         function showSummaryShoplist(products) {
@@ -1433,46 +1443,19 @@
             var contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
 
-            var listDiv = document.createElement('div');
-            listDiv.className = 'summary-shoplist';
-            listDiv.innerHTML = '<div class="summary-shoplist-header">\uD83D\uDED2 Add to your shopping list?</div>';
+            var html = '<div class="summary-shoplist">';
+            html += '<div class="summary-shoplist-header">\uD83D\uDED2 Add these to your list?</div>';
 
-            products.forEach(function(card) {
-                var row = document.createElement('div');
-                row.className = 'summary-shoplist-row';
-
-                var info = document.createElement('div');
-                info.className = 'summary-shoplist-info';
-                info.innerHTML = '<div class="summary-shoplist-name">' + card.title + '</div>' +
-                    '<div class="summary-shoplist-meta">' + card.deal + ' · ' + card.aisle + '</div>';
-
-                var checkBtn = document.createElement('button');
-                checkBtn.className = 'summary-check';
-
-                checkBtn.onclick = function() {
-                    checkBtn.style.transform = 'scale(1.2)';
-                    setTimeout(function() { checkBtn.style.transform = 'scale(1)'; }, 100);
-                    if (navigator.vibrate) navigator.vibrate(50);
-
-                    if (checkBtn.classList.contains('checked')) {
-                        checkBtn.classList.remove('checked');
-                        checkBtn.textContent = '';
-                        shoppingList = shoppingList.filter(function(item) { return item.id !== card.id; });
-                        GBAnalytics.track('promo_unclick', { product: card.title, brand: card.brand || '', source: 'summary' });
-                    } else {
-                        checkBtn.classList.add('checked');
-                        checkBtn.textContent = '\u2713';
-                        shoppingList.push({ id: card.id, product: card.title, deal: card.deal, brand: card.brand, aisle: card.aisle });
-                        GBAnalytics.track('promo_click', { product: card.title, brand: card.brand || '', source: 'summary' });
-                    }
-                };
-
-                row.appendChild(info);
-                row.appendChild(checkBtn);
-                listDiv.appendChild(row);
+            products.forEach(function(p) {
+                html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee">';
+                html += '<div><strong>' + p.name + '</strong><br><small style="color:#8C8577">' + p.price + (p.aisle ? ' \u00b7 ' + p.aisle : '') + '</small></div>';
+                html += '<div class="summary-check" data-product="' + p.name.replace(/"/g, '&quot;') + '" data-price="' + p.price + '" data-brand="' + p.brand.replace(/"/g, '&quot;') + '" data-aisle="' + p.aisle + '" data-checked="false" onclick="toggleSummaryProduct(this)" style="cursor:pointer;font-size:24px;color:#8C8577;transition:transform 0.1s">\u25CB</div>';
+                html += '</div>';
             });
 
-            contentDiv.appendChild(listDiv);
+            html += '</div>';
+            contentDiv.innerHTML = html;
+
             msgDiv.appendChild(contentDiv);
             container.insertBefore(msgDiv, typing);
             container.scrollTop = container.scrollHeight;
