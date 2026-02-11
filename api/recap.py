@@ -327,4 +327,4 @@ Extract what was actually discussed. Do not invent information not present in th
     def _escape(text):
         if not text:
             return ''
-        return str(text).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+        return str(text).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')

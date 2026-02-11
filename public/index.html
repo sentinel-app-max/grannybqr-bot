@@ -1148,8 +1148,8 @@
                 waPaint: "PAINT",
                 waSeal: "SEAL",
                 waLeroyProducts: "Leroy Merlin Products",
-                waDiscount: "Discount Code: GRANNYB10 (10% off at grannyb.co.za)",
-                emailShareTryIt: "Try the free paint advisor here: "
+                waDiscount: "\ud83d\udcb0 *10% OFF online:* Use code GRANNYB10\n\ud83d\uded2\nhttps://grannyb.co.za",
+                emailShareTryIt: "\ud83d\udd17 Free paint advice:\n"
             }
         };
 
@@ -1926,7 +1926,7 @@
             }
 
             lines.push('\n' + s.waDiscount);
-            lines.push('\nTry the free paint advisor: https://grannybqr.summitwebcraft.co.za/go');
+            lines.push('\n\ud83d\udd17 Free paint advice:\nhttps://grannybqr.summitwebcraft.co.za/go');
 
             return lines.join('\n');
         }
@@ -1975,7 +1975,7 @@
                 body += '\n' + s.waDiscount + '\n';
             }
 
-            body += '\n' + s.emailShareTryIt + advisorUrl;
+            body += '\n' + s.emailShareTryIt + advisorUrl + '\n';
 
             var mailto = 'mailto:?subject=' + encodeURIComponent(s.emailShareSubject) + '&body=' + encodeURIComponent(body);
             window.location.href = mailto;
