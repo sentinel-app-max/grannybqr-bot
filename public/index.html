@@ -448,7 +448,9 @@
             right: 8px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            z-index: 10;
+            pointer-events: auto;
         }
 
         .promo-check {
@@ -457,8 +459,8 @@
             color: #8C8577;
             cursor: pointer;
             font-size: 14px;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -466,6 +468,16 @@
             padding: 0;
             line-height: 1;
             transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+            z-index: 10;
+            pointer-events: auto;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .promo-check:hover {
+            border-color: #4CAF50;
+            background: rgba(76,175,80,0.1);
         }
 
         .promo-check.checked {
@@ -474,22 +486,32 @@
             color: #FFFFFF;
         }
 
+        .promo-check.checked:hover {
+            background: #388E3C;
+            border-color: #388E3C;
+        }
+
         .promo-dismiss {
             background: none;
             border: none;
             color: #8C8577;
             cursor: pointer;
             font-size: 16px;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             padding: 0;
+            z-index: 10;
+            pointer-events: auto;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
-        .promo-dismiss:hover { background: rgba(0,0,0,0.05); }
+        .promo-dismiss:hover { background: rgba(0,0,0,0.08); }
 
         /* ===== SUMMARY SHOPPING LIST ===== */
         .summary-shoplist {
@@ -1926,7 +1948,9 @@
             }
 
             lines.push('\n' + s.waDiscount);
-            lines.push('\n\ud83d\udd17 Free paint advice:\nhttps://grannybqr.summitwebcraft.co.za/go');
+            lines.push('\n\ud83d\udd17 Free paint advice:');
+            lines.push('https://grannybqr.summitwebcraft.co.za/go');
+            lines.push('');
 
             return lines.join('\n');
         }

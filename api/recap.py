@@ -43,8 +43,11 @@ class handler(BaseHTTPRequestHandler):
         recap = self._extract_recap(api_key, history)
 
         if not recap:
+            print(f"Recap extraction failed for {email or 'unknown'}, history length: {len(history)}")
             self._respond({'success': False, 'error': 'Could not extract recap'})
             return
+
+        print(f"Recap extracted OK: {json.dumps(recap)[:500]}")
 
         # Step 2: Send Granny's Recipe email via Brevo (if email provided)
         email_sent = False
@@ -106,13 +109,24 @@ Extract what was actually discussed. Do not invent information not present in th
             with urllib.request.urlopen(req) as response:
                 result = json.loads(response.read().decode())
                 raw_text = result['content'][0]['text']
+                print(f"Claude recap raw: {raw_text[:300]}")
 
                 start = raw_text.find('{')
                 end = raw_text.rfind('}') + 1
                 if start >= 0 and end > start:
-                    return json.loads(raw_text[start:end])
+                    parsed = json.loads(raw_text[start:end])
                 else:
-                    return json.loads(raw_text)
+                    parsed = json.loads(raw_text)
+
+                # Validate we got at least some content
+                has_content = any(parsed.get(k) for k in ['projectType', 'recommendedColour', 'prepSteps', 'paintSteps'])
+                if not has_content:
+                    print(f"Warning: recap parsed but all fields empty: {parsed}")
+
+                return parsed
+        except json.JSONDecodeError as e:
+            print(f"Recap JSON parse error: {str(e)}, raw: {raw_text[:200] if 'raw_text' in dir() else 'N/A'}")
+            return None
         except Exception as e:
             print(f"Recap extraction error: {str(e)}")
             return None
@@ -178,8 +192,8 @@ Extract what was actually discussed. Do not invent information not present in th
             </div>"""
 
         email_html = f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#F5F5F5;">
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#F5F5F5;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F5F5;padding:20px 0;">
 <tr><td align="center">
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
@@ -219,18 +233,19 @@ Extract what was actually discussed. Do not invent information not present in th
             <p style="margin:0;font-size:12px;color:#8C8577;text-transform:uppercase;letter-spacing:1px;">{lbl_discount}</p>
             <p style="margin:6px 0;font-size:28px;font-weight:800;color:#1A1A1A;letter-spacing:3px;">GRANNYB10</p>
             <p style="margin:0;font-size:13px;color:#7A9B6D;font-weight:600;">{lbl_discount_note}</p>
+            <p style="margin:10px 0 0 0;font-size:12px;"><a href="https://www.grannyb.co.za" target="_blank" style="color:#DD2222;text-decoration:underline;">grannyb.co.za</a></p>
         </div>
     </td></tr>
 
     <!-- CTA -->
     <tr><td style="padding:0 24px 24px;text-align:center;">
-        <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" style="display:inline-block;background:#DD2222;color:#FFFFFF;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">{lbl_shop} &rarr;</a>
+        <a href="https://www.grannyb.co.za/collections/old-fashioned-paint" target="_blank" style="display:inline-block;background:#DD2222;color:#FFFFFF;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">{lbl_shop} &rarr;</a>
     </td></tr>
 
     <!-- Footer -->
     <tr><td style="padding:20px 24px;text-align:center;border-top:1px solid #F0E0E0;">
         <p style="margin:0;font-size:11px;color:#8C8577;">{lbl_footer}</p>
-        <p style="margin:8px 0 0 0;font-size:12px;"><a href="https://grannybqr.summitwebcraft.co.za/?store=leroy-fourways" style="color:#DD2222;text-decoration:none;font-weight:600;">Try Granny B's Paint Advisor &rarr;</a></p>
+        <p style="margin:8px 0 0 0;font-size:12px;"><a href="https://grannybqr.summitwebcraft.co.za/?store=leroy-fourways" target="_blank" style="color:#DD2222;text-decoration:underline;font-weight:600;">Try Granny B's Paint Advisor &rarr;</a></p>
         <p style="margin:8px 0 0 0;font-size:11px;color:#8C8577;">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</p>
     </td></tr>
 
@@ -238,6 +253,9 @@ Extract what was actually discussed. Do not invent information not present in th
 </td></tr>
 </table>
 </body></html>"""
+
+        print(f"Email HTML length: {len(email_html)}, detail_rows: {len(detail_rows)}, steps: {len(steps_html)}")
+        print(f"Email HTML preview: ...{email_html[200:500]}...")
 
         brevo_url = "https://api.brevo.com/v3/smtp/email"
 
