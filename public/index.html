@@ -442,10 +442,39 @@
             margin-top: 2px;
         }
 
-        .promo-dismiss {
+        .promo-actions {
             position: absolute;
             top: 8px;
             right: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .promo-check {
+            background: none;
+            border: 2px solid #8C8577;
+            color: #8C8577;
+            cursor: pointer;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            padding: 0;
+            line-height: 1;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+        }
+
+        .promo-check.checked {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: #FFFFFF;
+        }
+
+        .promo-dismiss {
             background: none;
             border: none;
             color: #8C8577;
@@ -457,6 +486,7 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            padding: 0;
         }
 
         .promo-dismiss:hover { background: rgba(0,0,0,0.05); }
@@ -1047,6 +1077,7 @@
         let flowMode = 'consultation';
         let consultAnswers = [];
         let recapData = null;
+        let shoppingList = [];
 
         const speechLanguageMap = {
             'en': 'en-ZA'
@@ -1530,7 +1561,10 @@
             promoDiv.style.borderLeftColor = card.border;
 
             promoDiv.innerHTML =
-                '<button class="promo-dismiss">\u2715</button>' +
+                '<div class="promo-actions">' +
+                    '<button class="promo-check" data-card-id="' + card.id + '"></button>' +
+                    '<button class="promo-dismiss">\u2715</button>' +
+                '</div>' +
                 '<div class="promo-badge">LEROY MERLIN</div>' +
                 '<div class="promo-title">' + card.title + '</div>' +
                 '<div class="promo-deal">' + card.deal + '</div>' +
@@ -1542,6 +1576,25 @@
                 visiblePromoEl = null;
                 if (promoQueue.length > 0) {
                     setTimeout(function() { displayPromoCard(promoQueue.shift()); }, 300);
+                }
+            };
+
+            var checkBtn = promoDiv.querySelector('.promo-check');
+            checkBtn.onclick = function() {
+                checkBtn.style.transform = 'scale(1.2)';
+                setTimeout(function() { checkBtn.style.transform = 'scale(1)'; }, 100);
+                if (navigator.vibrate) navigator.vibrate(50);
+
+                if (checkBtn.classList.contains('checked')) {
+                    checkBtn.classList.remove('checked');
+                    checkBtn.textContent = '';
+                    shoppingList = shoppingList.filter(function(item) { return item.id !== card.id; });
+                    GBAnalytics.track('promo_unclick', { product: card.title, brand: card.brand || '' });
+                } else {
+                    checkBtn.classList.add('checked');
+                    checkBtn.textContent = '\u2713';
+                    shoppingList.push({ id: card.id, product: card.title, deal: card.deal, brand: card.brand, aisle: card.aisle });
+                    GBAnalytics.promoClick(card.title, card.brand);
                 }
             };
 
@@ -1663,7 +1716,8 @@
                         answers: consultAnswers,
                         flow: flowMode,
                         sku: urlParams.sku,
-                        store: urlParams.store
+                        store: urlParams.store,
+                        shoppingList: shoppingList
                     })
                 });
 
@@ -1712,6 +1766,13 @@
             if (r.sealSteps) lines.push('\n' + s.waSeal + ':\n' + r.sealSteps);
             if (r.leroyProducts) lines.push('\n' + s.waLeroyProducts + ':\n' + r.leroyProducts);
 
+            if (shoppingList.length > 0) {
+                lines.push('\n\ud83d\uded2 *My Shopping List*:');
+                shoppingList.forEach(function(item) {
+                    lines.push('\u2022 ' + item.product + ' \u2014 ' + item.deal + ' (' + item.aisle + ')');
+                });
+            }
+
             lines.push('\n' + s.waDiscount);
 
             return lines.join('\n');
@@ -1750,6 +1811,14 @@
                 if (r.paintSteps) body += '\n' + s.waPaint + ':\n' + r.paintSteps + '\n';
                 if (r.sealSteps) body += '\n' + s.waSeal + ':\n' + r.sealSteps + '\n';
                 if (r.leroyProducts) body += '\n' + s.waLeroyProducts + ':\n' + r.leroyProducts + '\n';
+
+                if (shoppingList.length > 0) {
+                    body += '\nMy Shopping List:\n';
+                    shoppingList.forEach(function(item) {
+                        body += '- ' + item.product + ' \u2014 ' + item.deal + ' (' + item.aisle + ')\n';
+                    });
+                }
+
                 body += '\n' + s.waDiscount + '\n';
             }
 
