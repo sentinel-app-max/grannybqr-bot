@@ -21,6 +21,7 @@
     { "source": "/stt", "destination": "/api/stt" },
     { "source": "/recap", "destination": "/api/recap" },
     { "source": "/analytics", "destination": "/api/analytics" },
+    { "source": "/go", "destination": "/api/go" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ]
 }

@@ -230,7 +230,8 @@ Extract what was actually discussed. Do not invent information not present in th
     <!-- Footer -->
     <tr><td style="padding:20px 24px;text-align:center;border-top:1px solid #F0E0E0;">
         <p style="margin:0;font-size:11px;color:#8C8577;">{lbl_footer}</p>
-        <p style="margin:4px 0 0 0;font-size:11px;color:#8C8577;">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</p>
+        <p style="margin:8px 0 0 0;font-size:12px;"><a href="https://grannybqr.summitwebcraft.co.za/?store=leroy-fourways" style="color:#DD2222;text-decoration:none;font-weight:600;">Try Granny B's Paint Advisor &rarr;</a></p>
+        <p style="margin:8px 0 0 0;font-size:11px;color:#8C8577;">Powered by SUMMITWEBCRAFT &times; Granny B's &times; Leroy Merlin</p>
     </td></tr>
 
 </table>
